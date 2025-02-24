@@ -1,7 +1,7 @@
-use serde::Deserialize;
-use csv::ReaderBuilder;
-use std::error::Error;
 use chrono::NaiveDate;
+use csv::ReaderBuilder;
+use serde::Deserialize;
+use std::error::Error;
 
 #[derive(Debug, Deserialize)]
 struct StockData {
