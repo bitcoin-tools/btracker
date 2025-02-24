@@ -15,7 +15,7 @@ struct RawData {
     close: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
     close: f32,
@@ -41,12 +41,53 @@ fn main() -> Result<(), Box<dyn Error>> {
         clean_data.push(CleanData { date, close });
     }
 
+    let moving_average_size = 1400;
+    let mut moving_averages: Vec<f32> = Vec::new();
+
+    for i in 0..clean_data.len() {
+        if i == clean_data.len() - 1 {
+            moving_averages.push(0.0 as f32);
+            break;
+        }
+
+        let mut sum = 0.0;
+        let j_start = i + 1;
+        let j_end;
+        let j_size;
+
+        if i < clean_data.len() - moving_average_size {
+            j_end = j_start + moving_average_size;
+            j_size = moving_average_size;
+        } else {
+            j_end = clean_data.len();
+            j_size = j_end - j_start;
+        }
+
+        for j in j_start..j_end {
+            sum += clean_data[j].close;
+        }
+        moving_averages.push(sum / j_size as f32);    
+    }
+
     println!("The current time is: {:?}", chrono::Local::now());
-    println!("Loaded {} rows of raw data", raw_data.len());
-    println!("Loaded {} rows of clean data", clean_data.len());
+    println!("Loaded {} rows of data", clean_data.len());
     println!("First row Date: {}", clean_data[0].date);
     println!("First row Close: {}", clean_data[0].close);
-    println!("First row: {:?}", clean_data[0]);
+    println!("Row 1 of clean data: {:?}", clean_data[0]);
+    println!("Row 2 of clean data: {:?}", clean_data[1]);
+    println!("Row 3 of clean data: {:?}", clean_data[2]);
+    println!("Row 1 of moving averages: {}", moving_averages[0]);
+    println!("Row 2 of moving averages: {}", moving_averages[1]);
+    println!("Row 3 of moving averages: {}", moving_averages[2]);
+
+    println!("Row -4 of clean data: {}", clean_data[clean_data.len() - 4].close);
+    println!("Row -3 of clean data: {}", clean_data[clean_data.len() - 3].close);
+    println!("Row -2 of clean data: {}", clean_data[clean_data.len() - 2].close);
+    println!("Row -1 of clean data: {}", clean_data[clean_data.len() - 1].close);
+    println!("Row -4 of moving averages: {}", moving_averages[moving_averages.len() - 4]);
+    println!("Row -3 of moving averages: {}", moving_averages[moving_averages.len() - 3]);
+    println!("Row -2 of moving averages: {}", moving_averages[moving_averages.len() - 2]);
+    println!("Row -1 of moving averages: {}", moving_averages[moving_averages.len() - 1]);
 
     Ok(())
 }
