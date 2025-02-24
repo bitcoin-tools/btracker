@@ -1,8 +1,10 @@
 use chrono::NaiveDate;
+use crate::full_palette::ORANGE;
 use csv::ReaderBuilder;
 use plotters::prelude::*;
 use serde::Deserialize;
 use std::error::Error;
+use std::path::Path;
 
 #[derive(Debug, Deserialize)]
 struct RawData {
@@ -94,7 +96,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     const OUTPUT_IMAGE_WIDTH: u32 = 800;
     const OUTPUT_IMAGE_HEIGHT: u32 = 600;
     const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
-    let root = BitMapBackend::new("output/200wma.png", OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
+    const OUTPUT_IMAGE_DESTINATION: &str = "output/200wma.png";
+    let output_image_destination_directory: &str = Path::new(OUTPUT_IMAGE_DESTINATION).parent().unwrap().to_str().unwrap();
+
+    // if the path OUTPUT_IMAGE_DESTINATION doesn't exist as a directory, create it
+    std::fs::create_dir_all(output_image_destination_directory)?;
+    let root = BitMapBackend::new(OUTPUT_IMAGE_DESTINATION, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
     let min_close = clean_data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
@@ -115,6 +122,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     chart.draw_series(LineSeries::new(
         clean_data.iter().map(|d| (d.date, d.close)),
         &BLUE,
+    ))?;
+
+    chart.draw_series(LineSeries::new(
+        //moving_averages.iter().enumerate().map(|(i, &ma)| (clean_data[i].date, ma)),
+        clean_data.iter().zip(moving_averages.iter()).map(|(d, ma)| (d.date, *ma)),
+        &ORANGE,
     ))?;
 
     root.present()?;
