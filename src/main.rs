@@ -76,14 +76,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Row 1 of clean data: {:?}", clean_data[0]);
     println!("Row 2 of clean data: {:?}", clean_data[1]);
     println!("Row 3 of clean data: {:?}", clean_data[2]);
-    println!("Row 1 of moving averages: {}", moving_averages[0]);
-    println!("Row 2 of moving averages: {}", moving_averages[1]);
-    println!("Row 3 of moving averages: {}", moving_averages[2]);
+    println!("Row 1 of moving averages:  {}", moving_averages[0]);
+    println!("Row 2 of moving averages:  {}", moving_averages[1]);
+    println!("Row 3 of moving averages:  {}", moving_averages[2]);
 
-    println!("Row -4 of clean data: {}", clean_data[clean_data.len() - 4].close);
-    println!("Row -3 of clean data: {}", clean_data[clean_data.len() - 3].close);
-    println!("Row -2 of clean data: {}", clean_data[clean_data.len() - 2].close);
-    println!("Row -1 of clean data: {}", clean_data[clean_data.len() - 1].close);
+    println!("Row -4 of clean data:      {}", clean_data[clean_data.len() - 4].close);
+    println!("Row -3 of clean data:      {}", clean_data[clean_data.len() - 3].close);
+    println!("Row -2 of clean data:      {}", clean_data[clean_data.len() - 2].close);
+    println!("Row -1 of clean data:      {}", clean_data[clean_data.len() - 1].close);
     println!("Row -4 of moving averages: {}", moving_averages[moving_averages.len() - 4]);
     println!("Row -3 of moving averages: {}", moving_averages[moving_averages.len() - 3]);
     println!("Row -2 of moving averages: {}", moving_averages[moving_averages.len() - 2]);
