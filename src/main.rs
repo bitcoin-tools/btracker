@@ -1,5 +1,4 @@
 use chrono::NaiveDate;
-use crate::full_palette::ORANGE;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -95,9 +94,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
     }
 
+    const OUTPUT_DIRECTORY: &str = "output/";
+    const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+    let output_csv_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_CSV_FILENAME);
+    const OUTPUT_IMAGE_FILENAME: &str = "200wma.png";
+    let output_image_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_IMAGE_FILENAME);
+
+    // if the path OUTPUT_IMAGE_DESTINATION doesn't exist as a directory, create it
+    std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
+
     // Save the clean_data_with_analytics to a CSV file
-    const OUTPUT_CSV_DESTINATION: &str = "output/clean_data_with_analytics.csv";
-    let mut writer = WriterBuilder::new().from_path(OUTPUT_CSV_DESTINATION)?;
+    let mut writer = WriterBuilder::new().from_path(output_csv_path)?;
     for record in &clean_data_with_analytics {
         writer.serialize(record)?;
     }
@@ -107,19 +114,28 @@ fn main() -> Result<(), Box<dyn Error>> {
     const OUTPUT_IMAGE_WIDTH: u32 = 800;
     const OUTPUT_IMAGE_HEIGHT: u32 = 600;
     const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
-    const OUTPUT_IMAGE_DESTINATION: &str = "output/200wma.png";
 
-    let root = BitMapBackend::new(OUTPUT_IMAGE_DESTINATION, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
+    // Build the drawing area (root) for the chart
+    let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
+    // Calculate the max and min values for both domensions of the chart
+    // TODO: dimensions should be the min of close or two_hundred_wma
     let min_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
+    let min_wma = clean_data_with_analytics.iter().map(|d| d.two_hundred_wma).fold(f32::INFINITY, f32::min);
+    let min_value = f32::min(min_close, min_wma);
+
     let max_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max);
+    let max_wma = clean_data_with_analytics.iter().map(|d| d.two_hundred_wma).fold(f32::NEG_INFINITY, f32::max);
+    let max_value = f32::max(max_close, max_wma);
+    
     let min_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min);
     let max_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max);
-    println!("Min close: {}", min_close);
-    println!("Max close: {}", max_close);
-    println!("Min date: {}", min_date);
-    println!("Max date: {}", max_date);
+
+    println!("Min value: {}", min_value);
+    println!("Max value: {}", max_value);
+    println!("Min date:  {}", min_date);
+    println!("Max date:  {}", max_date);
 
     let chart_caption = format!("Price and 200-WMA from {} to {}", min_date, max_date);
 
@@ -134,7 +150,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     chart.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.two_hundred_wma)),
-        &ORANGE,
+        &RED,
     ))?;
 
     root.present()?;
