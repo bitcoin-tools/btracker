@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use csv::ReaderBuilder;
 use std::error::Error;
+use chrono::NaiveDate;
 
 #[derive(Debug, Deserialize)]
 struct StockData {
@@ -25,13 +26,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         data.push(record);
     }
 
+    let test_date_str = format!("{} {} {}", data[0].month, data[0].day, data[0].year);
+    let date = NaiveDate::parse_from_str(&test_date_str, "%b %d %Y")?;
     println!("The current time is: {:?}", chrono::Local::now());
-    println!("Loaded {} rows", data.len());
-    println!("First row Month: {}", data[0].month);
-    println!("First row Day: {}", data[0].day);
-    println!("First row Year: {}", data[0].year);
-    println!("First row Close: {}", data[0].close);
+    println!("Loaded {} rows", data.len());    
+    println!("First row Date: {}", date);
     println!("First row: {:?}", data[0]);
-
     Ok(())
 }
