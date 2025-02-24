@@ -1,0 +1,13 @@
+name: Validation CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Cargo Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo check
+      - run: cargo build
+      - run: cargo run
