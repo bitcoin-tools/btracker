@@ -1,9 +1,9 @@
-name: Valid
+name: Validation CI
 on: [push, pull_request]
 
 jobs:
   test:
-    name: cargo test
+    name: Build and run
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
