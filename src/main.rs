@@ -113,7 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Min date: {}", min_date);
     println!("Max date: {}", max_date);
 
-    let chart_caption = format!("Price from {} to {}", min_date, max_date);
+    let chart_caption = format!("Price and 200-WMA from {} to {}", min_date, max_date);
 
     let mut chart = ChartBuilder::on(&root)
         .caption(chart_caption, ("sans-serif", 20).into_font())
