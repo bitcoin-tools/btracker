@@ -24,6 +24,13 @@ struct CleanData {
     close: f32,
 }
 
+#[derive(Debug)]
+struct CleanDataWithAnalytics {
+    date: NaiveDate,
+    close: f32,
+    wma: f32,
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let mut reader = ReaderBuilder::new()
         .delimiter(b'|')
@@ -72,25 +79,27 @@ fn main() -> Result<(), Box<dyn Error>> {
         moving_averages.push(sum / j_size as f32);    
     }
 
-    println!("The current time is: {:?}", chrono::Local::now());
-    println!("Loaded {} rows of data", clean_data.len());
-    println!("First row Date: {}", clean_data[0].date);
-    println!("First row Close: {}", clean_data[0].close);
-    println!("Row 1 of clean data: {:?}", clean_data[0]);
-    println!("Row 2 of clean data: {:?}", clean_data[1]);
-    println!("Row 3 of clean data: {:?}", clean_data[2]);
-    println!("Row 1 of moving averages:  {}", moving_averages[0]);
-    println!("Row 2 of moving averages:  {}", moving_averages[1]);
-    println!("Row 3 of moving averages:  {}", moving_averages[2]);
+    let mut clean_data_with_analytics: Vec<CleanDataWithAnalytics> = Vec::new();
+    for (i, row) in clean_data.iter().enumerate() {
+        clean_data_with_analytics.push(CleanDataWithAnalytics {
+            date: row.date,
+            close: row.close,
+            wma: moving_averages[i],
+        });
+    }
 
-    println!("Row -4 of clean data:      {}", clean_data[clean_data.len() - 4].close);
-    println!("Row -3 of clean data:      {}", clean_data[clean_data.len() - 3].close);
-    println!("Row -2 of clean data:      {}", clean_data[clean_data.len() - 2].close);
-    println!("Row -1 of clean data:      {}", clean_data[clean_data.len() - 1].close);
-    println!("Row -4 of moving averages: {}", moving_averages[moving_averages.len() - 4]);
-    println!("Row -3 of moving averages: {}", moving_averages[moving_averages.len() - 3]);
-    println!("Row -2 of moving averages: {}", moving_averages[moving_averages.len() - 2]);
-    println!("Row -1 of moving averages: {}", moving_averages[moving_averages.len() - 1]);
+    println!("The current time is: {:?}", chrono::Local::now());
+    println!("Loaded {} rows of data", clean_data_with_analytics.len());
+    println!("First row Date: {}", clean_data_with_analytics[0].date);
+    println!("First row Close: {}", clean_data_with_analytics[0].close);
+    println!("Row +1 of clean data: {:?}", clean_data_with_analytics[0]);
+    println!("Row +2 of clean data: {:?}", clean_data_with_analytics[1]);
+    println!("Row +3 of clean data: {:?}", clean_data_with_analytics[2]);
+    println!("Row +4 of clean data: {:?}", clean_data_with_analytics[3]);
+    println!("Row -4 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 4]);
+    println!("Row -3 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 3]);
+    println!("Row -2 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 2]);
+    println!("Row -1 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 1]);
 
     // TODO: try 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
     const OUTPUT_IMAGE_WIDTH: u32 = 800;
@@ -104,10 +113,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(OUTPUT_IMAGE_DESTINATION, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
-    let min_close = clean_data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
-    let max_close = clean_data.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max);
-    let min_date = clean_data.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min);
-    let max_date = clean_data.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max);
+    let min_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
+    let max_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max);
+    let min_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min);
+    let max_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max);
     println!("Min close: {}", min_close);
     println!("Max close: {}", max_close);
     println!("Min date: {}", min_date);
@@ -120,13 +129,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         .build_cartesian_2d(min_date..max_date, min_close..max_close)?;
 
     chart.draw_series(LineSeries::new(
-        clean_data.iter().map(|d| (d.date, d.close)),
+        clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
         &BLUE,
     ))?;
 
     chart.draw_series(LineSeries::new(
-        //moving_averages.iter().enumerate().map(|(i, &ma)| (clean_data[i].date, ma)),
-        clean_data.iter().zip(moving_averages.iter()).map(|(d, ma)| (d.date, *ma)),
+        clean_data_with_analytics.iter().map(|d| (d.date, d.wma)),
         &ORANGE,
     ))?;
 
