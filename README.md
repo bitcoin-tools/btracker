@@ -1,6 +1,6 @@
 # btracker
 
-Plot the historical price data with the 200-week moving average.
+Plot the historical bitcoin price with the 200-week moving average.
 
 ## Example of the output
 
