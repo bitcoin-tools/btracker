@@ -20,7 +20,13 @@ jobs:
         run: cargo build
       - name: Run
         run: cargo run
-      - uses: actions/upload-artifact@v4
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
         with:
           name: output_200wma.png
           path: ./output/200wma.png
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: output_clean_data_with_analytics.csv
+          path: ./output/clean_data_with_analytics.csv
