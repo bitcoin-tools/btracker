@@ -1,10 +1,9 @@
 use chrono::NaiveDate;
 use crate::full_palette::ORANGE;
-use csv::ReaderBuilder;
+use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::path::Path;
 
 #[derive(Debug, Deserialize)]
 struct RawData {
@@ -24,11 +23,11 @@ struct CleanData {
     close: f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     close: f32,
-    wma: f32,
+    two_hundred_wma: f32,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -84,32 +83,32 @@ fn main() -> Result<(), Box<dyn Error>> {
         clean_data_with_analytics.push(CleanDataWithAnalytics {
             date: row.date,
             close: row.close,
-            wma: moving_averages[i],
+            two_hundred_wma: moving_averages[i],
         });
     }
 
-    println!("The current time is: {:?}", chrono::Local::now());
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
-    println!("First row Date: {}", clean_data_with_analytics[0].date);
-    println!("First row Close: {}", clean_data_with_analytics[0].close);
-    println!("Row +1 of clean data: {:?}", clean_data_with_analytics[0]);
-    println!("Row +2 of clean data: {:?}", clean_data_with_analytics[1]);
-    println!("Row +3 of clean data: {:?}", clean_data_with_analytics[2]);
-    println!("Row +4 of clean data: {:?}", clean_data_with_analytics[3]);
-    println!("Row -4 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 4]);
-    println!("Row -3 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 3]);
-    println!("Row -2 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 2]);
-    println!("Row -1 of clean data: {:?}", clean_data_with_analytics[clean_data_with_analytics.len() - 1]);
+    for i in 0..4 {
+        println!("Row +{} of clean data: {:?}", i+1, clean_data_with_analytics[i]);
+    }
+    for i in 0..4 {
+        println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
+    }
+
+    // Save the clean_data_with_analytics to a CSV file
+    const OUTPUT_CSV_DESTINATION: &str = "output/clean_data_with_analytics.csv";
+    let mut writer = WriterBuilder::new().from_path(OUTPUT_CSV_DESTINATION)?;
+    for record in &clean_data_with_analytics {
+        writer.serialize(record)?;
+    }
+    writer.flush()?;
 
     // TODO: try 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
     const OUTPUT_IMAGE_WIDTH: u32 = 800;
     const OUTPUT_IMAGE_HEIGHT: u32 = 600;
     const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
     const OUTPUT_IMAGE_DESTINATION: &str = "output/200wma.png";
-    let output_image_destination_directory: &str = Path::new(OUTPUT_IMAGE_DESTINATION).parent().unwrap().to_str().unwrap();
 
-    // if the path OUTPUT_IMAGE_DESTINATION doesn't exist as a directory, create it
-    std::fs::create_dir_all(output_image_destination_directory)?;
     let root = BitMapBackend::new(OUTPUT_IMAGE_DESTINATION, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
@@ -134,7 +133,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ))?;
 
     chart.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.wma)),
+        clean_data_with_analytics.iter().map(|d| (d.date, d.two_hundred_wma)),
         &ORANGE,
     ))?;
 
