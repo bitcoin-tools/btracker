@@ -91,7 +91,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Row -1 of moving averages: {}", moving_averages[moving_averages.len() - 1]);
 
     // TODO: try 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
-    let root = BitMapBackend::new("output/200wma.png", (600, 400)).into_drawing_area();
+    const OUTPUT_IMAGE_WIDTH: u32 = 800;
+    const OUTPUT_IMAGE_HEIGHT: u32 = 600;
+    const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+    let root = BitMapBackend::new("output/200wma.png", OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
     let min_close = clean_data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
