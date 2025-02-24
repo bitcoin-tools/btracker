@@ -1,5 +1,6 @@
 use chrono::NaiveDate;
 use csv::ReaderBuilder;
+use plotters::prelude::*;
 use serde::Deserialize;
 use std::error::Error;
 
@@ -88,6 +89,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Row -3 of moving averages: {}", moving_averages[moving_averages.len() - 3]);
     println!("Row -2 of moving averages: {}", moving_averages[moving_averages.len() - 2]);
     println!("Row -1 of moving averages: {}", moving_averages[moving_averages.len() - 1]);
+
+    // TODO: try 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
+    let root = BitMapBackend::new("output/200wma.png", (600, 400)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let min_close = clean_data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
+    let max_close = clean_data.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max);
+    let min_date = clean_data.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min);
+    let max_date = clean_data.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max);
+    println!("Min close: {}", min_close);
+    println!("Max close: {}", max_close);
+    println!("Min date: {}", min_date);
+    println!("Max date: {}", max_date);
+
+    let chart_caption = format!("Price from {} to {}", min_date, max_date);
+
+    let mut chart = ChartBuilder::on(&root)
+        .caption(chart_caption, ("sans-serif", 20).into_font())
+        .build_cartesian_2d(min_date..max_date, min_close..max_close)?;
+
+    chart.draw_series(LineSeries::new(
+        clean_data.iter().map(|d| (d.date, d.close)),
+        &BLUE,
+    ))?;
+
+    root.present()?;
 
     Ok(())
 }
