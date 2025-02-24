@@ -1,16 +1,26 @@
-name: Validation CI
+name: Valid
 on: [push, pull_request]
 
 jobs:
   test:
-    name: Cargo Test
+    name: cargo test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - run: |
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: Install font dependencies
+        run: |
           sudo apt-get update
           sudo apt-get install -y libfontconfig1-dev
-      - run: cargo check
-      - run: cargo build
-      - run: cargo run
+      - name: Load the Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Check
+        run: cargo check
+      - name: Build
+        run: cargo build
+      - name: Run
+        run: cargo run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output_200wma.png
+          path: ./output/200wma.png
