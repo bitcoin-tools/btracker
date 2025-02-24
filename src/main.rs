@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     println!("The current time is: {:?}", chrono::Local::now());
-    println!("Loaded {} rows of raw data", data.len());
+    println!("Loaded {} rows of raw data", raw_data.len());
     println!("Loaded {} rows of clean data", clean_data.len());
     println!("First row Date: {}", clean_data[0].date);
     println!("First row Close: {}", clean_data[0].close);
