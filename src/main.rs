@@ -105,6 +105,38 @@ impl CleanDataWithAnalytics {
         writer.flush()?;
         Ok(())
     }
+
+    fn min_close(data: &[CleanDataWithAnalytics]) -> f32 {
+        data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min)
+    }
+
+    fn min_wma(data: &[CleanDataWithAnalytics]) -> f32 {
+        data.iter().map(|d| d.two_hundred_wma).fold(f32::INFINITY, f32::min)
+    }
+
+    fn max_close(data: &[CleanDataWithAnalytics]) -> f32 {
+        data.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max)
+    }
+
+    fn max_wma(data: &[CleanDataWithAnalytics]) -> f32 {
+        data.iter().map(|d| d.two_hundred_wma).fold(f32::NEG_INFINITY, f32::max)
+    }
+
+    fn min_value(data: &[CleanDataWithAnalytics]) -> f32 {
+        f32::min(Self::min_close(data), Self::min_wma(data))
+    }
+
+    fn max_value(data: &[CleanDataWithAnalytics]) -> f32 {
+        f32::max(Self::max_close(data), Self::max_wma(data))
+    }
+
+    fn min_date(data: &[CleanDataWithAnalytics]) -> NaiveDate {
+        data.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min)
+    }
+
+    fn max_date(data: &[CleanDataWithAnalytics]) -> NaiveDate {
+        data.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max)
+    }
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -119,7 +151,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Row +{} of clean data: {:?}", i+1, clean_data_with_analytics[i]);
     }
     for i in 0..4 {
-        println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
         println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
     }
 
@@ -142,15 +173,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&WHITE)?;
 
-    // Calculate the max and min values for both domensions of the chart
-    let min_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::INFINITY, f32::min);
-    let min_wma = clean_data_with_analytics.iter().map(|d| d.two_hundred_wma).fold(f32::INFINITY, f32::min);
-    let max_close = clean_data_with_analytics.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max);
-    let max_wma = clean_data_with_analytics.iter().map(|d| d.two_hundred_wma).fold(f32::NEG_INFINITY, f32::max);
-    let min_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min);
-    let max_date = clean_data_with_analytics.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max);
-    let min_value = f32::min(min_close, min_wma);
-    let max_value = f32::max(max_close, max_wma);
+    // Calculate the max and min values for both dimensions of the chart
+    let min_date = CleanDataWithAnalytics::min_date(&clean_data_with_analytics);
+    let max_date = CleanDataWithAnalytics::max_date(&clean_data_with_analytics);
+    let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
+    let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
     let chart_caption = format!("Price and 200-WMA from {} to {}", min_date, max_date);
     
