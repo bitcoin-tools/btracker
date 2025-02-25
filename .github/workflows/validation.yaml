@@ -23,8 +23,8 @@ jobs:
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output_200wma.png
-          path: ./output/200wma.png
+          name: output_200_week_moving_average.png
+          path: ./output/200_week_moving_average.png
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
         with:
