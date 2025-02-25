@@ -5,6 +5,22 @@ use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
+// Output constants
+const OUTPUT_DIRECTORY: &str = "output/";
+const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
+
+// Analytics constants
+const MOVING_AVERAGE_DAYS: usize = 1400;
+
+// Chart constants
+const CHART_TITLE: &str = "Price and 200-WMA";
+const CHART_FONT: (&str, u32) = ("sans-serif", 20);
+const OUTPUT_IMAGE_WIDTH: u32 = 1024;
+const OUTPUT_IMAGE_HEIGHT: u32 = 600;
+// TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
+const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+
 #[derive(Debug, Deserialize)]
 struct RawData {
     #[serde(rename = "Month")]
@@ -140,8 +156,6 @@ impl CleanDataWithAnalytics {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    const MOVING_AVERAGE_DAYS: usize = 1400;
-
     let raw_data = RawData::new("./resources/data/historical_data.csv")?;
     let clean_data = CleanData::new(&raw_data)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
@@ -154,35 +168,26 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
     }
 
-    const OUTPUT_DIRECTORY: &str = "output/";
-    const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
-    const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
     let output_csv_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_CSV_FILENAME);
     let output_image_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_IMAGE_FILENAME);
-
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
-
-    // Generate the chart
-    // TODO: try 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
-    const OUTPUT_IMAGE_WIDTH: u32 = 800;
-    const OUTPUT_IMAGE_HEIGHT: u32 = 600;
-    const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
-
-    // Build the drawing area (root) for the chart
-    let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
-    root.fill(&WHITE)?;
-
+    
     // Calculate the max and min values for both dimensions of the chart
     let min_date = CleanDataWithAnalytics::min_date(&clean_data_with_analytics);
     let max_date = CleanDataWithAnalytics::max_date(&clean_data_with_analytics);
     let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
-    let chart_caption = format!("Price and 200-WMA from {} to {}", min_date, max_date);
+    // Generate the chart
+    // Build the drawing area (root) for the chart
+    let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
     
     let mut chart = ChartBuilder::on(&root)
-        .caption(chart_caption, ("sans-serif", 20).into_font())
+        .caption(chart_caption, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart.draw_series(LineSeries::new(
