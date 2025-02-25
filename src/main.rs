@@ -1,21 +1,25 @@
 use chrono::NaiveDate;
-use crate::full_palette::ORANGE;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+
+// Analytics constants
+const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Output constants
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
 const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
 
-// Analytics constants
-const MOVING_AVERAGE_DAYS: usize = 1400;
-
 // Chart constants
-const CHART_TITLE: &str = "Price and 200-WMA";
+const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
+const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
+const CHART_COLOR_WMA_SERIES: RGBColor = RED;
 const CHART_FONT: (&str, u32) = ("sans-serif", 20);
+const CHART_TITLE: &str = "Price and 200-WMA";
+
+// Image dimensions
 const OUTPUT_IMAGE_WIDTH: u32 = 1024;
 const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
@@ -179,25 +183,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
-    // Generate the chart
-    // Build the drawing area (root) for the chart
+    // Build the drawing area
     let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
-    root.fill(&WHITE)?;
+    root.fill(&CHART_COLOR_BACKGROUND)?;
 
     let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
-    
+
     let mut chart = ChartBuilder::on(&root)
         .caption(chart_caption, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
-        &BLUE,
+        &CHART_COLOR_PRICE_SERIES,
     ))?;
 
     chart.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.two_hundred_wma)),
-        &ORANGE,
+        &CHART_COLOR_WMA_SERIES,
     ))?;
 
     root.present()?;
