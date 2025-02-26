@@ -83,56 +83,33 @@ impl CleanData {
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     open: f32,
+    open_two_hundred_wma: f32,
     high: f32,
+    high_two_hundred_wma: f32,
     low: f32,
+    low_two_hundred_wma: f32,
     close: f32,
-    two_hundred_wma: f32,
+    close_two_hundred_wma: f32,
 }
 
 impl CleanDataWithAnalytics {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<CleanDataWithAnalytics> {
-        let moving_averages = Self::calculate_moving_averages(clean_data, moving_average_size);
+        let moving_averages = MovingAverages::new(clean_data, moving_average_size);
         clean_data
             .iter()
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 open: row.open,
+                open_two_hundred_wma: moving_averages[i].open,
                 high: row.high,
+                high_two_hundred_wma: moving_averages[i].high,
                 low: row.low,
+                low_two_hundred_wma: moving_averages[i].low,
                 close: row.close,
-                two_hundred_wma: moving_averages[i],
+                close_two_hundred_wma: moving_averages[i].close,
             })
             .collect()
-    }
-
-    fn calculate_moving_averages(clean_data: &[CleanData], moving_average_size: usize) -> Vec<f32> {
-        let mut moving_averages: Vec<f32> = Vec::new();
-        for i in 0..clean_data.len() {
-            if i == clean_data.len() - 1 {
-                moving_averages.push(0.0 as f32);
-                break;
-            }
-
-            let mut sum = 0.0;
-            let j_start = i + 1;
-            let j_end;
-            let j_size;
-
-            if i < clean_data.len() - moving_average_size {
-                j_end = j_start + moving_average_size;
-                j_size = moving_average_size;
-            } else {
-                j_end = clean_data.len();
-                j_size = j_end - j_start;
-            }
-
-            for j in j_start..j_end {
-                sum += clean_data[j].close;
-            }
-            moving_averages.push(sum / j_size as f32);
-        }
-        moving_averages
     }
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
@@ -147,9 +124,9 @@ impl CleanDataWithAnalytics {
         data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min)
     }
 
-    fn min_wma(data: &[CleanDataWithAnalytics]) -> f32 {
+    fn min_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.two_hundred_wma)
+            .map(|d| d.close_two_hundred_wma)
             .fold(f32::INFINITY, f32::min)
     }
 
@@ -159,18 +136,18 @@ impl CleanDataWithAnalytics {
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
-    fn max_wma(data: &[CleanDataWithAnalytics]) -> f32 {
+    fn max_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.two_hundred_wma)
+            .map(|d| d.close_two_hundred_wma)
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
     fn min_value(data: &[CleanDataWithAnalytics]) -> f32 {
-        f32::min(Self::min_close(data), Self::min_wma(data))
+        f32::min(Self::min_close(data), Self::min_close_wma(data))
     }
 
     fn max_value(data: &[CleanDataWithAnalytics]) -> f32 {
-        f32::max(Self::max_close(data), Self::max_wma(data))
+        f32::max(Self::max_close(data), Self::max_close_wma(data))
     }
 
     fn min_date(data: &[CleanDataWithAnalytics]) -> NaiveDate {
@@ -183,6 +160,62 @@ impl CleanDataWithAnalytics {
         data.iter()
             .map(|d| d.date)
             .fold(NaiveDate::MIN, NaiveDate::max)
+    }
+}
+
+#[derive(Debug)]
+struct MovingAverages {
+    open: f32,
+    high: f32,
+    low: f32,
+    close: f32,
+}
+
+impl MovingAverages {
+    fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<MovingAverages> {
+        let mut moving_averages: Vec<MovingAverages> = Vec::new();
+        for i in 0..clean_data.len() {
+            if i == clean_data.len() - 1 {
+                moving_averages.push(MovingAverages {
+                    open: 0.0,
+                    high: 0.0,
+                    low: 0.0,
+                    close: 0.0,
+                });
+                break;
+            }
+
+            let mut sum_open = 0.0;
+            let mut sum_high = 0.0;
+            let mut sum_low = 0.0;
+            let mut sum_close = 0.0;
+            let j_start = i + 1;
+            let j_end;
+            let j_size;
+
+            if i < clean_data.len() - moving_average_size {
+                j_end = j_start + moving_average_size;
+                j_size = moving_average_size;
+            } else {
+                j_end = clean_data.len();
+                j_size = j_end - j_start;
+            }
+
+            for j in j_start..j_end {
+                sum_open += clean_data[j].open;
+                sum_high += clean_data[j].high;
+                sum_low += clean_data[j].low;
+                sum_close += clean_data[j].close;
+            }
+
+            moving_averages.push(MovingAverages {
+                open: sum_open / j_size as f32,
+                high: sum_high / j_size as f32,
+                low: sum_low / j_size as f32,
+                close: sum_close / j_size as f32,
+            });
+        }
+        moving_averages
     }
 }
 
@@ -239,7 +272,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     chart.draw_series(LineSeries::new(
         clean_data_with_analytics
             .iter()
-            .map(|d| (d.date, d.two_hundred_wma)),
+            .map(|d| (d.date, d.close_two_hundred_wma)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
