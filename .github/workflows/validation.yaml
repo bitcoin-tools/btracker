@@ -47,6 +47,8 @@ jobs:
     name: Deploy HTML to GitHub Pages
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
