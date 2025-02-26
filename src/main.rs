@@ -55,15 +55,13 @@ struct CleanData {
 
 impl CleanData {
     fn new(raw_data: &[RawData]) -> Result<Vec<CleanData>, Box<dyn Error>> {
-        let mut clean_data: Vec<CleanData> = Vec::new();
-        for row in raw_data {
+        raw_data.iter().map(|row| {
             let date_str = format!("{} {} {}", row.month, row.day, row.year);
             let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
             let close_str = row.close.replace(",", "");
             let close: f32 = close_str.parse()?;
-            clean_data.push(CleanData { date, close });
-        }
-        Ok(clean_data)
+            Ok(CleanData { date, close })
+        }).collect()
     }
 }
 
