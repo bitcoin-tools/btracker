@@ -73,7 +73,13 @@ impl CleanData {
                 let high: f32 = row.high.replace(",", "").parse()?;
                 let low: f32 = row.low.replace(",", "").parse()?;
                 let close: f32 = row.close.replace(",", "").parse()?;
-                Ok(CleanData { date, open, high, low, close })
+                Ok(CleanData {
+                    date,
+                    open,
+                    high,
+                    low,
+                    close,
+                })
             })
             .collect()
     }
