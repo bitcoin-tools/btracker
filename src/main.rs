@@ -117,9 +117,7 @@ impl CleanDataWithAnalytics {
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
-        for record in data {
-            writer.serialize(record)?;
-        }
+        data.iter().try_for_each(|record| writer.serialize(record))?;
         writer.flush()?;
         Ok(())
     }
