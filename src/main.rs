@@ -3,6 +3,7 @@ use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::fs::write;
 use std::path::Path;
 
 // Analytics constants
@@ -283,6 +284,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     ))?;
 
     root.present()?;
+
+    // Generate HTML output
+    let output_html_path = Path::new(OUTPUT_DIRECTORY).join("output.html");
+    let html_content = format!(
+        "<html>
+            <head>
+                <title>{}</title>
+            </head>
+            <body>
+                <h1>{}</h1>
+                <img src='{}' alt='Chart'>
+            </body>
+        </html>",
+        CHART_TITLE, CHART_TITLE, OUTPUT_IMAGE_FILENAME
+    );
+    write(output_html_path, html_content)?;
 
     Ok(())
 }
