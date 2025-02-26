@@ -42,3 +42,17 @@ jobs:
         with:
           name: output.html
           path: ./output/output.html
+
+  deploy:
+    name: Deploy HTML to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output  # Directory containing your output.html
+          publish_branch: gh-pages
