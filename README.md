@@ -1,4 +1,4 @@
-# btracker
+# ₿tracker
 
 Plot the historical bitcoin price with the 200-week moving average.
 
