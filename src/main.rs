@@ -83,12 +83,12 @@ impl CleanData {
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     open: f32,
-    open_two_hundred_wma: f32,
     high: f32,
-    high_two_hundred_wma: f32,
     low: f32,
-    low_two_hundred_wma: f32,
     close: f32,
+    open_two_hundred_wma: f32,
+    high_two_hundred_wma: f32,
+    low_two_hundred_wma: f32,
     close_two_hundred_wma: f32,
 }
 
@@ -101,12 +101,12 @@ impl CleanDataWithAnalytics {
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 open: row.open,
-                open_two_hundred_wma: moving_averages[i].open,
                 high: row.high,
-                high_two_hundred_wma: moving_averages[i].high,
                 low: row.low,
-                low_two_hundred_wma: moving_averages[i].low,
                 close: row.close,
+                open_two_hundred_wma: moving_averages[i].open,
+                high_two_hundred_wma: moving_averages[i].high,
+                low_two_hundred_wma: moving_averages[i].low,
                 close_two_hundred_wma: moving_averages[i].close,
             })
             .collect()
