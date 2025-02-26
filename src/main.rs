@@ -79,13 +79,15 @@ struct CleanDataWithAnalytics {
 impl CleanDataWithAnalytics {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<CleanDataWithAnalytics> {
         let moving_averages = Self::calculate_moving_averages(clean_data, moving_average_size);
-        clean_data.iter().enumerate().map(|(i, row)| {
-            CleanDataWithAnalytics {
+        clean_data
+            .iter()
+            .enumerate()
+            .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 close: row.close,
                 two_hundred_wma: moving_averages[i],
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     fn calculate_moving_averages(clean_data: &[CleanData], moving_average_size: usize) -> Vec<f32> {
@@ -131,15 +133,21 @@ impl CleanDataWithAnalytics {
     }
 
     fn min_wma(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.two_hundred_wma).fold(f32::INFINITY, f32::min)
+        data.iter()
+            .map(|d| d.two_hundred_wma)
+            .fold(f32::INFINITY, f32::min)
     }
 
     fn max_close(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.close).fold(f32::NEG_INFINITY, f32::max)
+        data.iter()
+            .map(|d| d.close)
+            .fold(f32::NEG_INFINITY, f32::max)
     }
 
     fn max_wma(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.two_hundred_wma).fold(f32::NEG_INFINITY, f32::max)
+        data.iter()
+            .map(|d| d.two_hundred_wma)
+            .fold(f32::NEG_INFINITY, f32::max)
     }
 
     fn min_value(data: &[CleanDataWithAnalytics]) -> f32 {
@@ -151,11 +159,15 @@ impl CleanDataWithAnalytics {
     }
 
     fn min_date(data: &[CleanDataWithAnalytics]) -> NaiveDate {
-        data.iter().map(|d| d.date).fold(NaiveDate::MAX, NaiveDate::min)
+        data.iter()
+            .map(|d| d.date)
+            .fold(NaiveDate::MAX, NaiveDate::min)
     }
 
     fn max_date(data: &[CleanDataWithAnalytics]) -> NaiveDate {
-        data.iter().map(|d| d.date).fold(NaiveDate::MIN, NaiveDate::max)
+        data.iter()
+            .map(|d| d.date)
+            .fold(NaiveDate::MIN, NaiveDate::max)
     }
 }
 
@@ -166,17 +178,24 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
     for i in 0..4 {
-        println!("Row +{} of clean data: {:?}", i+1, clean_data_with_analytics[i]);
+        println!(
+            "Row +{} of clean data: {:?}",
+            i + 1,
+            clean_data_with_analytics[i]
+        );
     }
     for i in 0..4 {
-        println!("Row -{} of clean data: {:?}", i+1, clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]);
+        println!(
+            "Row -{} of clean data: {:?}",
+            i + 1,
+            clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]
+        );
     }
 
-    let output_csv_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_CSV_FILENAME);
-    let output_image_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_IMAGE_FILENAME);
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
+    let output_csv_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
-    
+
     // Calculate the max and min values for both dimensions of the chart
     let min_date = CleanDataWithAnalytics::min_date(&clean_data_with_analytics);
     let max_date = CleanDataWithAnalytics::max_date(&clean_data_with_analytics);
@@ -184,6 +203,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
     // Build the drawing area
+    let output_image_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_IMAGE_FILENAME);
     let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&CHART_COLOR_BACKGROUND)?;
 
@@ -199,7 +219,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     ))?;
 
     chart.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.two_hundred_wma)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.two_hundred_wma)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
