@@ -13,6 +13,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
 
 // Chart constants
@@ -286,7 +287,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     root.present()?;
 
     // Generate HTML output
-    let output_html_path = Path::new(OUTPUT_DIRECTORY).join("output.html");
+    let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<html>
             <head>
