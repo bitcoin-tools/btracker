@@ -55,13 +55,16 @@ struct CleanData {
 
 impl CleanData {
     fn new(raw_data: &[RawData]) -> Result<Vec<CleanData>, Box<dyn Error>> {
-        raw_data.iter().map(|row| {
-            let date_str = format!("{} {} {}", row.month, row.day, row.year);
-            let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
-            let close_str = row.close.replace(",", "");
-            let close: f32 = close_str.parse()?;
-            Ok(CleanData { date, close })
-        }).collect()
+        raw_data
+            .iter()
+            .map(|row| {
+                let date_str = format!("{} {} {}", row.month, row.day, row.year);
+                let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
+                let close_str = row.close.replace(",", "");
+                let close: f32 = close_str.parse()?;
+                Ok(CleanData { date, close })
+            })
+            .collect()
     }
 }
 
@@ -117,7 +120,8 @@ impl CleanDataWithAnalytics {
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
-        data.iter().try_for_each(|record| writer.serialize(record))?;
+        data.iter()
+            .try_for_each(|record| writer.serialize(record))?;
         writer.flush()?;
         Ok(())
     }
@@ -172,12 +176,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
 
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
-    clean_data_with_analytics.iter().take(4).enumerate().for_each(|(i, row)| {
-        println!("Row +{} of clean data: {:?}", i + 1, row);
-    });
-    clean_data_with_analytics.iter().rev().take(4).enumerate().for_each(|(i, row)| {
-        println!("Row -{} of clean data: {:?}", i + 1, row);
-    });
+    clean_data_with_analytics
+        .iter()
+        .take(4)
+        .enumerate()
+        .for_each(|(i, row)| {
+            println!("Row +{} of clean data: {:?}", i + 1, row);
+        });
+    clean_data_with_analytics
+        .iter()
+        .rev()
+        .take(4)
+        .enumerate()
+        .for_each(|(i, row)| {
+            println!("Row -{} of clean data: {:?}", i + 1, row);
+        });
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
