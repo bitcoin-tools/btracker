@@ -172,20 +172,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
 
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
-    for i in 0..4 {
-        println!(
-            "Row +{} of clean data: {:?}",
-            i + 1,
-            clean_data_with_analytics[i]
-        );
-    }
-    for i in 0..4 {
-        println!(
-            "Row -{} of clean data: {:?}",
-            i + 1,
-            clean_data_with_analytics[clean_data_with_analytics.len() - i - 1]
-        );
-    }
+    clean_data_with_analytics.iter().take(4).enumerate().for_each(|(i, row)| {
+        println!("Row +{} of clean data: {:?}", i + 1, row);
+    });
+    clean_data_with_analytics.iter().rev().take(4).enumerate().for_each(|(i, row)| {
+        println!("Row -{} of clean data: {:?}", i + 1, row);
+    });
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
