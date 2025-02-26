@@ -3,11 +3,13 @@ use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::path::Path;
 
 // Analytics constants
 const MOVING_AVERAGE_DAYS: usize = 1400;
 
-// Output constants
+// Input and output constants
+const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
 const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
@@ -38,7 +40,7 @@ struct RawData {
 }
 
 impl RawData {
-    fn new(path: &str) -> Result<Vec<RawData>, Box<dyn Error>> {
+    fn new(path: &Path) -> Result<Vec<RawData>, Box<dyn Error>> {
         let mut reader = ReaderBuilder::new().delimiter(b'|').from_path(path)?;
         let mut raw_data: Vec<RawData> = Vec::new();
         for result in reader.deserialize() {
@@ -119,7 +121,7 @@ impl CleanDataWithAnalytics {
         moving_averages
     }
 
-    fn save_to_csv(data: &[CleanDataWithAnalytics], path: &str) -> Result<(), Box<dyn Error>> {
+    fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
         for record in data {
             writer.serialize(record)?;
@@ -172,7 +174,8 @@ impl CleanDataWithAnalytics {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let raw_data = RawData::new("./resources/data/historical_data.csv")?;
+    let raw_data_path: &Path = Path::new(INPUT_DATA_PATH_STR);
+    let raw_data = RawData::new(raw_data_path)?;
     let clean_data = CleanData::new(&raw_data)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
 
@@ -193,7 +196,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
-    let output_csv_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_CSV_FILENAME);
+    let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
 
     // Calculate the max and min values for both dimensions of the chart
@@ -203,7 +206,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
     // Build the drawing area
-    let output_image_path: String = format!("{}{}", OUTPUT_DIRECTORY, OUTPUT_IMAGE_FILENAME);
+    let output_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_IMAGE_FILENAME);
     let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
     root.fill(&CHART_COLOR_BACKGROUND)?;
 
