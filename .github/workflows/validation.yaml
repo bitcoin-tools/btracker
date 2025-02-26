@@ -14,7 +14,9 @@ jobs:
           sudo apt-get install -y libfontconfig1-dev
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Check
+      - name: Check formatting
+        run: cargo fmt --check
+      - name: Check code
         run: cargo check
       - name: Build
         run: cargo build
