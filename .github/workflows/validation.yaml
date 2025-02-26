@@ -40,8 +40,8 @@ jobs:
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output.html
-          path: ./output/output.html
+          name: output_index.html
+          path: ./output/index.html
 
   deploy:
     name: Deploy HTML to GitHub Pages
