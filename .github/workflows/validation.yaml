@@ -42,3 +42,28 @@ jobs:
         with:
           name: output.html
           path: ./output/output.html
+
+  deploy:
+    name: Deploy HTML to GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install font dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev
+      - name: Run
+        run: cargo run
+      - name: List output directory contents
+        run: ls -la ./output
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output  # Directory containing your output.html
+          publish_branch: gh-pages
