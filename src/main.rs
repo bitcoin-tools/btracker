@@ -42,11 +42,7 @@ struct RawData {
 impl RawData {
     fn new(path: &Path) -> Result<Vec<RawData>, Box<dyn Error>> {
         let mut reader = ReaderBuilder::new().delimiter(b'|').from_path(path)?;
-        let mut raw_data: Vec<RawData> = Vec::new();
-        for result in reader.deserialize() {
-            let record: RawData = result?;
-            raw_data.push(record);
-        }
+        let raw_data: Vec<RawData> = reader.deserialize().collect::<Result<_, _>>()?;
         Ok(raw_data)
     }
 }
