@@ -35,6 +35,12 @@ struct RawData {
     day: String,
     #[serde(rename = "Year")]
     year: String,
+    #[serde(rename = "Open")]
+    open: String,
+    #[serde(rename = "High")]
+    high: String,
+    #[serde(rename = "Low")]
+    low: String,
     #[serde(rename = "Close")]
     close: String,
 }
@@ -50,6 +56,9 @@ impl RawData {
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
+    open: f32,
+    high: f32,
+    low: f32,
     close: f32,
 }
 
@@ -60,9 +69,11 @@ impl CleanData {
             .map(|row| {
                 let date_str = format!("{} {} {}", row.month, row.day, row.year);
                 let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
-                let close_str = row.close.replace(",", "");
-                let close: f32 = close_str.parse()?;
-                Ok(CleanData { date, close })
+                let open: f32 = row.open.replace(",", "").parse()?;
+                let high: f32 = row.high.replace(",", "").parse()?;
+                let low: f32 = row.low.replace(",", "").parse()?;
+                let close: f32 = row.close.replace(",", "").parse()?;
+                Ok(CleanData { date, open, high, low, close })
             })
             .collect()
     }
@@ -71,6 +82,9 @@ impl CleanData {
 #[derive(Debug, Serialize)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
+    open: f32,
+    high: f32,
+    low: f32,
     close: f32,
     two_hundred_wma: f32,
 }
@@ -83,6 +97,9 @@ impl CleanDataWithAnalytics {
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
+                open: row.open,
+                high: row.high,
+                low: row.low,
                 close: row.close,
                 two_hundred_wma: moving_averages[i],
             })
@@ -181,15 +198,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .take(4)
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row +{} of clean data: {:?}", i + 1, row);
+            println!("Row +{} of clean data: {:?}", i, row);
         });
     clean_data_with_analytics
         .iter()
         .rev()
         .take(4)
+        .rev()
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row -{} of clean data: {:?}", i + 1, row);
+            println!("Row -{} of clean data: {:?}", 4 - i, row);
         });
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
