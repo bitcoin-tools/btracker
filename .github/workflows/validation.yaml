@@ -18,11 +18,9 @@ jobs:
       - name: Ensure proper formatting
         run: cargo fmt --check
       - name: Install font dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfontconfig1-dev
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Run linter
-        run: cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
   test-run-and-deploy:
     name: Check, Build, and Run
@@ -33,9 +31,7 @@ jobs:
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfontconfig1-dev
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Check
         run: cargo check
       - name: Build
@@ -76,9 +72,7 @@ jobs:
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfontconfig1-dev
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Run
         run: cargo run
       - name: List output directory contents
