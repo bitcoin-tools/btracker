@@ -154,7 +154,9 @@ impl CleanDataWithAnalytics {
     }
 
     fn min_close(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.values.close).fold(f32::INFINITY, f32::min)
+        data.iter()
+            .map(|d| d.values.close)
+            .fold(f32::INFINITY, f32::min)
     }
 
     fn min_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
@@ -299,7 +301,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart_linear.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
@@ -325,7 +329,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
 
     chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
