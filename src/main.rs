@@ -286,6 +286,28 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     root.present()?;
 
+    // Generate HTML table rows
+    let table_rows: String = clean_data_with_analytics
+    .iter()
+    .map(|d| {
+        format!(
+            "<tr>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+            </tr>",
+            d.date, d.open, d.high, d.low, d.close, d.open_two_hundred_wma, d.high_two_hundred_wma, d.low_two_hundred_wma, d.close_two_hundred_wma
+        )
+    })
+    .collect::<Vec<String>>()
+    .join("\n");
+
     // Generate HTML output
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
@@ -296,9 +318,24 @@ fn main() -> Result<(), Box<dyn Error>> {
             <body>
                 <h1>{}</h1>
                 <img src='{}' alt='Chart'>
+                <br><br><br>
+                <table border='1'>
+                    <tr>
+                        <th>Date</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
+                        <th>Open 200-WMA</th>
+                        <th>High 200-WMA</th>
+                        <th>Low 200-WMA</th>
+                        <th>Close 200-WMA</th>
+                    </tr>
+                    {}
+                </table>
             </body>
         </html>",
-        CHART_TITLE, CHART_TITLE, OUTPUT_IMAGE_FILENAME
+        CHART_TITLE, CHART_TITLE, OUTPUT_IMAGE_FILENAME, table_rows
     );
     write(output_html_path, html_content)?;
 
