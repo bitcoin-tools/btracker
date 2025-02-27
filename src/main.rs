@@ -59,10 +59,7 @@ impl RawData {
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
-    open: f32,
-    high: f32,
-    low: f32,
-    close: f32,
+    values: CleanValues,
 }
 
 impl CleanData {
@@ -72,33 +69,41 @@ impl CleanData {
             .map(|row| {
                 let date_str = format!("{} {} {}", row.month, row.day, row.year);
                 let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
-                let open: f32 = row.open.replace(",", "").parse()?;
-                let high: f32 = row.high.replace(",", "").parse()?;
-                let low: f32 = row.low.replace(",", "").parse()?;
-                let close: f32 = row.close.replace(",", "").parse()?;
-                Ok(CleanData {
-                    date,
-                    open,
-                    high,
-                    low,
-                    close,
-                })
+                let values = CleanValues::new(row)?;
+                Ok(CleanData { date, values })
             })
             .collect()
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct CleanValues {
+    open: f32,
+    high: f32,
+    low: f32,
+    close: f32,
+}
+
+impl CleanValues {
+    fn new(raw_data: &RawData) -> Result<Self, Box<dyn Error>> {
+        let open: f32 = raw_data.open.replace(",", "").parse()?;
+        let high: f32 = raw_data.high.replace(",", "").parse()?;
+        let low: f32 = raw_data.low.replace(",", "").parse()?;
+        let close: f32 = raw_data.close.replace(",", "").parse()?;
+        Ok(CleanValues {
+            open,
+            high,
+            low,
+            close,
+        })
     }
 }
 
 #[derive(Debug, Serialize)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
-    open: f32,
-    high: f32,
-    low: f32,
-    close: f32,
-    open_two_hundred_wma: f32,
-    high_two_hundred_wma: f32,
-    low_two_hundred_wma: f32,
-    close_two_hundred_wma: f32,
+    values: CleanValues,
+    moving_averages: MovingAverages,
 }
 
 impl CleanDataWithAnalytics {
@@ -109,45 +114,66 @@ impl CleanDataWithAnalytics {
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
-                open: row.open,
-                high: row.high,
-                low: row.low,
-                close: row.close,
-                open_two_hundred_wma: moving_averages[i].open,
-                high_two_hundred_wma: moving_averages[i].high,
-                low_two_hundred_wma: moving_averages[i].low,
-                close_two_hundred_wma: moving_averages[i].close,
+                values: row.values.clone(),
+                moving_averages: moving_averages[i].clone(),
             })
             .collect()
     }
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
-        data.iter()
-            .try_for_each(|record| writer.serialize(record))?;
+
+        writer.write_record([
+            "Date",
+            "Open",
+            "High",
+            "Low",
+            "Close",
+            "Open 200-WMA",
+            "High 200-WMA",
+            "Low 200-WMA",
+            "Close 200-WMA",
+        ])?;
+
+        data.iter().try_for_each(|row| {
+            writer.write_record(&[
+                row.date.to_string(),
+                format!("{:.2}", row.values.open),
+                format!("{:.2}", row.values.high),
+                format!("{:.2}", row.values.low),
+                format!("{:.2}", row.values.close),
+                format!("{:.2}", row.moving_averages.open),
+                format!("{:.2}", row.moving_averages.high),
+                format!("{:.2}", row.moving_averages.low),
+                format!("{:.2}", row.moving_averages.close),
+            ])
+        })?;
+
         writer.flush()?;
         Ok(())
     }
 
     fn min_close(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min)
+        data.iter()
+            .map(|d| d.values.close)
+            .fold(f32::INFINITY, f32::min)
     }
 
     fn min_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close_two_hundred_wma)
+            .map(|d| d.moving_averages.close)
             .fold(f32::INFINITY, f32::min)
     }
 
     fn max_close(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close)
+            .map(|d| d.values.close)
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
     fn max_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close_two_hundred_wma)
+            .map(|d| d.moving_averages.close)
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
@@ -172,7 +198,7 @@ impl CleanDataWithAnalytics {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize)]
 struct MovingAverages {
     open: f32,
     high: f32,
@@ -211,10 +237,10 @@ impl MovingAverages {
             }
 
             for row in clean_data.iter().take(j_end).skip(j_start) {
-                sum_open += row.open;
-                sum_high += row.high;
-                sum_low += row.low;
-                sum_close += row.close;
+                sum_open += row.values.open;
+                sum_high += row.values.high;
+                sum_low += row.values.low;
+                sum_close += row.values.close;
             }
 
             moving_averages.push(MovingAverages {
@@ -287,14 +313,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw()?;
 
     chart_linear.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
     chart_linear.draw_series(LineSeries::new(
         clean_data_with_analytics
             .iter()
-            .map(|d| (d.date, d.close_two_hundred_wma)),
+            .map(|d| (d.date, d.moving_averages.close)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
@@ -324,14 +352,44 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw()?;
 
     chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
     chart_log.draw_series(LineSeries::new(
         clean_data_with_analytics
             .iter()
-            .map(|d| (d.date, d.close_two_hundred_wma)),
+            .map(|d| (d.date, d.moving_averages.close)),
+        &CHART_COLOR_WMA_SERIES,
+    ))?;
+
+    root_linear.present()?;
+
+    // Build the drawing area for the linear graph
+    let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
+    let root_log =
+        BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+    root_log.fill(&CHART_COLOR_BACKGROUND)?;
+
+    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
+
+    let mut chart_log = ChartBuilder::on(&root_log)
+        .caption(chart_caption_log, CHART_FONT.into_font())
+        .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
+
+    chart_log.draw_series(LineSeries::new(
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
+        &CHART_COLOR_PRICE_SERIES,
+    ))?;
+
+    chart_log.draw_series(LineSeries::new(
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.moving_averages.close)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
@@ -354,14 +412,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <td>{}</td>
             </tr>",
                 d.date,
-                d.open,
-                d.high,
-                d.low,
-                d.close,
-                d.open_two_hundred_wma,
-                d.high_two_hundred_wma,
-                d.low_two_hundred_wma,
-                d.close_two_hundred_wma
+                d.values.open,
+                d.values.high,
+                d.values.low,
+                d.values.close,
+                d.moving_averages.open,
+                d.moving_averages.high,
+                d.moving_averages.low,
+                d.moving_averages.close
             )
         })
         .collect::<Vec<String>>()
