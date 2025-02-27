@@ -20,7 +20,6 @@ const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
 const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
 const CHART_COLOR_WMA_SERIES: RGBColor = RED;
-const CHART_FONT: (&str, u32) = ("arial", 20);
 const CHART_TITLE: &str = "Price and 200-WMA";
 
 // Image dimensions
@@ -269,7 +268,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
 
     let mut chart = ChartBuilder::on(&root)
-        .caption(chart_caption, CHART_FONT.into_font())
+        .caption(chart_caption)
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart.draw_series(LineSeries::new(
