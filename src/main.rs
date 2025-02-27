@@ -354,6 +354,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             <body>
                 <h1>{}</h1>
                 <img src='{}' alt='Linear Chart'>
+                <br><br><br>
                 <img src='{}' alt='Log Chart'>
                 <br><br><br>
                 <table border='1'>
