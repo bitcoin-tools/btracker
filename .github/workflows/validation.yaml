@@ -36,26 +36,11 @@ jobs:
         run: cargo build
       - name: Run
         run: cargo run
-      - name: Upload CSV artifact
+      - name: Upload output/ artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output_clean_data_with_analytics.csv
-          path: ./output/clean_data_with_analytics.csv
-      - name: Upload linear chart PNG artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: output_200_week_moving_average_linear.png
-          path: ./output/200_week_moving_average_linear.png
-      - name: Upload log chart PNG artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: output_200_week_moving_average_log.png
-          path: ./output/200_week_moving_average_log.png
-      - name: Upload HTML artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: output_index.html
-          path: ./output/index.html
+          name: output
+          path: output/
 
   deploy:
     name: Deploy HTML to GitHub Pages
