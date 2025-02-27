@@ -7,8 +7,8 @@ on:
     branches:
       - master
 jobs:
-  test:
-    name: Build and run
+  test-fmt:
+    name: Check formatting
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
@@ -17,11 +17,20 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Check formatting
         run: cargo fmt --check
+
+  test-run-and-deploy:
+    name: Check, Build, and Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: Load the Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y libfontconfig1-dev
-      - name: Check code
+      - name: Check
         run: cargo check
       - name: Build
         run: cargo build
@@ -41,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: output_200_week_moving_average_log.png
-          path: ./output/200_week_moving_average_log.png      
+          path: ./output/200_week_moving_average_log.png
       - name: Upload HTML artifact
         uses: actions/upload-artifact@v4
         with:
@@ -52,16 +61,12 @@ jobs:
     name: Deploy HTML to GitHub Pages
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-fmt, test-run-and-deploy]
     permissions:
       contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install font dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfontconfig1-dev
       - name: Run
         run: cargo run
       - name: List output directory contents
