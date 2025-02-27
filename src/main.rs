@@ -217,10 +217,10 @@ impl MovingAverages {
             }
 
             moving_averages.push(MovingAverages {
-                open: sum_open / j_size as f32,
-                high: sum_high / j_size as f32,
-                low: sum_low / j_size as f32,
-                close: sum_close / j_size as f32,
+                open: format!("{:.2}", sum_open / j_size as f32).parse().unwrap(),
+                high: format!("{:.2}", sum_high / j_size as f32).parse().unwrap(),
+                low: format!("{:.2}", sum_low / j_size as f32).parse().unwrap(),
+                close: format!("{:.2}", sum_close / j_size as f32).parse().unwrap(),
             });
         }
         moving_averages
