@@ -265,12 +265,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Build the drawing area for the linear graph
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
     let root_linear = BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root.fill(&CHART_COLOR_BACKGROUND)?;
+    root_linear.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
+    let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption, CHART_FONT.into_font())
+        .caption(chart_caption_linear, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart_linear.draw_series(LineSeries::new(
@@ -290,12 +290,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Build the drawing area for the linear graph
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     let root_log = BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root.fill(&CHART_COLOR_BACKGROUND)?;
+    root_log.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
+    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
 
     let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption, CHART_FONT.into_font())
+        .caption(chart_caption_log, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
     chart_log.draw_series(LineSeries::new(
