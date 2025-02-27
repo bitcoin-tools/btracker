@@ -20,7 +20,7 @@ const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
 const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
 const CHART_COLOR_WMA_SERIES: RGBColor = RED;
-const CHART_FONT: (&str, u32) = ("sans-serif", 20);
+const CHART_FONT: (&str, u32) = ("arial", 20);
 const CHART_TITLE: &str = "Price and 200-WMA";
 
 // Image dimensions
