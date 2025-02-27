@@ -67,6 +67,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Load the Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install font dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev
       - name: Run
         run: cargo run
       - name: List output directory contents
