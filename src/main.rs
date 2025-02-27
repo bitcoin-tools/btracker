@@ -288,10 +288,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Generate HTML table rows
     let table_rows: String = clean_data_with_analytics
-    .iter()
-    .map(|d| {
-        format!(
-            "<tr>
+        .iter()
+        .map(|d| {
+            format!(
+                "<tr>
                 <td>{}</td>
                 <td>{}</td>
                 <td>{}</td>
@@ -302,11 +302,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <td>{}</td>
                 <td>{}</td>
             </tr>",
-            d.date, d.open, d.high, d.low, d.close, d.open_two_hundred_wma, d.high_two_hundred_wma, d.low_two_hundred_wma, d.close_two_hundred_wma
-        )
-    })
-    .collect::<Vec<String>>()
-    .join("\n");
+                d.date,
+                d.open,
+                d.high,
+                d.low,
+                d.close,
+                d.open_two_hundred_wma,
+                d.high_two_hundred_wma,
+                d.low_two_hundred_wma,
+                d.close_two_hundred_wma
+            )
+        })
+        .collect::<Vec<String>>()
+        .join("\n");
 
     // Generate HTML output
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
