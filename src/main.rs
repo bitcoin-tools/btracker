@@ -122,28 +122,33 @@ impl CleanDataWithAnalytics {
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
-        
-        // Write the header
-        writer.write_record(&[
-            "Date", "Open", "High", "Low", "Close", 
-            "Open 200-WMA", "High 200-WMA", "Low 200-WMA", "Close 200-WMA"
+
+        writer.write_record([
+            "Date",
+            "Open",
+            "High",
+            "Low",
+            "Close",
+            "Open 200-WMA",
+            "High 200-WMA",
+            "Low 200-WMA",
+            "Close 200-WMA",
         ])?;
-        
-        // Write the data
-        data.iter().try_for_each(|record| {
+
+        data.iter().try_for_each(|row| {
             writer.write_record(&[
-                record.date.to_string(),
-                record.values.open.to_string(),
-                record.values.high.to_string(),
-                record.values.low.to_string(),
-                record.values.close.to_string(),
-                record.moving_averages.open.to_string(),
-                record.moving_averages.high.to_string(),
-                record.moving_averages.low.to_string(),
-                record.moving_averages.close.to_string(),
+                row.date.to_string(),
+                format!("{:.2}", row.values.open),
+                format!("{:.2}", row.values.high),
+                format!("{:.2}", row.values.low),
+                format!("{:.2}", row.values.close),
+                format!("{:.2}", row.moving_averages.open),
+                format!("{:.2}", row.moving_averages.high),
+                format!("{:.2}", row.moving_averages.low),
+                format!("{:.2}", row.moving_averages.close),
             ])
         })?;
-        
+
         writer.flush()?;
         Ok(())
     }
