@@ -3,6 +3,7 @@ use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::fs::write;
 use std::path::Path;
 
 // Analytics constants
@@ -12,7 +13,9 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
-const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
+const OUTPUT_HTML_FILENAME: &str = "index.html";
+const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
+const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
 
 // Chart constants
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
@@ -25,7 +28,7 @@ const CHART_TITLE: &str = "Price and 200-WMA";
 const OUTPUT_IMAGE_WIDTH: u32 = 1024;
 const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
-const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
 #[derive(Debug, Deserialize)]
 struct RawData {
@@ -56,10 +59,7 @@ impl RawData {
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
-    open: f32,
-    high: f32,
-    low: f32,
-    close: f32,
+    values: CleanValues,
 }
 
 impl CleanData {
@@ -69,33 +69,41 @@ impl CleanData {
             .map(|row| {
                 let date_str = format!("{} {} {}", row.month, row.day, row.year);
                 let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
-                let open: f32 = row.open.replace(",", "").parse()?;
-                let high: f32 = row.high.replace(",", "").parse()?;
-                let low: f32 = row.low.replace(",", "").parse()?;
-                let close: f32 = row.close.replace(",", "").parse()?;
-                Ok(CleanData {
-                    date,
-                    open,
-                    high,
-                    low,
-                    close,
-                })
+                let values = CleanValues::new(row)?;
+                Ok(CleanData { date, values })
             })
             .collect()
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct CleanValues {
+    open: f32,
+    high: f32,
+    low: f32,
+    close: f32,
+}
+
+impl CleanValues {
+    fn new(raw_data: &RawData) -> Result<Self, Box<dyn Error>> {
+        let open: f32 = raw_data.open.replace(",", "").parse()?;
+        let high: f32 = raw_data.high.replace(",", "").parse()?;
+        let low: f32 = raw_data.low.replace(",", "").parse()?;
+        let close: f32 = raw_data.close.replace(",", "").parse()?;
+        Ok(CleanValues {
+            open,
+            high,
+            low,
+            close,
+        })
     }
 }
 
 #[derive(Debug, Serialize)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
-    open: f32,
-    high: f32,
-    low: f32,
-    close: f32,
-    open_two_hundred_wma: f32,
-    high_two_hundred_wma: f32,
-    low_two_hundred_wma: f32,
-    close_two_hundred_wma: f32,
+    values: CleanValues,
+    moving_averages: MovingAverages,
 }
 
 impl CleanDataWithAnalytics {
@@ -106,45 +114,59 @@ impl CleanDataWithAnalytics {
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
-                open: row.open,
-                high: row.high,
-                low: row.low,
-                close: row.close,
-                open_two_hundred_wma: moving_averages[i].open,
-                high_two_hundred_wma: moving_averages[i].high,
-                low_two_hundred_wma: moving_averages[i].low,
-                close_two_hundred_wma: moving_averages[i].close,
+                values: row.values.clone(),
+                moving_averages: moving_averages[i].clone(),
             })
             .collect()
     }
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
-        data.iter()
-            .try_for_each(|record| writer.serialize(record))?;
+        
+        // Write the header
+        writer.write_record(&[
+            "Date", "Open", "High", "Low", "Close", 
+            "Open 200-WMA", "High 200-WMA", "Low 200-WMA", "Close 200-WMA"
+        ])?;
+        
+        // Write the data
+        data.iter().try_for_each(|record| {
+            writer.write_record(&[
+                record.date.to_string(),
+                record.values.open.to_string(),
+                record.values.high.to_string(),
+                record.values.low.to_string(),
+                record.values.close.to_string(),
+                record.moving_averages.open.to_string(),
+                record.moving_averages.high.to_string(),
+                record.moving_averages.low.to_string(),
+                record.moving_averages.close.to_string(),
+            ])
+        })?;
+        
         writer.flush()?;
         Ok(())
     }
 
     fn min_close(data: &[CleanDataWithAnalytics]) -> f32 {
-        data.iter().map(|d| d.close).fold(f32::INFINITY, f32::min)
+        data.iter().map(|d| d.values.close).fold(f32::INFINITY, f32::min)
     }
 
     fn min_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close_two_hundred_wma)
+            .map(|d| d.moving_averages.close)
             .fold(f32::INFINITY, f32::min)
     }
 
     fn max_close(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close)
+            .map(|d| d.values.close)
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
     fn max_close_wma(data: &[CleanDataWithAnalytics]) -> f32 {
         data.iter()
-            .map(|d| d.close_two_hundred_wma)
+            .map(|d| d.moving_averages.close)
             .fold(f32::NEG_INFINITY, f32::max)
     }
 
@@ -169,7 +191,7 @@ impl CleanDataWithAnalytics {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize)]
 struct MovingAverages {
     open: f32,
     high: f32,
@@ -207,18 +229,18 @@ impl MovingAverages {
                 j_size = j_end - j_start;
             }
 
-            for j in j_start..j_end {
-                sum_open += clean_data[j].open;
-                sum_high += clean_data[j].high;
-                sum_low += clean_data[j].low;
-                sum_close += clean_data[j].close;
+            for row in clean_data.iter().take(j_end).skip(j_start) {
+                sum_open += row.values.open;
+                sum_high += row.values.high;
+                sum_low += row.values.low;
+                sum_close += row.values.close;
             }
 
             moving_averages.push(MovingAverages {
-                open: sum_open / j_size as f32,
-                high: sum_high / j_size as f32,
-                low: sum_low / j_size as f32,
-                close: sum_close / j_size as f32,
+                open: format!("{:.2}", sum_open / j_size as f32).parse().unwrap(),
+                high: format!("{:.2}", sum_high / j_size as f32).parse().unwrap(),
+                low: format!("{:.2}", sum_low / j_size as f32).parse().unwrap(),
+                close: format!("{:.2}", sum_close / j_size as f32).parse().unwrap(),
             });
         }
         moving_averages
@@ -259,30 +281,124 @@ fn main() -> Result<(), Box<dyn Error>> {
     let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
-    // Build the drawing area
-    let output_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_IMAGE_FILENAME);
-    let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
-    root.fill(&CHART_COLOR_BACKGROUND)?;
+    // Build the drawing area for the linear graph
+    let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
+    let root_linear =
+        BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+    root_linear.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
+    let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
 
-    let mut chart = ChartBuilder::on(&root)
-        .caption(chart_caption, CHART_FONT.into_font())
+    let mut chart_linear = ChartBuilder::on(&root_linear)
+        .caption(chart_caption_linear, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
-    chart.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
+    chart_linear.draw_series(LineSeries::new(
+        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
-    chart.draw_series(LineSeries::new(
+    chart_linear.draw_series(LineSeries::new(
         clean_data_with_analytics
             .iter()
-            .map(|d| (d.date, d.close_two_hundred_wma)),
+            .map(|d| (d.date, d.moving_averages.close)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
-    root.present()?;
+    root_linear.present()?;
+
+    // Build the drawing area for the linear graph
+    let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
+    let root_log =
+        BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+    root_log.fill(&CHART_COLOR_BACKGROUND)?;
+
+    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
+
+    let mut chart_log = ChartBuilder::on(&root_log)
+        .caption(chart_caption_log, CHART_FONT.into_font())
+        .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
+
+    chart_log.draw_series(LineSeries::new(
+        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
+        &CHART_COLOR_PRICE_SERIES,
+    ))?;
+
+    chart_log.draw_series(LineSeries::new(
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.moving_averages.close)),
+        &CHART_COLOR_WMA_SERIES,
+    ))?;
+
+    root_log.present()?;
+
+    // Generate HTML table rows
+    let table_rows: String = clean_data_with_analytics
+        .iter()
+        .map(|d| {
+            format!(
+                "<tr>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+            </tr>",
+                d.date,
+                d.values.open,
+                d.values.high,
+                d.values.low,
+                d.values.close,
+                d.moving_averages.open,
+                d.moving_averages.high,
+                d.moving_averages.low,
+                d.moving_averages.close
+            )
+        })
+        .collect::<Vec<String>>()
+        .join("\n");
+
+    // Generate HTML output
+    let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
+    let html_content = format!(
+        "<html>
+            <head>
+                <title>{}</title>
+            </head>
+            <body>
+                <h1>{}</h1>
+                <img src='{}' style='border: 1px solid black;'alt='Linear Chart'>
+                <br><br><br>
+                <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
+                <br><br><br>
+                <table border='1'>
+                    <tr>
+                        <th>Date</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
+                        <th>Open 200-WMA</th>
+                        <th>High 200-WMA</th>
+                        <th>Low 200-WMA</th>
+                        <th>Close 200-WMA</th>
+                    </tr>
+                    {}
+                </table>
+            </body>
+        </html>",
+        CHART_TITLE,
+        CHART_TITLE,
+        OUTPUT_LINEAR_IMAGE_FILENAME,
+        OUTPUT_LOG_IMAGE_FILENAME,
+        table_rows
+    );
+    write(output_html_path, html_content)?;
 
     Ok(())
 }
