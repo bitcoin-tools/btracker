@@ -377,11 +377,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             <body>
                 <h1>{}</h1>
                 <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
-                <br><br><br>
+                <br><br>
                 <img src='{}' style='border: 1px solid black;' alt='Linear Chart'>
-                <br><br><br>
+                <br><br>
                 <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
-                <br><br><br>
+                <br><br>
                 <table border='1'>
                     <tr>
                         <th>Date</th>
