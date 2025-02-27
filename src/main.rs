@@ -298,7 +298,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
         .caption(chart_caption_linear, CHART_FONT.into_font())
-
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
@@ -314,7 +313,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw()?;
 
     chart_linear.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
@@ -351,7 +352,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .draw()?;
 
     chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.values.close)),
+        clean_data_with_analytics
+            .iter()
+            .map(|d| (d.date, d.values.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
