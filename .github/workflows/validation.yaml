@@ -17,10 +17,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Check formatting
         run: cargo fmt --check
-      - name: Install font dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libfontconfig1-dev
       - name: Check code
         run: cargo check
       - name: Build
