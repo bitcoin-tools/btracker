@@ -272,7 +272,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
         .caption(chart_caption_linear, CHART_FONT.into_font())
+        .margin(10)
+        .x_label_area_size(40)
+        .y_label_area_size(40)
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
+    
+    chart_linear.configure_mesh()
+        .x_label_formatter(&|date| date.format("%b %Y").to_string())
+        .x_max_light_lines(0)
+        .y_label_formatter(&|price| format!("{:.0}", price))
+        .y_max_light_lines(10)
+        .set_all_tick_mark_size(4)
+        .draw()?;
 
     chart_linear.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
@@ -298,7 +309,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut chart_log = ChartBuilder::on(&root_log)
         .caption(chart_caption_log, CHART_FONT.into_font())
+        .margin(10)
+        .x_label_area_size(40)
+        .y_label_area_size(40)
         .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
+
+    chart_log.configure_mesh()
+        .x_label_formatter(&|date| date.format("%b %Y").to_string())
+        .x_max_light_lines(0)
+        .y_label_formatter(&|price| format!("{:.0}", price))
+        .set_all_tick_mark_size(4)
+        .draw()?;
 
     chart_log.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
