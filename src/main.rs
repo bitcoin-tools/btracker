@@ -382,6 +382,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <br><br>
                 <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
                 <br><br>
+                <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
+                <br><br>
                 <table border='1'>
                     <tr>
                         <th>Date</th>
