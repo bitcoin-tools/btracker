@@ -38,6 +38,11 @@ jobs:
         run: cargo build
       - name: Run
         run: cargo run
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: btracker
+          path: target/debug/btracker
       - name: Upload output/ artifact
         uses: actions/upload-artifact@v4
         with:
