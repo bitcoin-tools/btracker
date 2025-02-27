@@ -14,8 +14,7 @@ const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
-const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
-const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
+const OUTPUT_IMAGE_FILENAME: &str = "200_week_moving_average.png";
 
 // Chart constants
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
@@ -28,7 +27,7 @@ const CHART_TITLE: &str = "Price and 200-WMA";
 const OUTPUT_IMAGE_WIDTH: u32 = 1024;
 const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
-const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+const OUTPUT_IMAGE_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
 #[derive(Debug, Deserialize)]
 struct RawData {
@@ -262,55 +261,30 @@ fn main() -> Result<(), Box<dyn Error>> {
     let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
     let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
 
-    // Build the drawing area for the linear graph
-    let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
-    let root_linear = BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root_linear.fill(&CHART_COLOR_BACKGROUND)?;
+    // Build the drawing area
+    let output_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_IMAGE_FILENAME);
+    let root = BitMapBackend::new(&output_image_path, OUTPUT_IMAGE_DIMENSIONS).into_drawing_area();
+    root.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
+    let chart_caption = format!("{} from {} to {}", CHART_TITLE, min_date, max_date);
 
-    let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption_linear, CHART_FONT.into_font())
+    let mut chart = ChartBuilder::on(&root)
+        .caption(chart_caption, CHART_FONT.into_font())
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
 
-    chart_linear.draw_series(LineSeries::new(
+    chart.draw_series(LineSeries::new(
         clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
-    chart_linear.draw_series(LineSeries::new(
+    chart.draw_series(LineSeries::new(
         clean_data_with_analytics
             .iter()
             .map(|d| (d.date, d.close_two_hundred_wma)),
         &CHART_COLOR_WMA_SERIES,
     ))?;
 
-    root_linear.present()?;
-
-    // Build the drawing area for the linear graph
-    let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
-    let root_log = BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root_log.fill(&CHART_COLOR_BACKGROUND)?;
-
-    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
-
-    let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT.into_font())
-        .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
-
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics.iter().map(|d| (d.date, d.close)),
-        &CHART_COLOR_PRICE_SERIES,
-    ))?;
-
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.close_two_hundred_wma)),
-        &CHART_COLOR_WMA_SERIES,
-    ))?;
-
-    root_log.present()?;
+    root.present()?;
 
     // Generate HTML table rows
     let table_rows: String = clean_data_with_analytics
@@ -351,8 +325,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             </head>
             <body>
                 <h1>{}</h1>
-                <img src='{}' alt='Linear Chart'>
-                <img src='{}' alt='Log Chart'>
+                <img src='{}' alt='Chart'>
                 <br><br><br>
                 <table border='1'>
                     <tr>
@@ -370,7 +343,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 </table>
             </body>
         </html>",
-        CHART_TITLE, CHART_TITLE, OUTPUT_LINEAR_IMAGE_FILENAME, OUTPUT_LOG_IMAGE_FILENAME, table_rows
+        CHART_TITLE, CHART_TITLE, OUTPUT_IMAGE_FILENAME, table_rows
     );
     write(output_html_path, html_content)?;
 
