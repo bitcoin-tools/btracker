@@ -210,11 +210,11 @@ impl MovingAverages {
                 j_size = j_end - j_start;
             }
 
-            for j in j_start..j_end {
-                sum_open += clean_data[j].open;
-                sum_high += clean_data[j].high;
-                sum_low += clean_data[j].low;
-                sum_close += clean_data[j].close;
+            for row in clean_data.iter().take(j_end).skip(j_start) {
+                sum_open += row.open;
+                sum_high += row.high;
+                sum_low += row.low;
+                sum_close += row.close;
             }
 
             moving_averages.push(MovingAverages {
