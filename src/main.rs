@@ -371,34 +371,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         .point_size(2), // Makes the line thicker
     )?;
 
-    root_linear.present()?;
-
-    // Build the drawing area for the linear graph
-    let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
-    let root_log =
-        BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root_log.fill(&CHART_COLOR_BACKGROUND)?;
-
-    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
-
-    let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT.into_font())
-        .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
-
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.values.close)),
-        &CHART_COLOR_PRICE_SERIES,
-    ))?;
-
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.moving_averages.close)),
-        &CHART_COLOR_WMA_SERIES,
-    ))?;
-
     root_log.present()?;
 
     // Generate HTML table rows
