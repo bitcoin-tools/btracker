@@ -276,8 +276,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         .x_label_area_size(40)
         .y_label_area_size(40)
         .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
-    
-    chart_linear.configure_mesh()
+
+    chart_linear
+        .configure_mesh()
         .x_label_formatter(&|date| date.format("%b %Y").to_string())
         .x_max_light_lines(0)
         .y_label_formatter(&|price| format!("{:.0}", price))
@@ -314,7 +315,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .y_label_area_size(40)
         .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
 
-    chart_log.configure_mesh()
+    chart_log
+        .configure_mesh()
         .x_label_formatter(&|date| date.format("%b %Y").to_string())
         .x_max_light_lines(0)
         .y_label_formatter(&|price| format!("{:.0}", price))
@@ -374,7 +376,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             </head>
             <body>
                 <h1>{}</h1>
-                <img src='{}' style='border: 1px solid black;'alt='Linear Chart'>
+                <img src='{}' style='border: 1px solid black;' alt='Linear Chart'>
                 <br><br><br>
                 <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
                 <br><br><br>
