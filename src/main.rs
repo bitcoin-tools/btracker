@@ -319,12 +319,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
-    chart_linear.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.moving_averages.close)),
-        &CHART_COLOR_WMA_SERIES,
-    ))?;
+    chart_linear.draw_series(
+        LineSeries::new(
+            clean_data_with_analytics
+                .iter()
+                .map(|d| (d.date, d.moving_averages.close)),
+            &CHART_COLOR_WMA_SERIES,
+        )
+        .point_size(2), // Makes the line thicker
+    )?;
 
     root_linear.present()?;
 
@@ -358,12 +361,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         &CHART_COLOR_PRICE_SERIES,
     ))?;
 
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.moving_averages.close)),
-        &CHART_COLOR_WMA_SERIES,
-    ))?;
+    chart_log.draw_series(
+        LineSeries::new(
+            clean_data_with_analytics
+                .iter()
+                .map(|d| (d.date, d.moving_averages.close)),
+            &CHART_COLOR_WMA_SERIES,
+        )
+        .point_size(2), // Makes the line thicker
+    )?;
 
     root_log.present()?;
 
