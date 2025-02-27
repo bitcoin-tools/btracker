@@ -401,16 +401,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|d| {
             format!(
                 "<tr>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-            </tr>",
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                </tr>",
                 d.date,
                 d.values.open,
                 d.values.high,
