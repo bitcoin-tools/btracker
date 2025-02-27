@@ -8,14 +8,14 @@ on:
       - master
 jobs:
   test-fmt:
-    name: Check formatting and run linter
+    name: Format and Lint
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Check formatting
+      - name: Ensure proper formatting
         run: cargo fmt --check
       - name: Install font dependency
         run: |
@@ -25,7 +25,7 @@ jobs:
         run: cargo clippy
 
   test-run-and-deploy:
-    name: Check, build, and run
+    name: Check, Build, and Run
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
