@@ -380,14 +380,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             format!(
                 "<tr>
                     <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
                 </tr>",
                 d.date,
                 d.values.open,
