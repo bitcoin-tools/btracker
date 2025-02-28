@@ -173,7 +173,7 @@ jobs:
     needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
-        github.ref == 'refs/heads/99-deploy-step-should-use-html-artifact' && 
+        github.ref == github.ref && 
         (
           needs.changes.outputs.ci == 'true' || 
           needs.changes.outputs.dependencies == 'true' || 
