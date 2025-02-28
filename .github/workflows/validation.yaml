@@ -173,7 +173,7 @@ jobs:
     needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
-        github.ref == 'refs/heads/master' && 
+        github.ref == 'refs/heads/99-deploy-step-should-use-html-artifact' && 
         (
           needs.changes.outputs.ci == 'true' || 
           needs.changes.outputs.dependencies == 'true' || 
@@ -187,12 +187,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Load the Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-      - name: Install font dependency
-        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
-      - name: Run
-        run: cargo run
+      - name: Download output artifact
+        uses: actions/download-artifact@v4
+          with:
+            name: output
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: List output directory contents
         run: ls -la ./output
       - name: Deploy
