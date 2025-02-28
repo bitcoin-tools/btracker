@@ -189,14 +189,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: output
-          path: output
-      - name: Display structure of downloaded files
-        run: ls -R
-      - name: List output directory contents
-        run: ls -la ./output
+          path: btracker_output
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output
+          publish_dir: ./btracker_output
           publish_branch: gh-pages
