@@ -1,1 +1,3 @@
-testwhitelistword
+btracker
+github
+io
