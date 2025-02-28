@@ -50,7 +50,6 @@ jobs:
 
   test-format:
     name: Format
-    runs-on: ubuntu-latest
     needs: changes
     if:  >-
       ${{
@@ -58,6 +57,7 @@ jobs:
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.rust == 'true'
       }}
+    runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
@@ -68,7 +68,6 @@ jobs:
 
   test-lint:
     name: Lint
-    runs-on: ubuntu-latest
     needs: changes
     if:  >-
       ${{
@@ -76,6 +75,7 @@ jobs:
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.rust == 'true'
       }}
+    runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
@@ -88,13 +88,13 @@ jobs:
 
   test-markdown:
     name: Markdown
-    runs-on: ubuntu-latest
     needs: changes
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
         needs.changes.outputs.markdown == 'true'
       }}
+    runs-on: ubuntu-latest
     steps:
       - name: Lint the markdown
         uses: avto-dev/markdown-lint@v1
@@ -104,6 +104,12 @@ jobs:
 
   test-run:
     name: Check, Build, and Run
+    needs: changes
+    if: >-
+      ${{
+        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.markdown == 'true'
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
