@@ -17,12 +17,19 @@ const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
 
-// Chart constants
+// Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
 const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
 const CHART_COLOR_WMA_SERIES: RGBColor = RED;
-const CHART_FONT: (&str, u32) = ("sans-serif", 20);
+const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
+const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
+const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
+const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
+
+// Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
+const CHART_LEGEND_PRICE_SERIES_LABEL: &str = "Price";
+const CHART_LEGEND_WMA_SERIES_LABEL: &str = "200-WMA";
 
 // Image dimensions
 const OUTPUT_IMAGE_WIDTH: u32 = 1024;
@@ -297,7 +304,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption_linear, CHART_FONT.into_font())
+        .caption(chart_caption_linear, CHART_FONT_TITLE)
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
@@ -312,26 +319,40 @@ fn main() -> Result<(), Box<dyn Error>> {
         .set_all_tick_mark_size(4)
         .draw()?;
 
-    chart_linear.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.values.close)),
-        &CHART_COLOR_PRICE_SERIES,
-    ))?;
-
-    chart_linear.draw_series(
-        LineSeries::new(
+    chart_linear
+        .draw_series(LineSeries::new(
             clean_data_with_analytics
                 .iter()
-                .map(|d| (d.date, d.moving_averages.close)),
-            &CHART_COLOR_WMA_SERIES,
-        )
-        .point_size(2), // Makes the line thicker
-    )?;
+                .map(|d| (d.date, d.values.close)),
+            &CHART_COLOR_PRICE_SERIES,
+        ))?
+        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
+
+    chart_linear
+        .draw_series(
+            LineSeries::new(
+                clean_data_with_analytics
+                    .iter()
+                    .map(|d| (d.date, d.moving_averages.close)),
+                &CHART_COLOR_WMA_SERIES,
+            )
+            .point_size(2), // Makes the line thicker
+        )?
+        .label(CHART_LEGEND_WMA_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
+
+    chart_linear
+        .configure_series_labels()
+        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+        .border_style(CHART_COLOR_LEGEND_BORDER)
+        .label_font(CHART_FONT_LEGEND)
+        .position(SeriesLabelPosition::LowerRight)
+        .draw()?;
 
     root_linear.present()?;
 
-    // Build the drawing area for the linear graph
+    // Build the drawing area for the log graph
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     let root_log =
         BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
@@ -340,7 +361,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
 
     let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT.into_font())
+        .caption(chart_caption_log, CHART_FONT_TITLE)
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
@@ -354,22 +375,36 @@ fn main() -> Result<(), Box<dyn Error>> {
         .set_all_tick_mark_size(4)
         .draw()?;
 
-    chart_log.draw_series(LineSeries::new(
-        clean_data_with_analytics
-            .iter()
-            .map(|d| (d.date, d.values.close)),
-        &CHART_COLOR_PRICE_SERIES,
-    ))?;
-
-    chart_log.draw_series(
-        LineSeries::new(
+    chart_log
+        .draw_series(LineSeries::new(
             clean_data_with_analytics
                 .iter()
-                .map(|d| (d.date, d.moving_averages.close)),
-            &CHART_COLOR_WMA_SERIES,
-        )
-        .point_size(2), // Makes the line thicker
-    )?;
+                .map(|d| (d.date, d.values.close)),
+            &CHART_COLOR_PRICE_SERIES,
+        ))?
+        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
+
+    chart_log
+        .draw_series(
+            LineSeries::new(
+                clean_data_with_analytics
+                    .iter()
+                    .map(|d| (d.date, d.moving_averages.close)),
+                CHART_COLOR_WMA_SERIES,
+            )
+            .point_size(2), // Makes the line thicker
+        )?
+        .label(CHART_LEGEND_WMA_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
+
+    chart_log
+        .configure_series_labels()
+        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+        .border_style(CHART_COLOR_LEGEND_BORDER)
+        .label_font(CHART_FONT_LEGEND)
+        .position(SeriesLabelPosition::MiddleRight)
+        .draw()?;
 
     root_log.present()?;
 
