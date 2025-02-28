@@ -185,12 +185,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
       - name: Download output artifact
         uses: actions/download-artifact@v4
         with:
           name: output
+          path: output
       - name: Display structure of downloaded files
         run: ls -R
       - name: List output directory contents
