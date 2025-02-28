@@ -17,13 +17,19 @@ const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
 
-// Chart constants
+// Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
 const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
 const CHART_COLOR_WMA_SERIES: RGBColor = RED;
+const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
+const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
 const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
+
+// Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
+const CHART_LEGEND_PRICE_SERIES_LABEL: &str = "Price";
+const CHART_LEGEND_WMA_SERIES_LABEL: &str = "200-WMA";
 
 // Image dimensions
 const OUTPUT_IMAGE_WIDTH: u32 = 1024;
@@ -320,8 +326,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .map(|d| (d.date, d.values.close)),
             &CHART_COLOR_PRICE_SERIES,
         ))?
-        .label("Price")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &CHART_COLOR_PRICE_SERIES));
+        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
 
     chart_linear
         .draw_series(
@@ -333,13 +339,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             )
             .point_size(2), // Makes the line thicker
         )?
-        .label("200-WMA")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &CHART_COLOR_WMA_SERIES));
+        .label(CHART_LEGEND_WMA_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
 
     chart_linear
         .configure_series_labels()
-        .background_style(&WHITE.mix(0.8))
-        .border_style(&BLACK)
+        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+        .border_style(CHART_COLOR_LEGEND_BORDER)
         .label_font(CHART_FONT_LEGEND)
         .position(SeriesLabelPosition::LowerRight)
         .draw()?;
@@ -376,8 +382,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .map(|d| (d.date, d.values.close)),
             &CHART_COLOR_PRICE_SERIES,
         ))?
-        .label("Price")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &CHART_COLOR_PRICE_SERIES));
+        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
 
     chart_log
         .draw_series(
@@ -389,13 +395,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             )
             .point_size(2), // Makes the line thicker
         )?
-        .label("200-WMA")
+        .label(CHART_LEGEND_WMA_SERIES_LABEL)
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
 
     chart_log
         .configure_series_labels()
-        .background_style(&WHITE.mix(0.8))
-        .border_style(&BLACK)
+        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+        .border_style(CHART_COLOR_LEGEND_BORDER)
         .label_font(CHART_FONT_LEGEND)
         .position(SeriesLabelPosition::MiddleRight)
         .draw()?;
