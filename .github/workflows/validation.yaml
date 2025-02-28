@@ -34,6 +34,16 @@ jobs:
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
+  test-markdown:
+    name: Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint the markdown
+        uses: avto-dev/markdown-lint@v1
+        with:
+          config: 'resources/config/markdownlint.yaml'
+          args: '*/*.md'
+
   test-run:
     name: Check, Build, and Run
     runs-on: ubuntu-latest
