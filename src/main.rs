@@ -28,7 +28,7 @@ const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
 
 // Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
-const CHART_LEGEND_PRICE_SERIES_LABEL: &str = "Price";
+const CHART_LEGEND_PRICE_SERIES_LABEL: &str = "Daily Price";
 const CHART_LEGEND_WMA_SERIES_LABEL: &str = "200-WMA";
 
 // Image dimensions
