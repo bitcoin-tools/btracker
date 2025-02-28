@@ -80,7 +80,7 @@ jobs:
       - name: List output directory contents
         run: ls -la ./output
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output  # Directory containing your output.html
