@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   dependencies-check:
     name: Check depencencies
     runs-on: ubuntu-latest
@@ -24,6 +23,7 @@ jobs:
         with:
           configurationFile: 'resources/config/renovate.json'
           token: ${{ secrets.RENOVATE_TOKEN }}
+          LOG_LEVEL: debug
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
