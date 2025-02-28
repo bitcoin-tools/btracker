@@ -18,6 +18,7 @@ jobs:
     outputs:
       ci: ${{ steps.filter.outputs.ci }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
+      historical_data: ${{ steps.filter.outputs.dependencies }}
       markdown: ${{ steps.filter.outputs.markdown }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
@@ -55,6 +56,7 @@ jobs:
       ${{
         needs.changes.outputs.ci == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
+        needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest
@@ -73,6 +75,7 @@ jobs:
       ${{
         needs.changes.outputs.ci == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
+        needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest
@@ -108,7 +111,9 @@ jobs:
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
-        needs.changes.outputs.markdown == 'true'
+        needs.changes.outputs.dependencies == 'true' ||
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest
     steps:
@@ -144,6 +149,7 @@ jobs:
         (
           needs.changes.outputs.ci == 'true' || 
           needs.changes.outputs.dependencies == 'true' || 
+          needs.changes.outputs.historical_data == 'true' ||
           needs.changes.outputs.rust == 'true'
         ) 
       }}
