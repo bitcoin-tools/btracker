@@ -136,10 +136,10 @@ impl CleanDataWithAnalytics {
             "High",
             "Low",
             "Close",
-            "Open 200-WMA",
-            "High 200-WMA",
-            "Low 200-WMA",
-            "Close 200-WMA",
+            "200_WMA_Open",
+            "200_WMA_High",
+            "200_WMA_Low",
+            "200_WMA_Close",
         ])?;
 
         data.iter().try_for_each(|row| {
@@ -446,11 +446,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{}</title>
                 <style>
                     th {{
+                        padding: 5px;
                         vertical-align: bottom;
                     }}
                     td {{
-                        text-align: right;
                         padding: 5px;
+                        text-align: right;
                     }}
                 </style>
             </head>
