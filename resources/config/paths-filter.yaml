@@ -1,0 +1,14 @@
+ci:
+  - '.github/workflows/*.yaml'
+  - '.github/workflows/*.yml'
+  - 'resources/config/**'
+dependencies:
+  - 'Cargo.toml'
+  - 'Cargo.lock'
+historical_data:
+  - 'resources/data/historical_data.csv'
+markdown:
+  - '**/*.md'
+  - 'resources/data/pyspelling.wordlist.txt'
+rust:
+  - 'src/*.rs'
