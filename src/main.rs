@@ -219,10 +219,10 @@ impl MovingAverages {
         for i in 0..clean_data.len() {
             if i == clean_data.len() - 1 {
                 moving_averages.push(MovingAverages {
-                    open: 0.0,
-                    high: 0.0,
-                    low: 0.0,
-                    close: 0.0,
+                    open: clean_data[i].open,
+                    high: clean_data[i].high,
+                    low: clean_data[i].low,
+                    close: clean_data[i].close,
                 });
                 break;
             }
