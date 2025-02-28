@@ -105,6 +105,8 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Install pyflakes dependency
+        run: pip3 install pyflakes
       - name: Lint
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
