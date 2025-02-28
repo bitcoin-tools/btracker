@@ -445,8 +445,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             <head>
                 <title>{}</title>
                 <style>
+                    th {{
+                        vertical-align: bottom;
+                    }}
                     td {{
                         text-align: right;
+                        padding: 5px;
                     }}
                 </style>
             </head>
@@ -462,15 +466,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <br><br>
                 <table border='1'>
                     <tr>
-                        <th>Date</th>
+                        <th rowspan='2'>Date</th>
+                        <th colspan='4'>Daily Prices</th>
+                        <th colspan='4'>200-Week Moving Averages</th>
+                    </tr>
+                    <tr>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
                         <th>Close</th>
-                        <th>Open 200-WMA</th>
-                        <th>High 200-WMA</th>
-                        <th>Low 200-WMA</th>
-                        <th>Close 200-WMA</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
                     </tr>
                     {}
                 </table>
