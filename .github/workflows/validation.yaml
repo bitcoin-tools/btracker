@@ -170,7 +170,7 @@ jobs:
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-format, test-lint, test-run]
+    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
