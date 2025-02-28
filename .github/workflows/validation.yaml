@@ -18,9 +18,8 @@ jobs:
     outputs:
       ci: ${{ steps.filter.outputs.ci }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
-      rust: ${{ steps.filter.outputs.rust }}
       markdown: ${{ steps.filter.outputs.markdown }}
-      spelling: ${{ steps.filter.outputs.spelling }}
+      rust: ${{ steps.filter.outputs.rust }}
     steps:
     - uses: actions/checkout@v4
     - uses: dorny/paths-filter@v3
