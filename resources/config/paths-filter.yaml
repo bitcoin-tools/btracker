@@ -5,6 +5,8 @@ ci:
 dependencies:
   - 'Cargo.toml'
   - 'Cargo.lock'
+historical_data:
+  - 'resources/config/paths-filter.yaml'
 markdown:
   - '**/*.md'
   - 'resources/data/pyspelling.wordlist.txt'
