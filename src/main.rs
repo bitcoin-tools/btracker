@@ -444,6 +444,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         "<html>
             <head>
                 <title>{}</title>
+                <style>
+                    td {{
+                        text-align: right;
+                    }}
+                </style>
             </head>
             <body>
                 <h1>{}</h1>

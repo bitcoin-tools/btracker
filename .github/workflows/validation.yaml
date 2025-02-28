@@ -10,6 +10,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  dependencies-check:
+    name: Check depencencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Renovate
+        uses: renovatebot/github-action@v41.0.13
+        with:
+          configurationFile: 'resources/config/renovate.json'
+          token: ${{ secrets.RENOVATE_TOKEN }}
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          config-file: 'resources/config/dependency-review.yaml'
+          base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
+          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
   test-format:
     name: Format
     runs-on: ubuntu-latest
@@ -33,6 +53,16 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test-markdown:
+    name: Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint the markdown
+        uses: avto-dev/markdown-lint@v1
+        with:
+          config: 'resources/config/markdownlint.yaml'
+          args: '*/*.md'
 
   test-run:
     name: Check, Build, and Run
@@ -80,7 +110,7 @@ jobs:
       - name: List output directory contents
         run: ls -la ./output
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output  # Directory containing your output.html
