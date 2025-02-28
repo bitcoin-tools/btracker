@@ -10,6 +10,25 @@ on:
   workflow_dispatch:
 
 jobs:
+  changes:
+    name: Check for file changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      ci: ${{ steps.filter.outputs.ci }}
+      dependencies: ${{ steps.filter.outputs.dependencies }}
+      rust: ${{ steps.filter.outputs.rust }}
+      markdown: ${{ steps.filter.outputs.markdown }}
+      spelling: ${{ steps.filter.outputs.spelling }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: resources/config/paths-filter.yaml
+        list-files: 'shell'
+
   dependencies-check:
     name: Check depencencies
     runs-on: ubuntu-latest
