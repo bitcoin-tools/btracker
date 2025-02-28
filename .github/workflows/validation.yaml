@@ -49,7 +49,7 @@ jobs:
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
   test-format:
-    name: Format
+    name: Check formatting
     needs: changes
     if:  >-
       ${{
@@ -67,7 +67,7 @@ jobs:
         run: cargo fmt --check
 
   test-lint:
-    name: Lint
+    name: Lint the Rust code
     needs: changes
     if:  >-
       ${{
@@ -87,7 +87,7 @@ jobs:
         run: cargo clippy --all-targets --all-features -- -D warnings
 
   test-markdown:
-    name: Markdown
+    name: Check markdown
     needs: changes
     if: >-
       ${{
@@ -103,7 +103,7 @@ jobs:
           args: '*/*.md'
 
   test-run:
-    name: Check, Build, and Run
+    name: Run the compiled binary
     needs: changes
     if: >-
       ${{
