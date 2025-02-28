@@ -68,7 +68,7 @@ jobs:
       - name: Ensure proper formatting
         run: cargo fmt --check
 
-  test-lint:
+  test-lint-rust:
     name: Lint the Rust code
     needs: changes
     if:  >-
@@ -88,6 +88,28 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test-lint-yaml:
+    name: Lint the yaml code
+    needs: changes
+    if: >-
+      ${{
+        github.event.action == 'prerelease' ||
+        github.event.action == 'published' ||
+        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.dependencies == 'true' ||
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: Lint
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color -verbose
+        shell: bash
 
   test-markdown:
     name: Check markdown
