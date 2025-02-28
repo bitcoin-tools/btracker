@@ -58,6 +58,10 @@ jobs:
     name: Markdown
     runs-on: ubuntu-latest
     steps:
+      - name: Check spelling
+        uses: rojopolis/spellcheck-github-actions@v0
+        with:
+          config_path: 'resources/config/spellcheck.yaml'
       - name: Lint the markdown
         uses: avto-dev/markdown-lint@v1
         with:
