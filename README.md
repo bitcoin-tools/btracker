@@ -1,14 +1,14 @@
 # ₿tracker
 
-Plot the historical bitcoin price with the 200-week moving average.
+Plot the bitcoin price and 200-week moving average.
 
 Please see [bitcoin-tools.github.io/btracker](https://bitcoin-tools.github.io/btracker/).
 
 ## Contributing
 
-Please open an issue for any bug reports or feature requests. You can see the list of open issues [here](https://github.com/bitcoin-tools/nodebuilder/issues).
+Please open an [issue](https://github.com/bitcoin-tools/btracker/issues) for any bug reports or feature requests.
 
-If you plan to submit a pull request, please first look over our automated and manual [test procedures](test/TEST.md).
+Pull requests are welcome.
 
 ## License
 
