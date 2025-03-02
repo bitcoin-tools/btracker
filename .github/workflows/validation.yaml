@@ -61,7 +61,7 @@ jobs:
         uses: jbzoo/csv-blueprint@master
         with:
           csv: resources/data/historical_data.csv
-          schema: resources/config/csv-input-schema.yaml
+          schema: resources/config/csv-schema-input.yaml
 
   test-format:
     name: Check formatting
@@ -181,10 +181,22 @@ jobs:
         with:
           name: output
           path: output/
+          
+  test-output-csv:
+    name: Check output CSV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: CSV Blueprint
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: resources/data/historical_data.csv
+          schema: resources/config/csv-schema-output.yaml
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
