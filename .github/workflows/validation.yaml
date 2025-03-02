@@ -201,7 +201,7 @@ jobs:
           schema: resources/config/csv-schema-output.yaml
 
   test-output-html:
-    name: Check the output HTML
+    name: Check output HTML
     needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
