@@ -220,31 +220,27 @@ impl MovingAverages {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<MovingAverages> {
         let mut moving_averages: Vec<MovingAverages> = Vec::new();
         for i in 0..clean_data.len() {
-            if i == clean_data.len() - 1 {
-                moving_averages.push(MovingAverages {
-                    open: clean_data[i].values.open,
-                    high: clean_data[i].values.high,
-                    low: clean_data[i].values.low,
-                    close: clean_data[i].values.close,
-                });
-                break;
-            }
-
             let mut sum_open = 0.0;
             let mut sum_high = 0.0;
             let mut sum_low = 0.0;
             let mut sum_close = 0.0;
-            let j_start = i + 1;
-            let j_end;
-            let j_size;
 
-            if i < clean_data.len() - moving_average_size {
-                j_end = j_start + moving_average_size;
-                j_size = moving_average_size;
-            } else {
-                j_end = clean_data.len();
-                j_size = j_end - j_start;
-            }
+            // The size is the number of days for the weekly moving average calculation.
+            //   As a proxy for 200 weeks, we use 1400 days for the simple moving average.
+            //   The dates are in reverse chronological order with the newest first.
+            //   For most of the data, we will use a size of 1400 days. But for the last
+            //   1400 days, we will use the actual number of days available in the data.
+            //   The j_start and j_end variables are used to calculate the sum of the
+            //   prices for the moving average. The j_ notation refers to for loop syntax.
+            //   The j_start is the index of the first row for the moving average.
+            //   The j_end is the index of the row after the last row for the moving average.
+            //   Meaning for most of the data, j_end is the same as j_start + 1400.
+            //   The j_size is the number of rows to include in the moving average.
+            //   j_start is includive, so the first row to average is j_start.
+            //   j_end is exclusive, so the last row to average is j_end - 1.
+            let j_start = i;
+            let j_size = usize::min(moving_average_size, clean_data.len() - i);
+            let j_end = i + j_size;
 
             for row in clean_data.iter().take(j_end).skip(j_start) {
                 sum_open += row.values.open;
