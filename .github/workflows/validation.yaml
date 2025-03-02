@@ -127,7 +127,7 @@ jobs:
 
   test-markdown:
     name: Check markdown
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
