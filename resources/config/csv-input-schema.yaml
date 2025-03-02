@@ -4,6 +4,9 @@ csv:
   delimiter: '|'
   header: true
 
+presets:
+  my-preset: ./csv-preset.yml
+
 columns:
   - name: Month
     example: 'Jan'
@@ -31,6 +34,7 @@ columns:
       num_max: 2100
       precision: 0
   - name: Open
+    presets: my-preset/input-price
     example: '1,000.00'
     rules:
       not_empty: true
