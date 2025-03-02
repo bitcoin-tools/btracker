@@ -1,7 +1,7 @@
 name: Presets for input data
 
 columns:
-  - name: login
+  - name: input-price
     description: Price data
     example: '1,000,000.01'
     rules:
