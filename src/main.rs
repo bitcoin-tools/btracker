@@ -460,9 +460,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <h1>{}</h1>
                 <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{}' style='border: 1px solid black;' alt='Linear Chart'>
+                <img src='{}' style='border: 2px solid black;' alt='Linear Chart'>
                 <br><br>
-                <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
+                <img src='{}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
                 <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
                 <br><br>
