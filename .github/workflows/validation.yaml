@@ -65,7 +65,7 @@ jobs:
 
   test-format:
     name: Check formatting
-    needs: changes
+    needs: [changes, test-input-csv]
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -84,7 +84,7 @@ jobs:
 
   test-lint-rust:
     name: Lint the Rust code
-    needs: changes
+    needs: [changes, test-input-csv]
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -105,7 +105,7 @@ jobs:
 
   test-lint-yaml:
     name: Lint the yaml code
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         github.event.action == 'prerelease' ||
