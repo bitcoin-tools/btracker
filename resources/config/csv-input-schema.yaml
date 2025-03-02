@@ -1,5 +1,5 @@
 name: Historical Data Input Schema
-filename_pattern: /resources/data/historical_data\.csv$
+filename_pattern: /resources/data/historical_data\.csv
 csv:
   delimiter: '|'
   header: true
