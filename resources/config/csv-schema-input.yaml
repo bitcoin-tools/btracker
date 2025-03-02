@@ -23,6 +23,6 @@ columns:
   - name: Close
     preset: my-preset/input-price
   - name: AdjClose
-    preset: my-preset/input-price
+    preset: my-preset/input-adj-close
   - name: Volume
     preset: my-preset/input-volume
