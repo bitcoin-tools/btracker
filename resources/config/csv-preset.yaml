@@ -1,9 +1,36 @@
 name: Presets for input data
 
 columns:
+  - name: input-month
+    description: Three-character month string
+    example: 'Jan'
+    required: true
+    rules:
+      not_empty: true
+      allow_values: [ Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ]
+      length: 3
+  - name: input-day
+    example: '1'
+    required: true
+    rules:
+      not_empty: true
+      is_int: true
+      num_min: 1
+      num_max: 31
+      precision: 0
+  - name: input-year
+    example: '2025'
+    required: true
+    rules:
+      not_empty: true
+      is_int: true
+      num_min: 2009
+      num_max: 2100
+      precision: 0
   - name: input-price
     description: Price data
     example: '1,000,000.01'
+    required: true
     rules:
       not_empty: true
       regex: '^\d{1,3}(,?\d{3})*(\.\d{1,2})?$'
@@ -11,3 +38,4 @@ columns:
       num_greater: 0.00
       is_trimmed: true
       length_min: 1
+  
