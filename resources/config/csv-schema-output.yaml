@@ -11,18 +11,18 @@ columns:
   - name: Date
     preset: my-preset/output-date
   - name: Open
-    preset: my-preset/output-open
+    preset: my-preset/output-price
   - name: High
-    preset: my-preset/output-high
+    preset: my-preset/output-price
   - name: Low
-    preset: my-preset/output-low
+    preset: my-preset/output-price
   - name: Close
-    preset: my-preset/output-close
+    preset: my-preset/output-price
   - name: 200_WMA_Open
-    preset: my-preset/output-200-wma-open
+    preset: my-preset/output-price
   - name: 200_WMA_High
-    preset: my-preset/output-200-wma-high
+    preset: my-preset/output-price
   - name: 200_WMA_Low
-    preset: my-preset/output-200-wma-low
+    preset: my-preset/output-price
   - name: 200_WMA_Close
-    preset: my-preset/output-200-wma-close
+    preset: my-preset/output-price
