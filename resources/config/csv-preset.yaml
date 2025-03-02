@@ -11,4 +11,3 @@ columns:
       num_greater: 0.00
       is_trimmed: true
       length_min: 1
-      is_alnum: true
