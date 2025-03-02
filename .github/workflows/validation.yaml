@@ -135,7 +135,7 @@ jobs:
       }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Pull the latest code
         uses: actions/checkout@v4
       - name: Check spelling
         uses: rojopolis/spellcheck-github-actions@v0
@@ -215,6 +215,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
       - name: Download output artifact
         uses: actions/download-artifact@v4
         with:
