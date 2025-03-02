@@ -442,7 +442,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Generate HTML output
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
-        "<html>
+        "<!DOCTYPE html>
+        <html>
             <head>
                 <title>{}</title>
                 <style>
