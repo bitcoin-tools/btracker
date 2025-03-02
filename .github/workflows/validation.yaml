@@ -149,7 +149,7 @@ jobs:
 
   test-run:
     name: Run the compiled binary
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -184,7 +184,7 @@ jobs:
           
   test-output-csv:
     name: Check output CSV
-    needs: [changes, test-run]
+    needs: [changes, test-input-csv, test-run]
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
