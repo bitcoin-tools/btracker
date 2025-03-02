@@ -22,12 +22,13 @@ jobs:
       markdown: ${{ steps.filter.outputs.markdown }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
-    - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: resources/config/paths-filter.yaml
-        list-files: 'shell'
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: resources/config/paths-filter.yaml
+          list-files: 'shell'
 
   dependencies-check:
     name: Check depencencies
@@ -36,7 +37,8 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Pull the latest code
+        uses: actions/checkout@v4
       - name: Renovate
         uses: renovatebot/github-action@v41.0.14
         with:
@@ -48,6 +50,18 @@ jobs:
           config-file: 'resources/config/dependency-review.yaml'
           base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+  test-input-csv:
+    name: Check input CSV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: CSV Blueprint
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: resources/data/historical_data.csv
+          schema: resources/config/csv-input-schema.yaml
 
   test-format:
     name: Check formatting
