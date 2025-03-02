@@ -34,7 +34,6 @@ columns:
     example: '1,000.00'
     rules:
       not_empty: true
-      is_float: true
       precision: 2
       num_greater: 0.00
 
