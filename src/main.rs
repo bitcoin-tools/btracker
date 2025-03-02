@@ -27,7 +27,11 @@ const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
-const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
+const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
+const CHART_CAPTION_FONT_SIZE: u32 = 32;
+const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Italic;
+const CHART_CAPTION_FONT_COLOR: RBGColor = BLUE; 
+const CHART_CAPTION_FONT: (&str, u32, FontStyle, RBGColor = (CHART_CAPTION_FONT_NAME, CHART_CAPTION_FONT_SIZE, CHART_CAPTION_FONT_STYLE, CHART_CAPTION_FONT_COLOR);
 
 // Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
@@ -308,7 +312,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption_linear, CHART_FONT_TITLE)
+        .caption(chart_caption_linear, CHART_CAPTION_FONT)
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
@@ -365,7 +369,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
 
     let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT_TITLE)
+        .caption(chart_caption_log, CHART_CAPTION_FONT)
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
