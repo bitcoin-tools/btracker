@@ -1,5 +1,5 @@
 name: Historical Data Input Schema
-filename_pattern: historical_data_input_schema.yaml
+filename_pattern: /resources/data/historical_data.csv
 csv:
   delimiter: '|'
   header: true
