@@ -184,7 +184,7 @@ jobs:
           
   test-output-csv:
     name: Check output CSV
-    needs: [changes, test-input-csv, test-run]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
