@@ -18,7 +18,7 @@ jobs:
     outputs:
       ci: ${{ steps.filter.outputs.ci }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
-      historical_data: ${{ steps.filter.outputs.dependencies }}
+      historical_data: ${{ steps.filter.outputs.historical_data }}
       markdown: ${{ steps.filter.outputs.markdown }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
