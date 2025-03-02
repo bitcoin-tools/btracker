@@ -18,7 +18,7 @@ jobs:
     outputs:
       ci: ${{ steps.filter.outputs.ci }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
-      historical_data: ${{ steps.filter.outputs.dependencies }}
+      historical_data: ${{ steps.filter.outputs.historical_data }}
       markdown: ${{ steps.filter.outputs.markdown }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Renovate
-        uses: renovatebot/github-action@v41.0.13
+        uses: renovatebot/github-action@v41.0.14
         with:
           configurationFile: 'resources/config/renovate.json'
           token: ${{ secrets.RENOVATE_TOKEN }}
