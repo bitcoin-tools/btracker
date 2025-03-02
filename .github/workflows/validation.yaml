@@ -187,6 +187,8 @@ jobs:
     needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
       - name: Download output artifact
         uses: actions/download-artifact@v4
         with:
@@ -215,8 +217,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Pull the latest code
-        uses: actions/checkout@v4
       - name: Download output artifact
         uses: actions/download-artifact@v4
         with:
