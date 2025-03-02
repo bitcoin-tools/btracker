@@ -200,9 +200,31 @@ jobs:
           csv: btracker_output/clean_data_with_analytics.csv
           schema: resources/config/csv-schema-output.yaml
 
+  test-output-html:
+    name: Check output HTML
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
+    if: >-
+      ${{ 
+        needs.changes.outputs.ci == 'true' || 
+        needs.changes.outputs.dependencies == 'true' || 
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download output artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: output
+          path: btracker_output
+      - uses: anishathalye/proof-html@v2
+        with:
+          directory: ./btracker_output
+
+
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
