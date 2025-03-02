@@ -1,0 +1,28 @@
+name: Output Schema
+
+csv:
+  delimiter: ','
+  header: true
+
+presets:
+  my-preset: ./csv-preset.yaml
+
+columns:
+  - name: Date
+    preset: my-preset/output-date
+  - name: Open
+    preset: my-preset/output-price
+  - name: High
+    preset: my-preset/output-price
+  - name: Low
+    preset: my-preset/output-price
+  - name: Close
+    preset: my-preset/output-price
+  - name: 200_WMA_Open
+    preset: my-preset/output-price
+  - name: 200_WMA_High
+    preset: my-preset/output-price
+  - name: 200_WMA_Low
+    preset: my-preset/output-price
+  - name: 200_WMA_Close
+    preset: my-preset/output-price
