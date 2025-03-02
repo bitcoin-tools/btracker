@@ -184,6 +184,7 @@ jobs:
           
   test-output-csv:
     name: Check output CSV
+    needs: [changes, test-run]
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
