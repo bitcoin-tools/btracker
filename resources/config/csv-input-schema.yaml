@@ -5,7 +5,7 @@ csv:
   header: true
 
 presets:
-  my-preset: ./csv-preset.yml
+  my-preset: ./csv-preset.yaml
 
 columns:
   - name: Month
