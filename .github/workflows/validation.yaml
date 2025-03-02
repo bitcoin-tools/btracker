@@ -202,7 +202,7 @@ jobs:
 
   test-output-html:
     name: Check the output HTML
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
@@ -227,7 +227,7 @@ jobs:
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
