@@ -1,5 +1,5 @@
-use chrono::NaiveDate;
 use crate::full_palette::ORANGE;
+use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
 use serde::{Deserialize, Serialize};
