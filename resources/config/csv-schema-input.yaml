@@ -9,33 +9,11 @@ presets:
 
 columns:
   - name: Month
-    preset: my-preset/input-year
-    example: 'Jan'
-    required: true
-    rules:
-      not_empty: true
-      allow_values: [ Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ]
-      length: 3
+    preset: my-preset/input-month
   - name: Day
-    preset: my-preset/input-year
-    example: '1'
-    required: true
-    rules:
-      not_empty: true
-      is_int: true
-      num_min: 1
-      num_max: 31
-      precision: 0
+    preset: my-preset/input-day
   - name: Year
     preset: my-preset/input-year
-    example: '2025'
-    required: true
-    rules:
-      not_empty: true
-      is_int: true
-      num_min: 2009
-      num_max: 2100
-      precision: 0
   - name: Open
     preset: my-preset/input-price
   - name: High
