@@ -30,31 +30,31 @@ columns:
       num_min: 2009
       num_max: 2100
       precision: 0
-  - name: open
+  - name: Open
     example: '1,000.00'
     rules:
       not_empty: true
       precision: 2
       num_greater: 0.00
 
-  - name: high
+  - name: High
     required: true
     rules:
       not_empty: true
 
-  - name: low
+  - name: Low
     required: true
     rules:
       not_empty: true
-  - name: close
+  - name: Close
     required: true
     rules:
       not_empty: true
-  - name: adj_close
+  - name: AdjClose
     required: true
     rules:
       not_empty: true
-  - name: volume
+  - name: Volume
     required: true
     rules:
       not_empty: true
