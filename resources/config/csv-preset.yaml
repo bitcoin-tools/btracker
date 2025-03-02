@@ -53,3 +53,23 @@ columns:
       regex: '^\d{1,3}(,?\d{3})*$'
       precision: 0
       is_trimmed: true
+  - name: output-date
+    description: Date in YYYY-MM-DD format
+    example: '2025-01-01'
+    required: true
+    rules:
+      not_empty: true
+      is_date: true
+      date_format: Y-m-d
+      date_min: 2009-01-13
+  - name: output-price
+    description: Daily price
+    example: '1000000.01'
+    required: true
+    rules:
+      not_empty: true
+      regex: '^\d{1,3}(,?\d{3})*(\.\d{1,2})?$'
+      precision_max: 2
+      num_greater: 0.00
+      is_trimmed: true
+      is_float: true
