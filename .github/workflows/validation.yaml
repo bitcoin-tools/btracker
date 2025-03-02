@@ -205,13 +205,10 @@ jobs:
     needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
-        github.ref == 'refs/heads/master' && 
-        (
-          needs.changes.outputs.ci == 'true' || 
-          needs.changes.outputs.dependencies == 'true' || 
-          needs.changes.outputs.historical_data == 'true' ||
-          needs.changes.outputs.rust == 'true'
-        ) 
+        needs.changes.outputs.ci == 'true' || 
+        needs.changes.outputs.dependencies == 'true' || 
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest
     steps:
