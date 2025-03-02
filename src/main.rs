@@ -12,8 +12,10 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
+const INPUT_FAVICON_PATH_STR: &str = "resources/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
@@ -286,7 +288,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Row -{} of clean data: {:?}", 4 - i, row);
         });
 
+    
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
+
+    let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
+    let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
+    std::fs::copy(input_favicon_path, output_favicon_path)?;
+    
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
 
@@ -446,6 +454,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         <html>
             <head>
                 <title>{}</title>
+                <link rel='icon' type='image/png' href='{}'>
                 <style>
                     th {{
                         padding: 5px;
@@ -488,6 +497,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             </body>
         </html>",
         CHART_TITLE,
+        OUTPUT_FAVICON_FILENAME,
         CHART_TITLE,
         OUTPUT_LINEAR_IMAGE_FILENAME,
         OUTPUT_LOG_IMAGE_FILENAME,
