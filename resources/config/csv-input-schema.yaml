@@ -34,7 +34,7 @@ columns:
       num_max: 2100
       precision: 0
   - name: Open
-    presets: my-preset/input-price
+    preset: my-preset/input-price
 
   - name: High
     required: true
