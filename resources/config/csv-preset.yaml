@@ -64,8 +64,8 @@ columns:
       is_date: true
       date_format: Y-m-d
       date_min: 2009-01-13
-    description: Daily price
   - name: output-price
+    description: Daily price
     example: '1000000.01'
     required: true
     rules:
