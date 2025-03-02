@@ -288,13 +288,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Row -{} of clean data: {:?}", 4 - i, row);
         });
 
-    
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
 
     let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
-    
+
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
 
