@@ -192,7 +192,7 @@ jobs:
       - name: CSV Blueprint
         uses: jbzoo/csv-blueprint@master
         with:
-          csv: resources/data/historical_data.csv
+          csv: output/clean_data_with_analytics.csv
           schema: resources/config/csv-schema-output.yaml
 
   deploy:
