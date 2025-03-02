@@ -1,3 +1,4 @@
+use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
@@ -19,8 +20,8 @@ const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
 
 // Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
-const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
-const CHART_COLOR_WMA_SERIES: RGBColor = RED;
+const CHART_COLOR_PRICE_SERIES: RGBColor = ORANGE;
+const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
