@@ -9,6 +9,9 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  TERM: xterm
+
 jobs:
   changes:
     name: Check for file changes
