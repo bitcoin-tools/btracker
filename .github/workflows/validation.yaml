@@ -137,15 +137,15 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
-      - name: Check spelling
-        uses: rojopolis/spellcheck-github-actions@v0
-        with:
-          config_path: 'resources/config/spellcheck.yaml'
       - name: Lint the markdown
         uses: avto-dev/markdown-lint@v1
         with:
           config: 'resources/config/markdownlint.yaml'
           args: '*/*.md'
+      - name: Check spelling
+        uses: rojopolis/spellcheck-github-actions@v0
+        with:
+          config_path: 'resources/config/spellcheck.yaml'
 
   test-run:
     name: Run the compiled binary
