@@ -148,14 +148,14 @@ impl CleanDataWithAnalytics {
         data.iter().try_for_each(|row| {
             writer.write_record(&[
                 row.date.to_string(),
-                format!("{row.values.open:.2}"),
-                format!("{row.values.high:.2}"),
-                format!("{row.values.low:.2}"),
-                format!("{row.values.close:.2}"),
-                format!("{row.moving_averages.open:.2}"),
-                format!("{row.moving_averages.high:.2}"),
-                format!("{row.moving_averages.low:.2}"),
-                format!("{row.moving_averages.close:.2}"),
+                format!("{:.2}", row.values.open),
+                format!("{:.2}", row.values.high),
+                format!("{:.2}", row.values.low),
+                format!("{:.2}", row.values.close),
+                format!("{:.2}", row.moving_averages.open),
+                format!("{:.2}", row.moving_averages.high),
+                format!("{:.2}", row.moving_averages.low),
+                format!("{:.2}", row.moving_averages.close),
             ])
         })?;
 
@@ -418,16 +418,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|d| {
             format!(
                 "<tr>
-                    <td>{d.date}</td>
-                    <td>{d.values.open:.2}</td>
-                    <td>{d.values.high:.2}</td>
-                    <td>{d.values.low:.2}</td>
-                    <td>{d.values.close:.2}</td>
-                    <td>{d.moving_averages.open:.2}</td>
-                    <td>{d.moving_averages.high:.2}</td>
-                    <td>{d.moving_averages.low:.2}</td>
-                    <td>{d.moving_averages.close:.2}</td>
+                    <td>{}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
+                    <td>{:.2}</td>
                 </tr>",
+                d.date,
+                d.values.open,
+                d.values.high,
+                d.values.low,
+                d.values.close,
+                d.moving_averages.open,
+                d.moving_averages.high,
+                d.moving_averages.low,
+                d.moving_averages.close
             )
         })
         .collect::<Vec<String>>()
