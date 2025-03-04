@@ -1,3 +1,4 @@
+use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
@@ -11,16 +12,18 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
+const INPUT_FAVICON_PATH_STR: &str = "resources/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
 
 // Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
-const CHART_COLOR_PRICE_SERIES: RGBColor = BLUE;
-const CHART_COLOR_WMA_SERIES: RGBColor = RED;
+const CHART_COLOR_PRICE_SERIES: RGBColor = ORANGE;
+const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
@@ -217,31 +220,27 @@ impl MovingAverages {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<MovingAverages> {
         let mut moving_averages: Vec<MovingAverages> = Vec::new();
         for i in 0..clean_data.len() {
-            if i == clean_data.len() - 1 {
-                moving_averages.push(MovingAverages {
-                    open: clean_data[i].values.open,
-                    high: clean_data[i].values.high,
-                    low: clean_data[i].values.low,
-                    close: clean_data[i].values.close,
-                });
-                break;
-            }
-
             let mut sum_open = 0.0;
             let mut sum_high = 0.0;
             let mut sum_low = 0.0;
             let mut sum_close = 0.0;
-            let j_start = i + 1;
-            let j_end;
-            let j_size;
 
-            if i < clean_data.len() - moving_average_size {
-                j_end = j_start + moving_average_size;
-                j_size = moving_average_size;
-            } else {
-                j_end = clean_data.len();
-                j_size = j_end - j_start;
-            }
+            // The size is the number of days for the weekly moving average calculation.
+            //   As a proxy for 200 weeks, we use 1400 days for the simple moving average.
+            //   The dates are in reverse chronological order with the newest first.
+            //   For most of the data, we will use a size of 1400 days. But for the last
+            //   1400 days, we will use the actual number of days available in the data.
+            //   The j_start and j_end variables are used to calculate the sum of the
+            //   prices for the moving average. The j_ notation refers to for loop syntax.
+            //   The j_start is the index of the first row for the moving average.
+            //   The j_end is the index of the row after the last row for the moving average.
+            //   Meaning for most of the data, j_end is the same as j_start + 1400.
+            //   The j_size is the number of rows to include in the moving average.
+            //   j_start is includive, so the first row to average is j_start.
+            //   j_end is exclusive, so the last row to average is j_end - 1.
+            let j_start = i;
+            let j_size = usize::min(moving_average_size, clean_data.len() - i);
+            let j_end = i + j_size;
 
             for row in clean_data.iter().take(j_end).skip(j_start) {
                 sum_open += row.values.open;
@@ -286,6 +285,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         });
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
+
+    let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
+    let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
+    std::fs::copy(input_favicon_path, output_favicon_path)?;
+
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
 
@@ -441,9 +445,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Generate HTML output
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
-        "<html>
+        "<!DOCTYPE html>
+        <html>
             <head>
                 <title>{}</title>
+                <link rel='icon' type='image/png' href='{}'>
                 <style>
                     th {{
                         padding: 5px;
@@ -459,13 +465,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <h1>{}</h1>
                 <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{}' style='border: 1px solid black;' alt='Linear Chart'>
+                <img src='{}' style='border: 2px solid black;' alt='Linear Chart'>
                 <br><br>
-                <img src='{}' style='border: 1px solid black;' alt='Log Chart'>
+                <img src='{}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
                 <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
                 <br><br>
-                <table border='1'>
+                <table style='border-width: 1px; border-style: solid; border-color: black;'>
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
@@ -486,6 +492,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             </body>
         </html>",
         CHART_TITLE,
+        OUTPUT_FAVICON_FILENAME,
         CHART_TITLE,
         OUTPUT_LINEAR_IMAGE_FILENAME,
         OUTPUT_LOG_IMAGE_FILENAME,

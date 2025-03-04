@@ -18,16 +18,17 @@ jobs:
     outputs:
       ci: ${{ steps.filter.outputs.ci }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
-      historical_data: ${{ steps.filter.outputs.dependencies }}
+      historical_data: ${{ steps.filter.outputs.historical_data }}
       markdown: ${{ steps.filter.outputs.markdown }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
-    - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: resources/config/paths-filter.yaml
-        list-files: 'shell'
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: resources/config/paths-filter.yaml
+          list-files: 'shell'
 
   dependencies-check:
     name: Check depencencies
@@ -36,9 +37,10 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Pull the latest code
+        uses: actions/checkout@v4
       - name: Renovate
-        uses: renovatebot/github-action@v41.0.13
+        uses: renovatebot/github-action@v41.0.14
         with:
           configurationFile: 'resources/config/renovate.json'
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -49,9 +51,21 @@ jobs:
           base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
+  test-input-csv:
+    name: Check input CSV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: CSV Blueprint
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: resources/data/historical_data.csv
+          schema: resources/config/csv-schema-input.yaml
+
   test-format:
     name: Check formatting
-    needs: changes
+    needs: [changes, test-input-csv]
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -70,7 +84,7 @@ jobs:
 
   test-lint-rust:
     name: Lint the Rust code
-    needs: changes
+    needs: [changes, test-input-csv]
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -91,7 +105,7 @@ jobs:
 
   test-lint-yaml:
     name: Lint the yaml code
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         github.event.action == 'prerelease' ||
@@ -113,7 +127,7 @@ jobs:
 
   test-markdown:
     name: Check markdown
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -121,7 +135,7 @@ jobs:
       }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Pull the latest code
         uses: actions/checkout@v4
       - name: Check spelling
         uses: rojopolis/spellcheck-github-actions@v0
@@ -131,11 +145,11 @@ jobs:
         uses: avto-dev/markdown-lint@v1
         with:
           config: 'resources/config/markdownlint.yaml'
-          args: '*/*.md'
+          args: '*.md'
 
   test-run:
     name: Run the compiled binary
-    needs: changes
+    needs: [changes, test-input-csv]
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -167,10 +181,50 @@ jobs:
         with:
           name: output
           path: output/
+          
+  test-output-csv:
+    name: Check output CSV
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: Download output artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: output
+          path: btracker_output
+      - name: CSV Blueprint
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: btracker_output/clean_data_with_analytics.csv
+          schema: resources/config/csv-schema-output.yaml
+
+  test-output-html:
+    name: Check output HTML
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
+    if: >-
+      ${{ 
+        needs.changes.outputs.ci == 'true' || 
+        needs.changes.outputs.dependencies == 'true' || 
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download output artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: output
+          path: btracker_output
+      - uses: anishathalye/proof-html@v2
+        with:
+          directory: ./btracker_output
+
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 

@@ -1,0 +1,28 @@
+name: Historical Data Input Schema
+
+csv:
+  delimiter: '|'
+  header: true
+
+presets:
+  my-preset: ./csv-preset.yaml
+
+columns:
+  - name: Month
+    preset: my-preset/input-month
+  - name: Day
+    preset: my-preset/input-day
+  - name: Year
+    preset: my-preset/input-year
+  - name: Open
+    preset: my-preset/input-price
+  - name: High
+    preset: my-preset/input-price
+  - name: Low
+    preset: my-preset/input-price
+  - name: Close
+    preset: my-preset/input-price
+  - name: AdjClose
+    preset: my-preset/input-adj-close
+  - name: Volume
+    preset: my-preset/input-volume
