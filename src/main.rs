@@ -272,7 +272,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .take(4)
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row +{} of clean data: {:?}", i, row);
+            println!("Row +{i} of clean data: {row:?}");
         });
     clean_data_with_analytics
         .iter()
