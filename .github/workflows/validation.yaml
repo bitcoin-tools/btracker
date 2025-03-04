@@ -144,7 +144,7 @@ jobs:
         uses: avto-dev/markdown-lint@v1
         with:
           config: 'resources/config/markdownlint.yaml'
-          args: '*/*.md'
+          args: '*.md'
       - name: Check spelling
         uses: rojopolis/spellcheck-github-actions@v0
         with:
