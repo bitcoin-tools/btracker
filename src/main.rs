@@ -77,7 +77,7 @@ impl CleanData {
         raw_data
             .iter()
             .map(|row| {
-                let date_str = format!("{} {} {}", row.month, row.day, row.year);
+                let date_str = format!("{row.month} {row.day} {row.year}");
                 let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
                 let values = CleanValues::new(row)?;
                 Ok(CleanData { date, values })
@@ -148,14 +148,14 @@ impl CleanDataWithAnalytics {
         data.iter().try_for_each(|row| {
             writer.write_record(&[
                 row.date.to_string(),
-                format!("{:.2}", row.values.open),
-                format!("{:.2}", row.values.high),
-                format!("{:.2}", row.values.low),
-                format!("{:.2}", row.values.close),
-                format!("{:.2}", row.moving_averages.open),
-                format!("{:.2}", row.moving_averages.high),
-                format!("{:.2}", row.moving_averages.low),
-                format!("{:.2}", row.moving_averages.close),
+                format!("{row.values.open:.2}"),
+                format!("{row.values.high:.2}"),
+                format!("{row.values.low:.2}"),
+                format!("{row.values.close:.2}"),
+                format!("{row.moving_averages.open:.2}"),
+                format!("{row.moving_averages.high:.2}"),
+                format!("{row.moving_averages.low:.2}"),
+                format!("{row.moving_averages.close:.2}"),
             ])
         })?;
 
@@ -305,7 +305,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_linear.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
+    let chart_caption_linear = format!("Linear scale from {min_date} to {max_date}");
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
         .caption(chart_caption_linear, CHART_FONT_TITLE)
@@ -362,7 +362,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_log.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
+    let chart_caption_log = format!("Log scale from {min_date} to {max_date}");
 
     let mut chart_log = ChartBuilder::on(&root_log)
         .caption(chart_caption_log, CHART_FONT_TITLE)
@@ -375,7 +375,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .configure_mesh()
         .x_label_formatter(&|date| date.format("%b %Y").to_string())
         .x_max_light_lines(0)
-        .y_label_formatter(&|price| format!("{:.0}", price))
+        .y_label_formatter(&|price| format!("{price:.0}"))
         .set_all_tick_mark_size(4)
         .draw()?;
 
@@ -418,25 +418,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|d| {
             format!(
                 "<tr>
-                    <td>{}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
+                    <td>{d.date}</td>
+                    <td>{d.values.open:.2}</td>
+                    <td>{d.values.high:.2}</td>
+                    <td>{d.values.low:.2}</td>
+                    <td>{d.values.close:.2}</td>
+                    <td>{d.moving_averages.open:.2}</td>
+                    <td>{d.moving_averages.high:.2}</td>
+                    <td>{d.moving_averages.low:.2}</td>
+                    <td>{d.moving_averages.close:.2}</td>
                 </tr>",
-                d.date,
-                d.values.open,
-                d.values.high,
-                d.values.low,
-                d.values.close,
-                d.moving_averages.open,
-                d.moving_averages.high,
-                d.moving_averages.low,
-                d.moving_averages.close
             )
         })
         .collect::<Vec<String>>()
@@ -448,8 +439,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         "<!DOCTYPE html>
         <html>
             <head>
-                <title>{}</title>
-                <link rel='icon' type='image/png' href='{}'>
+                <title>{CHART_TITLE}</title>
+                <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
                     th {{
                         padding: 5px;
@@ -462,12 +453,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 </style>
             </head>
             <body>
-                <h1>{}</h1>
+                <h1>{CHART_TITLE}</h1>
                 <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{}' style='border: 2px solid black;' alt='Linear Chart'>
+                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Linear Chart'>
                 <br><br>
-                <img src='{}' style='border: 2px solid black;' alt='Log Chart'>
+                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
                 <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
                 <br><br>
@@ -487,16 +478,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>Low</th>
                         <th>Close</th>
                     </tr>
-                    {}
+                    {table_rows}
                 </table>
             </body>
-        </html>",
-        CHART_TITLE,
-        OUTPUT_FAVICON_FILENAME,
-        CHART_TITLE,
-        OUTPUT_LINEAR_IMAGE_FILENAME,
-        OUTPUT_LOG_IMAGE_FILENAME,
-        table_rows
+        </html>"
     );
     write(output_html_path, html_content)?;
 
