@@ -12,7 +12,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
-const INPUT_FAVICON_PATH_STR: &str = "resources/favicon.png";
+const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
