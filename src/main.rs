@@ -272,7 +272,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .take(4)
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row +{} of clean data: {:?}", i, row);
+            println!("Row +{i} of clean data: {row:?}");
         });
     clean_data_with_analytics
         .iter()
@@ -305,7 +305,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_linear.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_linear = format!("Linear scale from {} to {}", min_date, max_date);
+    let chart_caption_linear = format!("Linear scale from {min_date} to {max_date}");
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
         .caption(chart_caption_linear, CHART_FONT_TITLE)
@@ -362,7 +362,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_log.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_log = format!("Log scale from {} to {}", min_date, max_date);
+    let chart_caption_log = format!("Log scale from {min_date} to {max_date}");
 
     let mut chart_log = ChartBuilder::on(&root_log)
         .caption(chart_caption_log, CHART_FONT_TITLE)
@@ -375,7 +375,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .configure_mesh()
         .x_label_formatter(&|date| date.format("%b %Y").to_string())
         .x_max_light_lines(0)
-        .y_label_formatter(&|price| format!("{:.0}", price))
+        .y_label_formatter(&|price| format!("{price:.0}"))
         .set_all_tick_mark_size(4)
         .draw()?;
 
@@ -448,8 +448,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         "<!DOCTYPE html>
         <html>
             <head>
-                <title>{}</title>
-                <link rel='icon' type='image/png' href='{}'>
+                <title>{CHART_TITLE}</title>
+                <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
                     th {{
                         padding: 5px;
@@ -462,12 +462,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 </style>
             </head>
             <body>
-                <h1>{}</h1>
+                <h1>{CHART_TITLE}</h1>
                 <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{}' style='border: 2px solid black;' alt='Linear Chart'>
+                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Linear Chart'>
                 <br><br>
-                <img src='{}' style='border: 2px solid black;' alt='Log Chart'>
+                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
                 <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
                 <br><br>
@@ -487,16 +487,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>Low</th>
                         <th>Close</th>
                     </tr>
-                    {}
+                    {table_rows}
                 </table>
             </body>
-        </html>",
-        CHART_TITLE,
-        OUTPUT_FAVICON_FILENAME,
-        CHART_TITLE,
-        OUTPUT_LINEAR_IMAGE_FILENAME,
-        OUTPUT_LOG_IMAGE_FILENAME,
-        table_rows
+        </html>"
     );
     write(output_html_path, html_content)?;
 
