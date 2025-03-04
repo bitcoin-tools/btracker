@@ -316,7 +316,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     .color(&CHART_CAPTION_FONT_COLOR);
 
     let chart_caption_label_linear = format!("Linear scale from {min_date} to {max_date}");
-
     let mut chart_linear = ChartBuilder::on(&root_linear)
         .caption(chart_caption_label_linear, chart_caption_font.clone())
         .margin(10)
@@ -372,9 +371,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_log.fill(&CHART_COLOR_BACKGROUND)?;
 
-
     let chart_caption_label_log = format!("Log scale from {min_date} to {max_date}");
-
     let mut chart_log = ChartBuilder::on(&root_log)
         .caption(chart_caption_label_log, chart_caption_font.clone())
         .margin(10)
