@@ -1,3 +1,4 @@
+# ₿tracker
 
 Plot the bitcoin price and 200-week moving average.
 
