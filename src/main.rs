@@ -96,10 +96,10 @@ struct CleanValues {
 
 impl CleanValues {
     fn new(raw_data: &RawData) -> Result<Self, Box<dyn Error>> {
-        let open: f32 = raw_data.open.replace(",", "").parse()?;
-        let high: f32 = raw_data.high.replace(",", "").parse()?;
-        let low: f32 = raw_data.low.replace(",", "").parse()?;
-        let close: f32 = raw_data.close.replace(",", "").parse()?;
+        let open: f32 = raw_data.open.replace(',', "").parse()?;
+        let high: f32 = raw_data.high.replace(',', "").parse()?;
+        let low: f32 = raw_data.low.replace(',', "").parse()?;
+        let close: f32 = raw_data.close.replace(',', "").parse()?;
         Ok(CleanValues {
             open,
             high,
