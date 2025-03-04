@@ -77,7 +77,7 @@ impl CleanData {
         raw_data
             .iter()
             .map(|row| {
-                let date_str = format!("{row.month} {row.day} {row.year}");
+                let date_str = format!("{} {} {}", row.month, row.day, row.year);
                 let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
                 let values = CleanValues::new(row)?;
                 Ok(CleanData { date, values })
