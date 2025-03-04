@@ -30,8 +30,7 @@ const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
 const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
 const CHART_CAPTION_FONT_SIZE: u32 = 32;
 const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Normal;
-const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE; 
-
+const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE;
 
 // Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
@@ -312,13 +311,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let chart_caption_font: TextStyle = FontDesc::new(
         FontFamily::Name(CHART_CAPTION_FONT_NAME),
         CHART_CAPTION_FONT_SIZE as f64,
-        CHART_CAPTION_FONT_STYLE
-    ).color(&CHART_CAPTION_FONT_COLOR);
+        CHART_CAPTION_FONT_STYLE,
+    )
+    .color(&CHART_CAPTION_FONT_COLOR);
 
     let chart_caption_label_linear = format!("Linear scale from {} to {}", min_date, max_date);
 
     let mut chart_linear = ChartBuilder::on(&root_linear)
-    .caption(chart_caption_label_linear, chart_caption_font.clone())
+        .caption(chart_caption_label_linear, chart_caption_font.clone())
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
