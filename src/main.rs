@@ -310,7 +310,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let chart_caption_font: TextStyle = FontDesc::new(
         FontFamily::Name(CHART_CAPTION_FONT_NAME),
-        CHART_CAPTION_FONT_SIZE as f64,
+        f64::from(CHART_CAPTION_FONT_SIZE),
         CHART_CAPTION_FONT_STYLE,
     )
     .color(&CHART_CAPTION_FONT_COLOR);
