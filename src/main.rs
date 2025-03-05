@@ -14,7 +14,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
-const OUTPUT_CSV_FILENAME: &str = "clean_data_with_analytics.csv";
+const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
@@ -469,7 +469,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <br><br>
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
-                <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/clean_data_with_analytics.csv'>Link to CSV data</a>
+                <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/{OUTPUT_CSV_FILENAME}'>Link to CSV data</a>
                 <br><br>
                 <table style='border-width: 1px; border-style: solid; border-color: black;'>
                     <tr>
