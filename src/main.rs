@@ -11,6 +11,7 @@ use std::path::Path;
 const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
+const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
@@ -443,6 +444,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .join("\n");
 
     // Generate HTML output
+    let output_csv_url: String = format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
@@ -463,13 +465,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             </head>
             <body>
                 <h1>{CHART_TITLE}</h1>
-                <a href='https://github.com/bitcoin-tools/btracker'>Link to the btracker repo</a>
+                <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
                 <br><br>
                 <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Linear Chart'>
                 <br><br>
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
                 <br><br>
-                <a href='https://github.com/bitcoin-tools/btracker/raw/gh-pages/{OUTPUT_CSV_FILENAME}'>Link to CSV data</a>
+                <a href='{output_csv_url}'>Link to CSV data</a>
                 <br><br>
                 <table style='border-width: 1px; border-style: solid; border-color: black;'>
                     <tr>
