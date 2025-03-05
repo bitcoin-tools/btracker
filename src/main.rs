@@ -2,7 +2,6 @@ use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
-use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::write;
 use std::path::Path;
@@ -41,32 +40,6 @@ const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
-#[derive(Debug, Deserialize)]
-struct RawData {
-    #[serde(rename = "Month")]
-    month: String,
-    #[serde(rename = "Day")]
-    day: String,
-    #[serde(rename = "Year")]
-    year: String,
-    #[serde(rename = "Open")]
-    open: String,
-    #[serde(rename = "High")]
-    high: String,
-    #[serde(rename = "Low")]
-    low: String,
-    #[serde(rename = "Close")]
-    close: String,
-}
-
-impl RawData {
-    fn new(path: &Path) -> Result<Vec<RawData>, Box<dyn Error>> {
-        let mut reader = ReaderBuilder::new().delimiter(b'|').from_path(path)?;
-        let raw_data: Vec<RawData> = reader.deserialize().collect::<Result<_, _>>()?;
-        Ok(raw_data)
-    }
-}
-
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
@@ -74,20 +47,27 @@ struct CleanData {
 }
 
 impl CleanData {
-    fn new(raw_data: &[RawData]) -> Result<Vec<CleanData>, Box<dyn Error>> {
-        raw_data
-            .iter()
-            .map(|row| {
-                let date_str = format!("{} {} {}", row.month, row.day, row.year);
-                let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
-                let values = CleanValues::new(row)?;
-                Ok(CleanData { date, values })
-            })
-            .collect()
+    fn new(path: &Path) -> Result<Vec<CleanData>, Box<dyn Error>> {
+        let mut clean_data_vec: Vec<CleanData> = Vec::new();
+
+        let mut reader = ReaderBuilder::new()
+            .delimiter(b'|')
+            .has_headers(true)
+            .from_path(path)?;
+
+        for result in reader.records() {
+            let record = result?;
+            let date_str = format!("{} {} {}", &record[0], &record[1], &record[2]);
+            let date = NaiveDate::parse_from_str(&date_str, "%b %d %Y")?;
+            let values = CleanValues::new(&record)?;
+            clean_data_vec.push(CleanData { date, values });
+        }
+
+        Ok(clean_data_vec)
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 struct CleanValues {
     open: f32,
     high: f32,
@@ -96,11 +76,12 @@ struct CleanValues {
 }
 
 impl CleanValues {
-    fn new(raw_data: &RawData) -> Result<Self, Box<dyn Error>> {
-        let open: f32 = raw_data.open.replace(',', "").parse()?;
-        let high: f32 = raw_data.high.replace(',', "").parse()?;
-        let low: f32 = raw_data.low.replace(',', "").parse()?;
-        let close: f32 = raw_data.close.replace(',', "").parse()?;
+    fn new(record: &csv::StringRecord) -> Result<Self, Box<dyn Error>> {
+        let open: f32 = record[3].replace(',', "").parse()?;
+        let high: f32 = record[4].replace(',', "").parse()?;
+        let low: f32 = record[5].replace(',', "").parse()?;
+        let close: f32 = record[6].replace(',', "").parse()?;
+
         Ok(CleanValues {
             open,
             high,
@@ -110,7 +91,7 @@ impl CleanValues {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     values: CleanValues,
@@ -209,7 +190,7 @@ impl CleanDataWithAnalytics {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 struct MovingAverages {
     open: f32,
     high: f32,
@@ -263,8 +244,7 @@ impl MovingAverages {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let raw_data_path: &Path = Path::new(INPUT_DATA_PATH_STR);
-    let raw_data = RawData::new(raw_data_path)?;
-    let clean_data = CleanData::new(&raw_data)?;
+    let clean_data = CleanData::new(raw_data_path)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
 
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
