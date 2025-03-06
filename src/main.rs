@@ -503,6 +503,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 d.values.high,
                 d.values.low,
                 d.values.close,
+                d.price_changes.price_dollar_change_daily,
+                d.price_changes.price_percent_change_daily,
+                d.price_changes.price_dollar_change_two_hundred_week,
+                d.price_changesprice_percent_change_two_hundred_week,      
                 d.moving_averages.open,
                 d.moving_averages.high,
                 d.moving_averages.low,
@@ -556,6 +560,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
+                        <th colspan='4'>Price Changes</th>
                         <th colspan='4'>200-Week Moving Averages</th>
                     </tr>
                     <tr>
@@ -563,6 +568,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>High</th>
                         <th>Low</th>
                         <th>Close</th>
+                        <th>Daily Amount</th>
+                        <th>Daily Percent</th>
+                        <th>200 Week Amount</th>
+                        <th>200 Week Percent</th>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
