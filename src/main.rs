@@ -431,7 +431,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
-                    <td>{:.2}</td>
                 </tr>",
                 d.date,
                 d.values.open,
