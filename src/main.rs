@@ -27,7 +27,10 @@ const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
-const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
+const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
+const CHART_CAPTION_FONT_SIZE: u32 = 32;
+const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Normal;
+const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE;
 
 // Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
@@ -110,6 +113,139 @@ impl CleanDataWithAnalytics {
                 moving_averages: moving_averages[i].clone(),
             })
             .collect()
+    }
+
+    fn create_linear_chart(
+        data: &[CleanDataWithAnalytics],
+        output_path: &Path,
+    ) -> Result<(), Box<dyn Error>> {
+        let min_date = Self::min_date(data);
+        let max_date = Self::max_date(data);
+        let min_value = Self::min_value(data);
+        let max_value = Self::max_value(data);
+
+        let root = BitMapBackend::new(output_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+        root.fill(&CHART_COLOR_BACKGROUND)?;
+
+        let chart_caption_font: TextStyle = FontDesc::new(
+            FontFamily::Name(CHART_CAPTION_FONT_NAME),
+            f64::from(CHART_CAPTION_FONT_SIZE),
+            CHART_CAPTION_FONT_STYLE,
+        )
+        .color(&CHART_CAPTION_FONT_COLOR);
+
+        let chart_caption_label = format!("Linear scale from {min_date} to {max_date}");
+        let mut chart = ChartBuilder::on(&root)
+            .caption(chart_caption_label, chart_caption_font.clone())
+            .margin(10)
+            .x_label_area_size(40)
+            .y_label_area_size(40)
+            .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
+
+        chart
+            .configure_mesh()
+            .x_label_formatter(&|date| date.format("%b %Y").to_string())
+            .x_max_light_lines(0)
+            .y_label_formatter(&|price| format!("{:.0}", price))
+            .y_max_light_lines(10)
+            .set_all_tick_mark_size(4)
+            .draw()?;
+
+        chart
+            .draw_series(LineSeries::new(
+                data.iter().map(|d| (d.date, d.values.close)),
+                &CHART_COLOR_PRICE_SERIES,
+            ))?
+            .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
+
+        chart
+            .draw_series(
+                LineSeries::new(
+                    data.iter().map(|d| (d.date, d.moving_averages.close)),
+                    &CHART_COLOR_WMA_SERIES,
+                )
+                .point_size(2),
+            )?
+            .label(CHART_LEGEND_WMA_SERIES_LABEL)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
+
+        chart
+            .configure_series_labels()
+            .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+            .border_style(CHART_COLOR_LEGEND_BORDER)
+            .label_font(CHART_FONT_LEGEND)
+            .position(SeriesLabelPosition::LowerRight)
+            .draw()?;
+
+        root.present()?;
+        Ok(())
+    }
+
+    fn create_log_chart(
+        data: &[CleanDataWithAnalytics],
+        output_path: &Path,
+    ) -> Result<(), Box<dyn Error>> {
+        let min_date = Self::min_date(data);
+        let max_date = Self::max_date(data);
+        let min_value = Self::min_value(data);
+        let max_value = Self::max_value(data);
+
+        let root = BitMapBackend::new(output_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+        root.fill(&CHART_COLOR_BACKGROUND)?;
+
+        let chart_caption_font: TextStyle = FontDesc::new(
+            FontFamily::Name(CHART_CAPTION_FONT_NAME),
+            f64::from(CHART_CAPTION_FONT_SIZE),
+            CHART_CAPTION_FONT_STYLE,
+        )
+        .color(&CHART_CAPTION_FONT_COLOR);
+
+        let chart_caption_label = format!("Log scale from {min_date} to {max_date}");
+        let mut chart = ChartBuilder::on(&root)
+            .caption(chart_caption_label, chart_caption_font.clone())
+            .margin(10)
+            .x_label_area_size(40)
+            .y_label_area_size(40)
+            .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
+
+        chart
+            .configure_mesh()
+            .x_label_formatter(&|date| date.format("%b %Y").to_string())
+            .x_max_light_lines(0)
+            .y_label_formatter(&|price| format!("{price:.0}"))
+            .set_all_tick_mark_size(4)
+            .draw()?;
+
+        chart
+            .draw_series(LineSeries::new(
+                data.iter().map(|d| (d.date, d.values.close)),
+                &CHART_COLOR_PRICE_SERIES,
+            ))?
+            .label(CHART_LEGEND_PRICE_SERIES_LABEL)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
+
+        chart
+            .draw_series(
+                LineSeries::new(
+                    data.iter().map(|d| (d.date, d.moving_averages.close)),
+                    &CHART_COLOR_WMA_SERIES,
+                )
+                .point_size(2),
+            )?
+            .label(CHART_LEGEND_WMA_SERIES_LABEL)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
+
+        chart
+            .configure_series_labels()
+            .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
+            .border_style(CHART_COLOR_LEGEND_BORDER)
+            .label_font(CHART_FONT_LEGEND)
+            .position(SeriesLabelPosition::MiddleRight)
+            .draw()?;
+
+        root.present()?;
+        Ok(())
     }
 
     fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
@@ -274,124 +410,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
     CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
 
-    // Calculate the max and min values for both dimensions of the chart
-    let min_date = CleanDataWithAnalytics::min_date(&clean_data_with_analytics);
-    let max_date = CleanDataWithAnalytics::max_date(&clean_data_with_analytics);
-    let min_value = CleanDataWithAnalytics::min_value(&clean_data_with_analytics);
-    let max_value = CleanDataWithAnalytics::max_value(&clean_data_with_analytics);
-
-    // Build the drawing area for the linear graph
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
-    let root_linear =
-        BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root_linear.fill(&CHART_COLOR_BACKGROUND)?;
+    CleanDataWithAnalytics::create_linear_chart(
+        &clean_data_with_analytics,
+        &output_linear_image_path,
+    )?;
 
-    let chart_caption_linear = format!("Linear scale from {min_date} to {max_date}");
-
-    let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption_linear, CHART_FONT_TITLE)
-        .margin(10)
-        .x_label_area_size(40)
-        .y_label_area_size(40)
-        .build_cartesian_2d(min_date..max_date, min_value..max_value)?;
-
-    chart_linear
-        .configure_mesh()
-        .x_label_formatter(&|date| date.format("%b %Y").to_string())
-        .x_max_light_lines(0)
-        .y_label_formatter(&|price| format!("{:.0}", price))
-        .y_max_light_lines(10)
-        .set_all_tick_mark_size(4)
-        .draw()?;
-
-    chart_linear
-        .draw_series(LineSeries::new(
-            clean_data_with_analytics
-                .iter()
-                .map(|d| (d.date, d.values.close)),
-            &CHART_COLOR_PRICE_SERIES,
-        ))?
-        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
-
-    chart_linear
-        .draw_series(
-            LineSeries::new(
-                clean_data_with_analytics
-                    .iter()
-                    .map(|d| (d.date, d.moving_averages.close)),
-                &CHART_COLOR_WMA_SERIES,
-            )
-            .point_size(2), // Makes the line thicker
-        )?
-        .label(CHART_LEGEND_WMA_SERIES_LABEL)
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
-
-    chart_linear
-        .configure_series_labels()
-        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
-        .border_style(CHART_COLOR_LEGEND_BORDER)
-        .label_font(CHART_FONT_LEGEND)
-        .position(SeriesLabelPosition::LowerRight)
-        .draw()?;
-
-    root_linear.present()?;
-
-    // Build the drawing area for the log graph
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
-    let root_log =
-        BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-    root_log.fill(&CHART_COLOR_BACKGROUND)?;
-
-    let chart_caption_log = format!("Log scale from {min_date} to {max_date}");
-
-    let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT_TITLE)
-        .margin(10)
-        .x_label_area_size(40)
-        .y_label_area_size(40)
-        .build_cartesian_2d(min_date..max_date, (min_value..max_value).log_scale())?;
-
-    chart_log
-        .configure_mesh()
-        .x_label_formatter(&|date| date.format("%b %Y").to_string())
-        .x_max_light_lines(0)
-        .y_label_formatter(&|price| format!("{price:.0}"))
-        .set_all_tick_mark_size(4)
-        .draw()?;
-
-    chart_log
-        .draw_series(LineSeries::new(
-            clean_data_with_analytics
-                .iter()
-                .map(|d| (d.date, d.values.close)),
-            &CHART_COLOR_PRICE_SERIES,
-        ))?
-        .label(CHART_LEGEND_PRICE_SERIES_LABEL)
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_PRICE_SERIES));
-
-    chart_log
-        .draw_series(
-            LineSeries::new(
-                clean_data_with_analytics
-                    .iter()
-                    .map(|d| (d.date, d.moving_averages.close)),
-                CHART_COLOR_WMA_SERIES,
-            )
-            .point_size(2), // Makes the line thicker
-        )?
-        .label(CHART_LEGEND_WMA_SERIES_LABEL)
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], CHART_COLOR_WMA_SERIES));
-
-    chart_log
-        .configure_series_labels()
-        .background_style(CHART_COLOR_LEGEND_BACKGROUND.mix(0.8))
-        .border_style(CHART_COLOR_LEGEND_BORDER)
-        .label_font(CHART_FONT_LEGEND)
-        .position(SeriesLabelPosition::MiddleRight)
-        .draw()?;
-
-    root_log.present()?;
+    CleanDataWithAnalytics::create_log_chart(&clean_data_with_analytics, &output_log_image_path)?;
 
     // Generate HTML table rows
     let table_rows: String = clean_data_with_analytics
@@ -433,11 +459,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
+                    img {{
+                        border: 2px solid black;
+                    }}
+                    table {{
+                        border-color: black;
+                        border-style: solid;
+                        border-width: 1px;
+                    }}
                     th {{
+                        border: 1px solid black;
                         padding: 5px;
                         vertical-align: bottom;
                     }}
                     td {{
+                        border: 1px solid black;
                         padding: 5px;
                         text-align: right;
                     }}
@@ -447,13 +483,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <h1>{CHART_TITLE}</h1>
                 <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Linear Chart'>
+                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
                 <br><br>
-                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
+                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
                 <br><br>
                 <a href='{output_csv_url}'>Link to CSV data</a>
                 <br><br>
-                <table style='border-width: 1px; border-style: solid; border-color: black;'>
+                <table>
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
