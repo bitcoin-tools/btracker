@@ -454,10 +454,12 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
                     th {{
+                        border: 1px solid black;
                         padding: 5px;
                         vertical-align: bottom;
                     }}
                     td {{
+                        border: 1px solid black;
                         padding: 5px;
                         text-align: right;
                     }}
