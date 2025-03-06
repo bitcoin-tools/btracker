@@ -116,12 +116,12 @@ impl PriceChanges {
                 PriceChanges::get_price_change(price_now, price_previous_1_day, true);
 
             let i_previous_200_week = usize::min(i + MOVING_AVERAGE_DAYS, clean_data.len() - 1);
-            let price_previous_200_week = clean_data[i_previous_200_week].values.close;            
+            let price_previous_200_week = clean_data[i_previous_200_week].values.close;
             let dollar_change_200_week =
                 PriceChanges::get_price_change(price_now, price_previous_200_week, false);
             let percent_change_200_week =
                 PriceChanges::get_price_change(price_now, price_previous_200_week, true);
-            
+
             price_changes_vec.push(PriceChanges {
                 dollar_change_1_day,
                 percent_change_1_day,
