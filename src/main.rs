@@ -96,10 +96,10 @@ impl CleanValues {
 
 #[derive(Debug, Clone)]
 struct PriceChanges {
-    price_dollar_change_daily: f32,
-    price_percent_change_daily: f32,
-    price_dollar_change_two_hundred_week: f32,
-    price_percent_change_two_hundred_week: f32,
+    dollar_change_daily: f32,
+    percent_change_daily: f32,
+    dollar_change_two_hundred_week: f32,
+    percent_change_two_hundred_week: f32,
 }
 
 impl PriceChanges {
@@ -113,19 +113,19 @@ impl PriceChanges {
             let price_previous_1_day = clean_data[i_previous_1_day].values.close;
             let price_previous_1400_day = clean_data[i_previous_1400_days].values.close;
 
-            let price_dollar_change_daily =
+            let dollar_change_daily =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, false);
-            let price_percent_change_daily =
+            let percent_change_daily =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, true);
-            let price_dollar_change_two_hundred_week =
+            let dollar_change_two_hundred_week =
                 PriceChanges::get_price_change(price_now, price_previous_1400_day, false);
-            let price_percent_change_two_hundred_week =
+            let percent_change_two_hundred_week =
                 PriceChanges::get_price_change(price_now, price_previous_1400_day, true);
             price_changes_vec.push(PriceChanges {
-                price_dollar_change_daily,
-                price_percent_change_daily,
-                price_dollar_change_two_hundred_week,
-                price_percent_change_two_hundred_week,
+                dollar_change_daily,
+                percent_change_daily,
+                dollar_change_two_hundred_week,
+                percent_change_two_hundred_week,
             });
         }
         price_changes_vec
@@ -323,16 +323,10 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
-                format!("{:.2}", row.price_changes.price_dollar_change_daily),
-                format!("{:.2}", row.price_changes.price_percent_change_daily),
-                format!(
-                    "{:.2}",
-                    row.price_changes.price_dollar_change_two_hundred_week
-                ),
-                format!(
-                    "{:.2}",
-                    row.price_changes.price_percent_change_two_hundred_week
-                ),
+                format!("{:.2}", row.price_changes.dollar_change_daily),
+                format!("{:.2}", row.price_changes.percent_change_daily),
+                format!("{:.2}", row.price_changes.dollar_change_two_hundred_week),
+                format!("{:.2}", row.price_changes.percent_change_two_hundred_week),
                 format!("{:.2}", row.moving_averages.open),
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
@@ -507,10 +501,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 d.values.high,
                 d.values.low,
                 d.values.close,
-                d.price_changes.price_dollar_change_daily,
-                d.price_changes.price_percent_change_daily,
-                d.price_changes.price_dollar_change_two_hundred_week,
-                d.price_changes.price_percent_change_two_hundred_week,
+                d.price_changes.dollar_change_daily,
+                d.price_changes.percent_change_daily,
+                d.price_changes.dollar_change_two_hundred_week,
+                d.price_changes.percent_change_two_hundred_week,
                 d.moving_averages.open,
                 d.moving_averages.high,
                 d.moving_averages.low,
@@ -574,8 +568,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>Close</th>
                         <th>Daily $</th>
                         <th>Daily %</th>
-                        <th>200 Week $</th>
-                        <th>200 Week %</th>
+                        <th>200wk $</th>
+                        <th>200wk %</th>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
