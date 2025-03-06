@@ -96,36 +96,37 @@ impl CleanValues {
 
 #[derive(Debug, Clone)]
 struct PriceChanges {
-    dollar_change_daily: f32,
-    percent_change_daily: f32,
-    dollar_change_two_hundred_week: f32,
-    percent_change_two_hundred_week: f32,
+    dollar_change_1_day: f32,
+    percent_change_1_day: f32,
+    dollar_change_200_week: f32,
+    percent_change_200_week: f32,
 }
 
 impl PriceChanges {
     fn new(clean_data: &[CleanData]) -> Vec<PriceChanges> {
         let mut price_changes_vec: Vec<PriceChanges> = Vec::new();
         for i in 0..clean_data.len() {
-            // The previous days' indices can't be greater than len()-1
-            let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
-            let i_previous_1400_days = usize::min(i + 1400, clean_data.len() - 1);
             let price_now = clean_data[i].values.close;
-            let price_previous_1_day = clean_data[i_previous_1_day].values.close;
-            let price_previous_1400_day = clean_data[i_previous_1400_days].values.close;
 
-            let dollar_change_daily =
+            let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
+            let price_previous_1_day = clean_data[i_previous_1_day].values.close;
+            let dollar_change_1_day =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, false);
-            let percent_change_daily =
+            let percent_change_1_day =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, true);
-            let dollar_change_two_hundred_week =
-                PriceChanges::get_price_change(price_now, price_previous_1400_day, false);
-            let percent_change_two_hundred_week =
-                PriceChanges::get_price_change(price_now, price_previous_1400_day, true);
+
+            let i_previous_200_week = usize::min(i + MOVING_AVERAGE_DAYS, clean_data.len() - 1);
+            let price_previous_200_week = clean_data[i_previous_200_week].values.close;
+            let dollar_change_200_week =
+                PriceChanges::get_price_change(price_now, price_previous_200_week, false);
+            let percent_change_200_week =
+                PriceChanges::get_price_change(price_now, price_previous_200_week, true);
+
             price_changes_vec.push(PriceChanges {
-                dollar_change_daily,
-                percent_change_daily,
-                dollar_change_two_hundred_week,
-                percent_change_two_hundred_week,
+                dollar_change_1_day,
+                percent_change_1_day,
+                dollar_change_200_week,
+                percent_change_200_week,
             });
         }
         price_changes_vec
@@ -323,10 +324,10 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
-                format!("{:.2}", row.price_changes.dollar_change_daily),
-                format!("{:.2}", row.price_changes.percent_change_daily),
-                format!("{:.2}", row.price_changes.dollar_change_two_hundred_week),
-                format!("{:.2}", row.price_changes.percent_change_two_hundred_week),
+                format!("{:.2}", row.price_changes.dollar_change_1_day),
+                format!("{:.2}", row.price_changes.percent_change_1_day),
+                format!("{:.2}", row.price_changes.dollar_change_200_week),
+                format!("{:.2}", row.price_changes.percent_change_200_week),
                 format!("{:.2}", row.moving_averages.open),
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
@@ -501,10 +502,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 d.values.high,
                 d.values.low,
                 d.values.close,
-                d.price_changes.dollar_change_daily,
-                d.price_changes.percent_change_daily,
-                d.price_changes.dollar_change_two_hundred_week,
-                d.price_changes.percent_change_two_hundred_week,
+                d.price_changes.dollar_change_1_day,
+                d.price_changes.percent_change_1_day,
+                d.price_changes.dollar_change_200_week,
+                d.price_changes.percent_change_200_week,
                 d.moving_averages.open,
                 d.moving_averages.high,
                 d.moving_averages.low,
