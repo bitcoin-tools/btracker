@@ -488,21 +488,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
+                    <td>{:.2}</td>
                     <td>{:.1} %</td>
                     <td>{:.2} </td>
                     <td>{:.1} %</td>
-                    <td>{:.2}</td>
                 </tr>",
                 d.date,
                 d.values.open,
                 d.values.high,
                 d.values.low,
                 d.values.close,
+                d.moving_averages.close,
                 d.price_changes.dollar_change_daily,
                 d.price_changes.percent_change_daily,
                 d.price_changes.dollar_change_two_hundred_week,
-                d.price_changes.percent_change_two_hundred_week,
-                d.moving_averages.close
+                d.price_changes.percent_change_two_hundred_week
             )
         })
         .collect::<Vec<String>>()
@@ -552,19 +552,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
-                        <th colspan='4'>Price Changes</th>
                         <th>Moving Average</th>
+                        <th colspan='4'>Price Changes</th>
                     </tr>
                     <tr>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
                         <th>Close</th>
+                        <th>200-Week</th>
                         <th>Daily $</th>
                         <th>Daily %</th>
                         <th>200wk $</th>
                         <th>200wk %</th>
-                        <th>200wk</th>
                     </tr>
                     {table_rows}
                 </table>
