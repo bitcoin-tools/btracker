@@ -133,7 +133,7 @@ impl PriceChanges {
 
     fn get_price_change(price_now: f32, price_previous: f32, report_percent: bool) -> f32 {
         if report_percent {
-            price_now / price_previous - 1.0
+            100.0 * (price_now / price_previous - 1.0)
         } else {
             price_now - price_previous
         }
@@ -494,9 +494,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
-                    <td>{:.4}</td>
-                    <td>{:.2}</td>
-                    <td>{:.4}</td>
+                    <td>{:.1} %</td>
+                    <td>{:.2} </td>
+                    <td>{:.1} %</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
@@ -572,10 +572,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>High</th>
                         <th>Low</th>
                         <th>Close</th>
-                        <th>Daily Amount</th>
-                        <th>Daily Percent</th>
-                        <th>200 Week Amount</th>
-                        <th>200 Week Percent</th>
+                        <th>Daily $</th>
+                        <th>Daily %</th>
+                        <th>200 Week $</th>
+                        <th>200 Week %</th>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
