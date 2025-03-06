@@ -94,15 +94,63 @@ impl CleanValues {
     }
 }
 
+#[derive(Debug, Clone)]
+struct PriceChanges {
+    dollar_change_daily: f32,
+    percent_change_daily: f32,
+    dollar_change_two_hundred_week: f32,
+    percent_change_two_hundred_week: f32,
+}
+
+impl PriceChanges {
+    fn new(clean_data: &[CleanData]) -> Vec<PriceChanges> {
+        let mut price_changes_vec: Vec<PriceChanges> = Vec::new();
+        for i in 0..clean_data.len() {
+            // The previous days' indices can't be greater than len()-1
+            let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
+            let i_previous_1400_days = usize::min(i + 1400, clean_data.len() - 1);
+            let price_now = clean_data[i].values.close;
+            let price_previous_1_day = clean_data[i_previous_1_day].values.close;
+            let price_previous_1400_day = clean_data[i_previous_1400_days].values.close;
+
+            let dollar_change_daily =
+                PriceChanges::get_price_change(price_now, price_previous_1_day, false);
+            let percent_change_daily =
+                PriceChanges::get_price_change(price_now, price_previous_1_day, true);
+            let dollar_change_two_hundred_week =
+                PriceChanges::get_price_change(price_now, price_previous_1400_day, false);
+            let percent_change_two_hundred_week =
+                PriceChanges::get_price_change(price_now, price_previous_1400_day, true);
+            price_changes_vec.push(PriceChanges {
+                dollar_change_daily,
+                percent_change_daily,
+                dollar_change_two_hundred_week,
+                percent_change_two_hundred_week,
+            });
+        }
+        price_changes_vec
+    }
+
+    fn get_price_change(price_now: f32, price_previous: f32, report_percent: bool) -> f32 {
+        if report_percent {
+            100.0 * (price_now / price_previous - 1.0)
+        } else {
+            price_now - price_previous
+        }
+    }
+}
+
 #[derive(Debug)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     values: CleanValues,
+    price_changes: PriceChanges,
     moving_averages: MovingAverages,
 }
 
 impl CleanDataWithAnalytics {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<CleanDataWithAnalytics> {
+        let price_changes = PriceChanges::new(clean_data);
         let moving_averages = MovingAverages::new(clean_data, moving_average_size);
         clean_data
             .iter()
@@ -110,6 +158,7 @@ impl CleanDataWithAnalytics {
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 values: row.values.clone(),
+                price_changes: price_changes[i].clone(),
                 moving_averages: moving_averages[i].clone(),
             })
             .collect()
@@ -257,6 +306,10 @@ impl CleanDataWithAnalytics {
             "High",
             "Low",
             "Close",
+            "Price_Change_Dollar_Daily",
+            "Price_Change_Percent_Daily",
+            "Price_Change_Dollar_200_Weeks",
+            "Price_Change_Percent_200_Weeks",
             "200_WMA_Open",
             "200_WMA_High",
             "200_WMA_Low",
@@ -270,6 +323,10 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
+                format!("{:.2}", row.price_changes.dollar_change_daily),
+                format!("{:.2}", row.price_changes.percent_change_daily),
+                format!("{:.2}", row.price_changes.dollar_change_two_hundred_week),
+                format!("{:.2}", row.price_changes.percent_change_two_hundred_week),
                 format!("{:.2}", row.moving_averages.open),
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
@@ -431,6 +488,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
+                    <td>{:.1} %</td>
+                    <td>{:.2} </td>
+                    <td>{:.1} %</td>
+                    <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
@@ -440,6 +501,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 d.values.high,
                 d.values.low,
                 d.values.close,
+                d.price_changes.dollar_change_daily,
+                d.price_changes.percent_change_daily,
+                d.price_changes.dollar_change_two_hundred_week,
+                d.price_changes.percent_change_two_hundred_week,
                 d.moving_averages.open,
                 d.moving_averages.high,
                 d.moving_averages.low,
@@ -493,6 +558,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
+                        <th colspan='4'>Price Changes</th>
                         <th colspan='4'>200-Week Moving Averages</th>
                     </tr>
                     <tr>
@@ -500,6 +566,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <th>High</th>
                         <th>Low</th>
                         <th>Close</th>
+                        <th>Daily $</th>
+                        <th>Daily %</th>
+                        <th>200wk $</th>
+                        <th>200wk %</th>
                         <th>Open</th>
                         <th>High</th>
                         <th>Low</th>
