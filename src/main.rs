@@ -28,7 +28,10 @@ const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
 const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
-const CHART_FONT_TITLE: (&str, u32) = ("sans-serif", 32);
+const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
+const CHART_CAPTION_FONT_SIZE: u32 = 32;
+const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Normal;
+const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE;
 
 // Chart content
 const CHART_TITLE: &str = "Price and 200-WMA";
@@ -306,10 +309,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_linear_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_linear.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_linear = format!("Linear scale from {min_date} to {max_date}");
+    let chart_caption_font: TextStyle = FontDesc::new(
+        FontFamily::Name(CHART_CAPTION_FONT_NAME),
+        f64::from(CHART_CAPTION_FONT_SIZE),
+        CHART_CAPTION_FONT_STYLE,
+    )
+    .color(&CHART_CAPTION_FONT_COLOR);
 
+    let chart_caption_label_linear = format!("Linear scale from {min_date} to {max_date}");
     let mut chart_linear = ChartBuilder::on(&root_linear)
-        .caption(chart_caption_linear, CHART_FONT_TITLE)
+        .caption(chart_caption_label_linear, chart_caption_font.clone())
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
@@ -363,10 +372,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         BitMapBackend::new(&output_log_image_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
     root_log.fill(&CHART_COLOR_BACKGROUND)?;
 
-    let chart_caption_log = format!("Log scale from {min_date} to {max_date}");
-
+    let chart_caption_label_log = format!("Log scale from {min_date} to {max_date}");
     let mut chart_log = ChartBuilder::on(&root_log)
-        .caption(chart_caption_log, CHART_FONT_TITLE)
+        .caption(chart_caption_label_log, chart_caption_font.clone())
         .margin(10)
         .x_label_area_size(40)
         .y_label_area_size(40)
