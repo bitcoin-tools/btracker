@@ -461,6 +461,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
+                    img {{
+                        border: 2px solid black;
+                    }}
+                    table {{
+                        border-color: black;
+                        border-style: solid;
+                        border-width: 1px;
+                    }}
                     th {{
                         border: 1px solid black;
                         padding: 5px;
@@ -477,13 +485,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <h1>{CHART_TITLE}</h1>
                 <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
                 <br><br>
-                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Linear Chart'>
+                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
                 <br><br>
-                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' style='border: 2px solid black;' alt='Log Chart'>
+                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
                 <br><br>
                 <a href='{output_csv_url}'>Link to CSV data</a>
                 <br><br>
-                <table style='border-width: 1px; border-style: solid; border-color: black;'>
+                <table>
                     <tr>
                         <th rowspan='2'>Date</th>
                         <th colspan='4'>Daily Prices</th>
