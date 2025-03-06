@@ -510,7 +510,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 d.price_changes.price_dollar_change_daily,
                 d.price_changes.price_percent_change_daily,
                 d.price_changes.price_dollar_change_two_hundred_week,
-                d.price_changesprice_percent_change_two_hundred_week,
+                d.price_changes.price_percent_change_two_hundred_week,
                 d.moving_averages.open,
                 d.moving_averages.high,
                 d.moving_averages.low,
