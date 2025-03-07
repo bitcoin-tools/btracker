@@ -550,24 +550,28 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <a href='{output_csv_url}'>Link to CSV data</a>
                 <br><br>
                 <table>
-                    <tr>
-                        <th rowspan='2'>Date</th>
-                        <th colspan='4'>Daily Prices</th>
-                        <th>Moving Average</th>
-                        <th colspan='4'>Price Changes</th>
-                    </tr>
-                    <tr>
-                        <th>Open</th>
-                        <th>High</th>
-                        <th>Low</th>
-                        <th>Close</th>
-                        <th>200-Week</th>
-                        <th>Daily $</th>
-                        <th>Daily %</th>
-                        <th>200wk $</th>
-                        <th>200wk %</th>
-                    </tr>
-                    {table_rows}
+                    <thead>
+                        <tr>
+                            <th rowspan='2'>Date</th>
+                            <th colspan='4'>Daily Prices</th>
+                            <th>Moving Average</th>
+                            <th colspan='4'>Price Changes</th>
+                        </tr>
+                        <tr>
+                            <th>Open</th>
+                            <th>High</th>
+                            <th>Low</th>
+                            <th>Close</th>
+                            <th>200-Week</th>
+                            <th>Daily $</th>
+                            <th>Daily %</th>
+                            <th>200wk $</th>
+                            <th>200wk %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {table_rows}
+                    </tbody>
                 </table>
             </body>
         </html>"
