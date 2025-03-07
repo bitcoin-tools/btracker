@@ -441,24 +441,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let clean_data = CleanData::new(raw_data_path)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
 
-    println!("Loaded {} rows of data", clean_data_with_analytics.len());
+println!("Loaded {} rows of data", clean_data_with_analytics.len());
     clean_data_with_analytics
         .iter()
-        .take(4)
+        .take(2)
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row +{i} of clean data: {row:?}");
+            println!("Row {i} of clean_data: {row:?}");
         });
     clean_data_with_analytics
         .iter()
         .rev()
-        .take(4)
+        .take(2)
         .rev()
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row -{} of clean data: {:?}", 4 - i, row);
+            println!("Row -{} of clean_data: {:?}", 2 - i, row);
         });
-
+    
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
 
     let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
