@@ -563,7 +563,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <th>High</th>
                             <th>Low</th>
                             <th>Close</th>
-                            <th>200-Week</th>
                             <th>$ Change</th>
                             <th>% Change</th>
                             <th>$ Change</th>
