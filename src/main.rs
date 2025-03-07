@@ -1,6 +1,7 @@
 use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
+use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
 use std::error::Error;
 use std::fs::write;
@@ -11,7 +12,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
-const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
+const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
@@ -43,6 +44,18 @@ const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
+// Helper function to format numbers with commas and decimal places
+fn format_number_with_commas(value: f32, decimal_places: usize) -> String {
+    let integer_part = value.trunc() as i64;
+    let decimal_part = (value.fract() * 10f32.powi(decimal_places as i32)).abs() as i64;
+    format!(
+        "{}.{:0width$}",
+        integer_part.to_formatted_string(&Locale::en),
+        decimal_part,
+        width = decimal_places
+    )
+}
+
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
@@ -54,7 +67,7 @@ impl CleanData {
         let mut clean_data_vec: Vec<CleanData> = Vec::new();
 
         let mut reader = ReaderBuilder::new()
-            .delimiter(b'|')
+            .delimiter(b'\t')
             .has_headers(true)
             .from_path(path)?;
 
@@ -483,27 +496,27 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|d| {
             format!(
                 "<tr>
-                    <td>{}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.1} %</td>
-                    <td>{:.2} </td>
-                    <td>{:.1} %</td>
-                </tr>",
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{} %</td>
+                <td>{}</td>
+                <td>{} %</td>
+            </tr>",
                 d.date,
-                d.values.open,
-                d.values.high,
-                d.values.low,
-                d.values.close,
-                d.moving_averages.close,
-                d.price_changes.dollar_change_1_day,
-                d.price_changes.percent_change_1_day,
-                d.price_changes.dollar_change_200_week,
-                d.price_changes.percent_change_200_week,
+                format_number_with_commas(d.values.open, 2),
+                format_number_with_commas(d.values.high, 2),
+                format_number_with_commas(d.values.low, 2),
+                format_number_with_commas(d.values.close, 2),
+                format_number_with_commas(d.moving_averages.close, 2),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1)
             )
         })
         .collect::<Vec<String>>()

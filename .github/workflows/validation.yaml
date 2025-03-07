@@ -60,7 +60,7 @@ jobs:
       - name: CSV Blueprint
         uses: jbzoo/csv-blueprint@master
         with:
-          csv: resources/data/historical_data.csv
+          csv: resources/data/historical_data.tsv
           schema: resources/config/csv-schema-input.yaml
 
   test-format:
