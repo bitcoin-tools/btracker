@@ -1,7 +1,7 @@
 name: Historical Data Input Schema
 
 csv:
-  delimiter: '\t'
+  delimiter: '	'
   header: true
 
 presets:
