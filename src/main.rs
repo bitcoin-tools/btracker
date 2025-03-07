@@ -555,8 +555,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
                             <th rowspan='2'>200-Week Moving Average</th>
-                            <th colspan='4'>1-Day Change</th>
-                            <th colspan='4'>200-Week Change</th>
+                            <th colspan='2'>Change in 1 Day</th>
+                            <th colspan='2'>Change in 200 Weeks</th>
                         </tr>
                         <tr>
                             <th>Open</th>
@@ -564,10 +564,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <th>Low</th>
                             <th>Close</th>
                             <th>200-Week</th>
-                            <th>Daily $</th>
-                            <th>Daily %</th>
-                            <th>200wk $</th>
-                            <th>200wk %</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
                         </tr>
                     </thead>
                     <tbody>
