@@ -2,6 +2,7 @@ use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
 use plotters::prelude::*;
+use regex::Regex;
 use std::error::Error;
 use std::fs::write;
 use std::path::Path;
@@ -42,6 +43,21 @@ const OUTPUT_IMAGE_WIDTH: u32 = 1024;
 const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+
+fn format_output_string(number: f32, decimal_points: u32) -> String {
+    let formatted_number = format!("{:.*}", decimal_points, number);
+
+    // Match in the integer part and add commas
+    let re = Regex::new(r"(?<=\d)(?=(\d{3})+(?!\d))").unwrap();
+    re.replace_all(&formatted_number, ",").to_string()
+}
+
+fn main() {
+    let number: f32 = 1234567.89567;
+    let decimal_points = 2;
+    println!("{}", format_with_commas(number, decimal_points)); // Output: 1,234,567.90
+}
+
 
 #[derive(Debug, Clone)]
 struct CleanData {
@@ -484,7 +500,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             format!(
                 "<tr>
                     <td>{}</td>
-                    <td>{:.2}</td>
+                    <td>{}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
                     <td>{:.2}</td>
@@ -495,7 +511,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{:.1} %</td>
                 </tr>",
                 d.date,
-                d.values.open,
+                format_output_string(d.values.open, 2),
                 d.values.high,
                 d.values.low,
                 d.values.close,
