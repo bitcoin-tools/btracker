@@ -44,7 +44,7 @@ const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
-fn format_output_string(number: f32, decimal_points: u32) -> String {
+fn format_output_string(number: f32, decimal_points: usize) -> String {
     let formatted_number = format!("{:.*}", decimal_points, number);
 
     // Match in the integer part and add commas
