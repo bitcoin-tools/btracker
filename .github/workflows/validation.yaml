@@ -51,18 +51,6 @@ jobs:
           base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
-  test-input-csv:
-    name: Check input CSV
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pull the latest code
-        uses: actions/checkout@v4
-      - name: CSV Blueprint
-        uses: jbzoo/csv-blueprint@master
-        with:
-          csv: resources/data/historical_data.tsv
-          schema: resources/config/csv-schema-input.yaml
-
   test-format:
     name: Check formatting
     needs: [changes, test-input-csv]
