@@ -52,13 +52,6 @@ fn format_output_string(number: f32, decimal_points: u32) -> String {
     re.replace_all(&formatted_number, ",").to_string()
 }
 
-fn main() {
-    let number: f32 = 1234567.89567;
-    let decimal_points = 2;
-    println!("{}", format_with_commas(number, decimal_points)); // Output: 1,234,567.90
-}
-
-
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
