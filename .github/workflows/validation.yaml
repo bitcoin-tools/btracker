@@ -53,7 +53,7 @@ jobs:
 
   test-format:
     name: Check formatting
-    needs: [changes, test-input-csv]
+    needs: changes
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -72,7 +72,7 @@ jobs:
 
   test-lint-rust:
     name: Lint the Rust code
-    needs: [changes, test-input-csv]
+    needs: changes
     if:  >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -93,7 +93,7 @@ jobs:
 
   test-lint-yaml:
     name: Lint the yaml code
-    needs: [changes, test-input-csv]
+    needs: changes
     if: >-
       ${{
         github.event.action == 'prerelease' ||
@@ -115,7 +115,7 @@ jobs:
 
   test-markdown:
     name: Check markdown
-    needs: [changes, test-input-csv]
+    needs: changes
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -137,7 +137,7 @@ jobs:
 
   test-run:
     name: Run the compiled binary
-    needs: [changes, test-input-csv]
+    needs: changes
     if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
@@ -172,7 +172,7 @@ jobs:
           
   test-output-csv:
     name: Check output CSV
-    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
@@ -190,7 +190,7 @@ jobs:
 
   test-output-html:
     name: Check output HTML
-    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
         needs.changes.outputs.ci == 'true' || 
@@ -212,7 +212,7 @@ jobs:
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-input-csv, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
+    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
