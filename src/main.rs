@@ -1,6 +1,7 @@
 use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
+use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
 use std::error::Error;
 use std::fs::write;
@@ -42,6 +43,18 @@ const OUTPUT_IMAGE_WIDTH: u32 = 1024;
 const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+
+// Helper function to format numbers with commas and decimal places
+fn format_number_with_commas(value: f32, decimal_places: usize) -> String {
+    let integer_part = value.trunc() as i64;
+    let decimal_part = (value.fract() * 10f32.powi(decimal_places as i32)).abs() as i64;
+    format!(
+        "{}.{:0width$}",
+        integer_part.to_formatted_string(&Locale::en),
+        decimal_part,
+        width = decimal_places
+    )
+}
 
 #[derive(Debug, Clone)]
 struct CleanData {
@@ -495,30 +508,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             format!(
                 "<tr>
                     <td>{}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.1} %</td>
-                    <td>{:.2}</td>
-                    <td>{:.1} %</td>
-                    <td>{:.2} </td>
-                    <td>{:.1} %</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{} %</td>
+                    <td>{}</td>
+                    <td>{} %</td>
+                    <td>{}</td>
+                    <td>{} %</td>
                 </tr>",
                 d.date,
-                d.values.open,
-                d.values.high,
-                d.values.low,
-                d.values.close,
-                d.moving_averages.close,
-                d.price_changes.dollar_swing_same_day,
-                d.price_changes.percent_swing_same_day,
-                d.price_changes.dollar_change_1_day,
-                d.price_changes.percent_change_1_day,
-                d.price_changes.dollar_change_200_week,
-                d.price_changes.percent_change_200_week,
+                format_number_with_commas(d.values.open, 2),
+                format_number_with_commas(d.values.high, 2),
+                format_number_with_commas(d.values.low, 2),
+                format_number_with_commas(d.values.close, 2),
+                format_number_with_commas(d.moving_averages.close, 2),
+                format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
+                format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1)
             )
         })
         .collect::<Vec<String>>()
