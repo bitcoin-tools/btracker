@@ -1,4 +1,4 @@
-name: Presets for input data
+name: Presets for output data
 
 columns:
   - name: output-date
