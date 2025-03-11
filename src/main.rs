@@ -12,7 +12,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
-const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
+const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
@@ -67,7 +67,7 @@ impl CleanData {
         let mut clean_data_vec: Vec<CleanData> = Vec::new();
 
         let mut reader = ReaderBuilder::new()
-            .delimiter(b'|')
+            .delimiter(b'\t')
             .has_headers(true)
             .from_path(path)?;
 
