@@ -567,7 +567,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <tr>
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2'>200-Week Moving Average</th>
+                            <th rowspan='2'>200-Week<br>Moving Average</th>
                             <th colspan='2'>Change in 1 Day</th>
                             <th colspan='2'>Change in 200 Weeks</th>
                         </tr>
