@@ -457,19 +457,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Loaded {} rows of data", clean_data_with_analytics.len());
     clean_data_with_analytics
         .iter()
-        .take(4)
+        .take(2)
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row +{i} of clean data: {row:?}");
+            println!("Row {i} of clean_data: {row:?}");
         });
     clean_data_with_analytics
         .iter()
         .rev()
-        .take(4)
+        .take(2)
         .rev()
         .enumerate()
         .for_each(|(i, row)| {
-            println!("Row -{} of clean data: {:?}", 4 - i, row);
+            println!("Row -{} of clean_data: {:?}", 2 - i, row);
         });
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
@@ -567,19 +567,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <tr>
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
-                            <th>Moving Average</th>
-                            <th colspan='4'>Price Changes</th>
+                            <th rowspan='2'>200-Week Moving Average</th>
+                            <th colspan='2'>Change in 1 Day</th>
+                            <th colspan='2'>Change in 200 Weeks</th>
                         </tr>
                         <tr>
                             <th>Open</th>
                             <th>High</th>
                             <th>Low</th>
                             <th>Close</th>
-                            <th>200-Week</th>
-                            <th>Daily $</th>
-                            <th>Daily %</th>
-                            <th>200wk $</th>
-                            <th>200wk %</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
                         </tr>
                     </thead>
                     <tbody>
