@@ -653,20 +653,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|d| {
             format!(
-                "<tr>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td class='wmacolumn'>{}</td>
-                    <td>{}</td>
-                    <td>{} %</td>
-                    <td>{}</td>
-                    <td>{} %</td>
-                    <td>{}</td>
-                    <td>{} %</td>
-                </tr>",
+                "                        <tr>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td>{}</td>
+                            <td class='wmacolumn'>{}</td>
+                            <td>{}</td>
+                            <td>{} %</td>
+                            <td>{}</td>
+                            <td>{} %</td>
+                            <td>{}</td>
+                            <td>{} %</td>
+                        </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
                 format_number_with_commas(d.values.high, 2),
@@ -761,7 +761,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         </tr>
                     </thead>
                     <tbody>
-                        {table_rows}
+{table_rows}
                     </tbody>
                 </table>
             </body>
