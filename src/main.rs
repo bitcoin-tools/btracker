@@ -506,7 +506,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|d| {
             format!(
-                "<tr>
+                "                        <tr>
                             <td>{}</td>
                             <td>{}</td>
                             <td>{}</td>
@@ -612,7 +612,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         </tr>
                     </thead>
                     <tbody>
-                        {table_rows}
+{table_rows}
                     </tbody>
                 </table>
             </body>
