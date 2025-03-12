@@ -702,6 +702,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     tr.histogram-footer {{
                         background-color: whitesmoke;
                         border: 2px solid black;
+                        font-weight: bold;
                     }}
                     th.wma-column {{
                         background-color: whitesmoke;
