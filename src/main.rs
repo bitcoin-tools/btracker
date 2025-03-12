@@ -549,11 +549,16 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <style>
                     .wmacolumn th {{
                         background-color: lightgrey;
-                        border: 2px solid black;
+                        border: 2px solid blue;
+                        padding: 6px;
                     }}
                     .wmacolumn td {{
                         background-color: lightgrey;
-                        border: 2px solid black;
+                        border-left: 2px solid blue;
+                        border-right: 2px solid blue;
+                        color: blue;
+                        font-weight: bold;
+                        transition: background-color 0.3s ease;
                     }}
                     img {{
                         border: 2px solid black;
