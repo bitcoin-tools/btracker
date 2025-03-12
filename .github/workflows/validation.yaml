@@ -155,16 +155,20 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
       - name: Check
         run: cargo check
-      - name: Build
-        run: cargo build && sha256sum target/debug/btracker
-      - name: Run
-        run: cargo run
+      - name: Build binary
+        run: cargo build
+      - name: Hash binary
+        run: sha256sum target/debug/btracker
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: btracker
           path: target/debug/btracker
-      - name: Upload output/ artifact
+      - name: Run binary
+        run: cargo run
+      - name: Hash output
+        run: sha256sum output/*
+      - name: Upload output artifact
         uses: actions/upload-artifact@v4
         with:
           name: output
