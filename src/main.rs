@@ -162,6 +162,94 @@ impl PriceChanges {
 }
 
 #[derive(Debug)]
+struct PriceChangesHistogram {
+    below_2_percent: usize,
+    between_2_and_5_percent: usize,
+    between_5_and_10_percent: usize,
+    between_10_and_15_percent: usize,
+    between_15_and_20_percent: usize,
+    above_20_percent: usize,
+}
+
+impl PriceChangesHistogram {
+    fn new(data: &[CleanDataWithAnalytics]) -> Self {
+        let mut histogram = PriceChangesHistogram {
+            below_2_percent: 0,
+            between_2_and_5_percent: 0,
+            between_5_and_10_percent: 0,
+            between_10_and_15_percent: 0,
+            between_15_and_20_percent: 0,
+            above_20_percent: 0,
+        };
+
+        for d in data {
+            let percent_change = d.price_changes.percent_change_1_day.abs();
+            if percent_change < 2.0 {
+                histogram.below_2_percent += 1;
+            } else if (2.0..5.0).contains(&percent_change) {
+                histogram.between_2_and_5_percent += 1;
+            } else if (5.0..10.0).contains(&percent_change) {
+                histogram.between_5_and_10_percent += 1;
+            } else if (10.0..15.0).contains(&percent_change) {
+                histogram.between_10_and_15_percent += 1;
+            } else if (15.0..20.0).contains(&percent_change) {
+                histogram.between_15_and_20_percent += 1;
+            } else if percent_change >= 20.0 {
+                histogram.above_20_percent += 1;
+            }
+        }
+        histogram
+    }
+
+    fn to_html_table(&self) -> String {
+        format!(
+            "<table>
+                <thead>
+                    <tr>
+                        <th colspan='2'>Price Change Histogram</th>
+                    <tr>
+                        <th>1-Day Change</th>
+                        <th>Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Below 2%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>2% to 5%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>5% to 10%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>10% to 15%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>15% to 20%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>Above 20%</td>
+                        <td>{}</td>
+                    </tr>
+                </tbody>
+            </table>",
+            self.below_2_percent,
+            self.between_2_and_5_percent,
+            self.between_5_and_10_percent,
+            self.between_10_and_15_percent,
+            self.between_15_and_20_percent,
+            self.above_20_percent
+        )
+    }
+}
+
+#[derive(Debug)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     values: CleanValues,
@@ -501,7 +589,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_log_chart(&clean_data_with_analytics, &output_log_image_path)?;
 
-    // Generate HTML table rows
+    let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
+    let histogram_html_table = histogram.to_html_table();
+
     let table_rows: String = clean_data_with_analytics
         .iter()
         .map(|d| {
@@ -585,6 +675,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
                 <br><br>
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+                <br><br>
+                {histogram_html_table}
                 <br><br>
                 <a href='{output_csv_url}'>Link to CSV data</a>
                 <br><br>
