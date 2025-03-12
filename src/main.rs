@@ -163,18 +163,32 @@ impl PriceChanges {
 
 #[derive(Debug)]
 struct PriceChangesHistogram {
-    below_2_percent: usize,
+    below_negative_20_percent: usize,
+    between_negative_20_and_15_percent: usize,
+    between_negative_15_and_10_percent: usize,
+    between_negative_10_and_5_percent: usize,
+    between_negative_5_and_2_percent: usize,
+    between_netative_2_and_0_percent: usize,
+    between_0_and_2_percent: usize,
     between_2_and_5_percent: usize,
     between_5_and_10_percent: usize,
     between_10_and_15_percent: usize,
     between_15_and_20_percent: usize,
     above_20_percent: usize,
+    total_days: usize,
 }
 
 impl PriceChangesHistogram {
     fn new(data: &[CleanDataWithAnalytics]) -> Self {
         let mut histogram = PriceChangesHistogram {
-            below_2_percent: 0,
+            total_days: 0,
+            below_negative_20_percent: 0,
+            between_negative_20_and_15_percent: 0,
+            between_negative_15_and_10_percent: 0,
+            between_negative_10_and_5_percent: 0,
+            between_negative_5_and_2_percent: 0,
+            between_netative_2_and_0_percent: 0,
+            between_0_and_2_percent: 0,
             between_2_and_5_percent: 0,
             between_5_and_10_percent: 0,
             between_10_and_15_percent: 0,
@@ -183,9 +197,22 @@ impl PriceChangesHistogram {
         };
 
         for d in data {
-            let percent_change = d.price_changes.percent_change_1_day.abs();
-            if percent_change < 2.0 {
-                histogram.below_2_percent += 1;
+            histogram.total_days += 1;
+            let percent_change = d.price_changes.percent_change_1_day;
+            if percent_change < -20.0 {
+                histogram.below_negative_20_percent += 1;
+            } else if (-20.0..-15.0).contains(&percent_change) {
+                histogram.between_negative_20_and_15_percent += 1;
+            } else if (-15.0..-10.0).contains(&percent_change) {
+                histogram.between_negative_15_and_10_percent += 1;
+            } else if (-10.0..-5.0).contains(&percent_change) {
+                histogram.between_negative_10_and_5_percent += 1;
+            } else if (-5.0..-2.0).contains(&percent_change) {
+                histogram.between_negative_5_and_2_percent += 1;
+            } else if (-2.0..0.0).contains(&percent_change) {
+                histogram.between_netative_2_and_0_percent += 1;
+            } else if (0.0..2.0).contains(&percent_change) {
+                histogram.between_0_and_2_percent += 1;
             } else if (2.0..5.0).contains(&percent_change) {
                 histogram.between_2_and_5_percent += 1;
             } else if (5.0..10.0).contains(&percent_change) {
@@ -214,7 +241,31 @@ impl PriceChangesHistogram {
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Below 2%</td>
+                        <td>Below -20%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>-20% to -15%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>-15% to -10%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>-10% to -5%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>-5% to -2%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>-2% to 0%</td>
+                        <td>{}</td>
+                    </tr>
+                    <tr>
+                        <td>0% to 2%</td>
                         <td>{}</td>
                     </tr>
                     <tr>
@@ -239,7 +290,13 @@ impl PriceChangesHistogram {
                     </tr>
                 </tbody>
             </table>",
-            self.below_2_percent,
+            self.below_negative_20_percent,
+            self.between_negative_20_and_15_percent,
+            self.between_negative_15_and_10_percent,
+            self.between_negative_10_and_5_percent,
+            self.between_negative_5_and_2_percent,
+            self.between_netative_2_and_0_percent,
+            self.between_0_and_2_percent,
             self.between_2_and_5_percent,
             self.between_5_and_10_percent,
             self.between_10_and_15_percent,
