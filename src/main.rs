@@ -288,6 +288,10 @@ impl PriceChangesHistogram {
                         <td>Above 20%</td>
                         <td>{}</td>
                     </tr>
+                    <tr class='histogram-footer'>
+                        <td>Total Days</td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>",
             self.below_negative_20_percent,
@@ -301,7 +305,8 @@ impl PriceChangesHistogram {
             self.between_5_and_10_percent,
             self.between_10_and_15_percent,
             self.between_15_and_20_percent,
-            self.above_20_percent
+            self.above_20_percent,
+            self.total_days
         )
     }
 }
@@ -659,7 +664,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <td>{}</td>
                             <td>{}</td>
                             <td>{}</td>
-                            <td class='wmacolumn'>{}</td>
+                            <td class='wma-column'>{}</td>
                             <td>{}</td>
                             <td>{} %</td>
                             <td>{}</td>
@@ -694,12 +699,16 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
-                    th.wmacolumn {{
+                    tr.histogram-footer {{
+                        background-color: whitesmoke;
+                        border: 2px solid black;
+                    }}
+                    th.wma-column {{
                         background-color: whitesmoke;
                         border: 3px solid blue;
                         padding: 7px;
                     }}
-                    td.wmacolumn {{
+                    td.wma-column {{
                         background-color: whitesmoke;
                         border-left: 3px solid blue;
                         border-right: 3px solid blue;
@@ -742,7 +751,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <tr>
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2' class='wmacolumn'>200-Week<br>Moving<br>Average</th>
+                            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
                             <th colspan='2'>Same-Day Swing</th>
                             <th colspan='2'>1-Day Change</th>
                             <th colspan='2'>200-Week Change</th>
