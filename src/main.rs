@@ -1,6 +1,7 @@
 use crate::full_palette::ORANGE;
 use chrono::NaiveDate;
 use csv::{ReaderBuilder, WriterBuilder};
+use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
 use std::error::Error;
 use std::fs::write;
@@ -11,7 +12,7 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
-const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.csv";
+const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
@@ -43,6 +44,18 @@ const OUTPUT_IMAGE_HEIGHT: u32 = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
 const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
+// Helper function to format numbers with commas and decimal places
+fn format_number_with_commas(value: f32, decimal_places: usize) -> String {
+    let integer_part = value.trunc() as i64;
+    let decimal_part = (value.fract() * 10f32.powi(decimal_places as i32)).abs() as i64;
+    format!(
+        "{}.{:0width$}",
+        integer_part.to_formatted_string(&Locale::en),
+        decimal_part,
+        width = decimal_places
+    )
+}
+
 #[derive(Debug, Clone)]
 struct CleanData {
     date: NaiveDate,
@@ -54,7 +67,7 @@ impl CleanData {
         let mut clean_data_vec: Vec<CleanData> = Vec::new();
 
         let mut reader = ReaderBuilder::new()
-            .delimiter(b'|')
+            .delimiter(b'\t')
             .has_headers(true)
             .from_path(path)?;
 
@@ -96,6 +109,8 @@ impl CleanValues {
 
 #[derive(Debug, Clone)]
 struct PriceChanges {
+    dollar_swing_same_day: f32,
+    percent_swing_same_day: f32,
     dollar_change_1_day: f32,
     percent_change_1_day: f32,
     dollar_change_200_week: f32,
@@ -107,6 +122,9 @@ impl PriceChanges {
         let mut price_changes_vec: Vec<PriceChanges> = Vec::new();
         for i in 0..clean_data.len() {
             let price_now = clean_data[i].values.close;
+
+            let dollar_swing_same_day = clean_data[i].values.high - clean_data[i].values.low;
+            let percent_swing_same_day = 100.0 * (dollar_swing_same_day / price_now);
 
             let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
             let price_previous_1_day = clean_data[i_previous_1_day].values.close;
@@ -123,6 +141,8 @@ impl PriceChanges {
                 PriceChanges::get_price_change(price_now, price_previous_200_week, true);
 
             price_changes_vec.push(PriceChanges {
+                dollar_swing_same_day,
+                percent_swing_same_day,
                 dollar_change_1_day,
                 percent_change_1_day,
                 dollar_change_200_week,
@@ -307,10 +327,12 @@ impl CleanDataWithAnalytics {
             "High",
             "Low",
             "Close",
-            "Price_Change_Dollar_Daily",
-            "Price_Change_Percent_Daily",
-            "Price_Change_Dollar_200_Weeks",
-            "Price_Change_Percent_200_Weeks",
+            "Price_Change_Dollar_Same_Day_Swing",
+            "Price_Change_Percent_Same_Day_Swing",
+            "Price_Change_Dollar_1_Day",
+            "Price_Change_Percent_1_Day",
+            "Price_Change_Dollar_200_Week",
+            "Price_Change_Percent_200_Week",
             "200_WMA_Open",
             "200_WMA_High",
             "200_WMA_Low",
@@ -324,6 +346,8 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
+                format!("{:.2}", row.price_changes.dollar_swing_same_day),
+                format!("{:.1}", row.price_changes.percent_swing_same_day),
                 format!("{:.2}", row.price_changes.dollar_change_1_day),
                 format!("{:.2}", row.price_changes.percent_change_1_day),
                 format!("{:.2}", row.price_changes.dollar_change_200_week),
@@ -484,26 +508,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             format!(
                 "<tr>
                     <td>{}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.2}</td>
-                    <td>{:.1} %</td>
-                    <td>{:.2} </td>
-                    <td>{:.1} %</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{}</td>
+                    <td>{} %</td>
+                    <td>{}</td>
+                    <td>{} %</td>
+                    <td>{}</td>
+                    <td>{} %</td>
                 </tr>",
                 d.date,
-                d.values.open,
-                d.values.high,
-                d.values.low,
-                d.values.close,
-                d.moving_averages.close,
-                d.price_changes.dollar_change_1_day,
-                d.price_changes.percent_change_1_day,
-                d.price_changes.dollar_change_200_week,
-                d.price_changes.percent_change_200_week,
+                format_number_with_commas(d.values.open, 2),
+                format_number_with_commas(d.values.high, 2),
+                format_number_with_commas(d.values.low, 2),
+                format_number_with_commas(d.values.close, 2),
+                format_number_with_commas(d.moving_averages.close, 2),
+                format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
+                format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1)
             )
         })
         .collect::<Vec<String>>()
@@ -554,15 +582,18 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <tr>
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2'>200-Week Moving Average</th>
-                            <th colspan='2'>Change in 1 Day</th>
-                            <th colspan='2'>Change in 200 Weeks</th>
+                            <th rowspan='2'>200-Week<br>Moving<br>Average</th>
+                            <th colspan='2'>Same-Day Swing</th>
+                            <th colspan='2'>1-Day Change</th>
+                            <th colspan='2'>200-Week Change</th>
                         </tr>
                         <tr>
                             <th>Open</th>
                             <th>High</th>
                             <th>Low</th>
                             <th>Close</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
                             <th>$ Change</th>
                             <th>% Change</th>
                             <th>$ Change</th>
