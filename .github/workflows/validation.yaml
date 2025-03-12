@@ -209,6 +209,8 @@ jobs:
         with:
           name: output
           path: btracker_output
+      - name: Display HTML content
+        run: head -500 btracker_output/index.html
       - uses: anishathalye/proof-html@v2
         with:
           directory: ./btracker_output
