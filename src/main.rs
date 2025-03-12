@@ -290,7 +290,7 @@ impl PriceChangesHistogram {
                     </tr>
                     <tr class='histogram-footer'>
                         <td>Total Days</td>
-                        <td></td>
+                        <td>{}</td>
                     </tr>
                 </tbody>
             </table>",
