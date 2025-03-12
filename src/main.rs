@@ -512,7 +512,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     <td>{}</td>
                     <td>{}</td>
                     <td>{}</td>
-                    <td>{}</td>
+                    <td class='wmacolumn'>{}</td>
                     <td>{}</td>
                     <td>{} %</td>
                     <td>{}</td>
@@ -547,6 +547,17 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
+                    th.wmacolumn {{
+                        background-color: whitesmoke;
+                        border: 3px solid blue;
+                        padding: 7px;
+                    }}
+                    td.wmacolumn {{
+                        background-color: whitesmoke;
+                        border-left: 3px solid blue;
+                        border-right: 3px solid blue;
+                        font-weight: bold;
+                    }}
                     img {{
                         border: 2px solid black;
                     }}
@@ -582,7 +593,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         <tr>
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2'>200-Week<br>Moving<br>Average</th>
+                            <th rowspan='2' class='wmacolumn'>200-Week<br>Moving<br>Average</th>
                             <th colspan='2'>Same-Day Swing</th>
                             <th colspan='2'>1-Day Change</th>
                             <th colspan='2'>200-Week Change</th>
