@@ -547,18 +547,16 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
-                    .wmacolumn th {{
-                        background-color: lightgrey;
-                        border: 2px solid blue;
-                        padding: 6px;
+                    th.wmacolumn {{
+                        background-color: whitesmoke;
+                        border: 3px solid blue;
+                        padding: 7px;
                     }}
-                    .wmacolumn td {{
-                        background-color: lightgrey;
-                        border-left: 2px solid blue;
-                        border-right: 2px solid blue;
-                        color: blue;
+                    td.wmacolumn {{
+                        background-color: whitesmoke;
+                        border-left: 3px solid blue;
+                        border-right: 3px solid blue;
                         font-weight: bold;
-                        transition: background-color 0.3s ease;
                     }}
                     img {{
                         border: 2px solid black;
