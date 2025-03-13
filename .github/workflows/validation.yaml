@@ -90,6 +90,10 @@ jobs:
         run: |
           sudo chmod u+rw /var/cache/apt/archives
           sudo chmod u+rw /var/lib/apt/lists
+          sudo chmod u+rw /var/cache/apt/archives/partial
+          sudo chmod u+rw /var/cache/apt/archives/lock
+          sudo chmod u+rw /var/lib/apt/lists/partial
+          sudo chmod u+rw /var/lib/apt/lists/lock
       - name: Restore apt package cache
         id: lint-apt-package-cache-restore
         uses: actions/cache/restore@v4
