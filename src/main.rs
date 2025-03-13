@@ -237,14 +237,14 @@ impl PriceChangesHistogram {
         writer.write_record(["-15% to -10%", data.between_negative_15_and_10_percent])?;
         writer.write_record(["-10% to -5%", data.between_negative_10_and_5_percent])?;
         writer.write_record(["-5% to -2%", data.between_negative_5_and_2_percent])?;
-        writer.write_record(["-2% to 0%",data.between_negative_2_and_0_percent])?;
+        writer.write_record(["-2% to 0%", data.between_negative_2_and_0_percent])?;
         writer.write_record(["0% to 2%", data.between_0_and_2_percent])?;
         writer.write_record(["2% to 5%", data.between_2_and_5_percent])?;
         writer.write_record(["5% to 10%", data.between_5_and_10_percent])?;
         writer.write_record(["10% to 15%", data.between_10_and_15_percent])?;
         writer.write_record(["15% to 20%", data.between_15_and_20_percent])?;
         writer.write_record(["Above 20%", data.above_20_percent])?;
-        
+
         writer.flush()?;
         Ok(())
     }
