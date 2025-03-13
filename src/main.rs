@@ -168,7 +168,7 @@ struct PriceChangesHistogram {
     between_negative_15_and_10_percent: u32,
     between_negative_10_and_5_percent: u32,
     between_negative_5_and_2_percent: u32,
-    between_netative_2_and_0_percent: u32,
+    between_negative_2_and_0_percent: u32,
     between_0_and_2_percent: u32,
     between_2_and_5_percent: u32,
     between_5_and_10_percent: u32,
@@ -187,7 +187,7 @@ impl PriceChangesHistogram {
             between_negative_15_and_10_percent: 0,
             between_negative_10_and_5_percent: 0,
             between_negative_5_and_2_percent: 0,
-            between_netative_2_and_0_percent: 0,
+            between_negative_2_and_0_percent: 0,
             between_0_and_2_percent: 0,
             between_2_and_5_percent: 0,
             between_5_and_10_percent: 0,
@@ -210,7 +210,7 @@ impl PriceChangesHistogram {
             } else if (-5.0..-2.0).contains(&percent_change) {
                 histogram.between_negative_5_and_2_percent += 1;
             } else if (-2.0..0.0).contains(&percent_change) {
-                histogram.between_netative_2_and_0_percent += 1;
+                histogram.between_negative_2_and_0_percent += 1;
             } else if (0.0..2.0).contains(&percent_change) {
                 histogram.between_0_and_2_percent += 1;
             } else if (2.0..5.0).contains(&percent_change) {
@@ -320,7 +320,7 @@ impl PriceChangesHistogram {
             self.between_negative_15_and_10_percent,
             self.between_negative_10_and_5_percent,
             self.between_negative_5_and_2_percent,
-            self.between_netative_2_and_0_percent,
+            self.between_negative_2_and_0_percent,
             self.between_0_and_2_percent,
             self.between_2_and_5_percent,
             self.between_5_and_10_percent,
