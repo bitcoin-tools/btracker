@@ -228,7 +228,7 @@ impl PriceChangesHistogram {
         histogram
     }
 
-    fn save_to_csv(data: &[PriceChangesHistogram], path: &Path) -> Result<(), Box<dyn Error>> {
+    fn save_to_csv(data: PriceChangesHistogram, path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
 
         writer.write_record(["One-Day Price Change", "Days"])?;
