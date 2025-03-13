@@ -113,12 +113,12 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            /var/cache/apt/archives/
-            /var/lib/apt/lists/
             !/var/cache/apt/archives/lock
             !/var/cache/apt/archives/partial
             !/var/lib/apt/lists/lock
             !/var/lib/apt/lists/partial
+            /var/cache/apt/archives/
+            /var/lib/apt/lists/
           key: ${{ steps.lint-apt-package-cache-restore.outputs.cache-primary-key }}
 
   test-lint-yaml:
