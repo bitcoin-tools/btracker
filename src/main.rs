@@ -676,7 +676,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
     let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
-    PriceChangesHistogram::save_to_csv(&histogram, &output_histogram_csv_path)?;
+    PriceChangesHistogram::save_to_csv(histogram, &output_histogram_csv_path)?;
 
     let table_rows: String = clean_data_with_analytics
         .iter()
