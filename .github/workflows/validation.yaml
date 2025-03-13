@@ -87,7 +87,7 @@ jobs:
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable      
       - name: Install font dependency
-        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
