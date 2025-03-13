@@ -178,7 +178,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-v1-${{ hashFiles('**/Cargo.lock') }}
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
