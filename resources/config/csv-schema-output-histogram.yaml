@@ -1,0 +1,14 @@
+name: Output Price Analytics Schema
+
+csv:
+  delimiter: ','
+  header: true
+
+presets:
+  my-preset: ./csv-preset.yaml
+
+columns:
+  - name: One-Day Price Change
+    preset: my-preset/output-histogram-label
+  - name: Days
+    preset: my-preset/output-histogram-days
