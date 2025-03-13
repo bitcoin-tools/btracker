@@ -65,6 +65,20 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Ensure proper formatting
@@ -84,6 +98,20 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable      
       - name: Install font dependency
@@ -149,6 +177,20 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
@@ -173,6 +215,16 @@ jobs:
         with:
           name: output
           path: output/
+      - name: Save cargo cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           
   test-output-csv:
     name: Check output CSV
