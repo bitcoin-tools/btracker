@@ -88,19 +88,13 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Change apt directory permissions
         run: |
-          sudo chmod u+rw /var/cache/apt/archives
-          sudo chmod u+rw /var/lib/apt/lists
-          sudo chmod u+rw /var/cache/apt/archives/partial
-          sudo chmod u+rw /var/cache/apt/archives/lock
-          sudo chmod u+rw /var/lib/apt/lists/partial
-          sudo chmod u+rw /var/lib/apt/lists/lock
+          sudo chmod u+rw /var/cache/apt/archives/
       - name: Restore apt package cache
         id: lint-apt-package-cache-restore
         uses: actions/cache/restore@v4
         with:
           path: |
-            /var/cache/apt/archives/
-            /var/lib/apt/lists/
+            /var/cache/apt/archives/*.deb
           key: ${{ runner.os }}-apt-cache-v1
       - name: Install font dependency
         run: |
@@ -112,13 +106,7 @@ jobs:
         id: lint-apt-package-cache-save
         uses: actions/cache/save@v4
         with:
-          path: |
-            !/var/cache/apt/archives/lock
-            !/var/cache/apt/archives/partial
-            !/var/lib/apt/lists/lock
-            !/var/lib/apt/lists/partial
-            /var/cache/apt/archives/
-            /var/lib/apt/lists/
+          path: /var/cache/apt/archives/*.deb
           key: ${{ steps.lint-apt-package-cache-restore.outputs.cache-primary-key }}
 
   test-lint-yaml:
