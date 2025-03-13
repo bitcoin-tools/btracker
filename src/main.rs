@@ -792,6 +792,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 {histogram_html_table}
                 <br><br>
                 <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+                <br><br>
                 <a href='{output_histogram_csv_url}'>Link to Histogram data</a>
                 <br><br>
                 <table>
