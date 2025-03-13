@@ -228,25 +228,7 @@ impl PriceChangesHistogram {
         histogram
     }
 
-    fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
-        let mut writer = WriterBuilder::new().from_path(path)?;
-
-        writer.write_record([
-            "One-Day Price Change",
-            "Days",
-        ])?;
-
-        writer.write_record([
-            "Below -20%",
-            format!("{}", data.below_negative_20_percent),
-        ])?;
-
-        writer.write_record([
-            "-20% to -15%",
-            format!("{}", data.between_negative_20_and_15_percent),
-        ])?;
-
-    fn save_to_csv(data: &[CleanDataWithAnalytics], path: &Path) -> Result<(), Box<dyn Error>> {
+    fn save_to_csv(data: &[PriceChangesHistogram], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
 
         writer.write_record([
@@ -317,12 +299,6 @@ impl PriceChangesHistogram {
         writer.flush()?;
         Ok(())
     }
-
-        
-        writer.flush()?;
-        Ok(())
-    }
-
 
     fn to_html_table(&self) -> String {
         format!(
