@@ -86,6 +86,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+      - name: Change apt directory permissions
+        run: |
+          sudo chmod u+rw /var/cache/apt/archives
+          sudo chmod u+rw /var/lib/apt/lists
       - name: Restore apt package cache
         id: lint-apt-package-cache-restore
         uses: actions/cache/restore@v4
