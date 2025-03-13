@@ -89,6 +89,7 @@ jobs:
       - name: Change apt directory permissions
         run: |
           sudo chmod u+rw /var/cache/apt/archives/
+          sudo chmod u+rw /var/cache/apt/archives/*.deb
       - name: Restore apt package cache
         id: lint-apt-package-cache-restore
         uses: actions/cache/restore@v4
