@@ -86,21 +86,28 @@ jobs:
         uses: actions/checkout@v4
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Cache apt packages
-        uses: actions/cache@v3
+      - name: Restore apt package cache
+        id: lint-apt-package-cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: |
             /var/cache/apt/archives/
             /var/lib/apt/lists/
           key: ${{ runner.os }}-apt-cache-v1
-          restore-keys: |
-            ${{ runner.os }}-apt-
       - name: Install font dependency
         run: |
           sudo apt-get update
           sudo apt-get install -y libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Save apt package cache
+        id: lint-apt-package-cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /var/cache/apt/archives/
+            /var/lib/apt/lists/
+          key: ${{ steps.lint-apt-package-cache-restore.outputs.cache-primary-key }}
 
   test-lint-yaml:
     name: Lint the yaml code
