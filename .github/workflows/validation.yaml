@@ -73,7 +73,7 @@ jobs:
   test-lint-rust:
     name: Lint the Rust code
     needs: [changes]
-    if:  >-
+    if: >-
       ${{
         needs.changes.outputs.ci == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
@@ -85,9 +85,20 @@ jobs:
       - name: Pull the latest code
         uses: actions/checkout@v4
       - name: Load the Rust toolchain
-        uses: dtolnay/rust-toolchain@stable      
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache apt packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            /var/cache/apt/archives/
+            /var/lib/apt/lists/
+          key: ${{ runner.os }}-apt-cache-v1
+          restore-keys: |
+            ${{ runner.os }}-apt-
       - name: Install font dependency
-        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
