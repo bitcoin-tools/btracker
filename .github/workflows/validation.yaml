@@ -74,10 +74,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -107,10 +107,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable      
@@ -186,10 +186,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-
-            ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
             ${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -224,7 +224,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           
   test-output-csv:
     name: Check output CSV
