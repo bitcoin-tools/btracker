@@ -234,11 +234,26 @@ impl PriceChangesHistogram {
 
         writer.write_record(["One-Day Price Change", "Days"])?;
         writer.write_record(["Below -20%", &data.below_negative_20_percent.to_string()])?;
-        writer.write_record(["-20% to -15%", &data.between_negative_20_and_15_percent.to_string()])?;
-        writer.write_record(["-15% to -10%", &data.between_negative_15_and_10_percent.to_string()])?;
-        writer.write_record(["-10% to -5%", &data.between_negative_10_and_5_percent.to_string()])?;
-        writer.write_record(["-5% to -2%", &data.between_negative_5_and_2_percent.to_string()])?;
-        writer.write_record(["-2% to 0%", &data.between_negative_2_and_0_percent.to_string()])?;
+        writer.write_record([
+            "-20% to -15%",
+            &data.between_negative_20_and_15_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-15% to -10%",
+            &data.between_negative_15_and_10_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-10% to -5%",
+            &data.between_negative_10_and_5_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-5% to -2%",
+            &data.between_negative_5_and_2_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-2% to 0%",
+            &data.between_negative_2_and_0_percent.to_string(),
+        ])?;
         writer.write_record(["0% to 2%", &data.between_0_and_2_percent.to_string()])?;
         writer.write_record(["2% to 5%", &data.between_2_and_5_percent.to_string()])?;
         writer.write_record(["5% to 10%", &data.between_5_and_10_percent.to_string()])?;
@@ -661,8 +676,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
 
-    let output_price_analytics_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_PRICE_ANALYTICS_CSV_FILENAME);
-    CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_price_analytics_csv_path)?;
+    let output_price_analytics_csv_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_PRICE_ANALYTICS_CSV_FILENAME);
+    CleanDataWithAnalytics::save_to_csv(
+        &clean_data_with_analytics,
+        &output_price_analytics_csv_path,
+    )?;
 
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_linear_chart(
@@ -714,8 +733,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .join("\n");
 
     // Generate HTML output
-    let output_price_analytics_csv_url: String = format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
-    let output_histogram_csv_url: String = format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_HISTOGRAM_CSV_FILENAME}");
+    let output_price_analytics_csv_url: String =
+        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
+    let output_histogram_csv_url: String =
+        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_HISTOGRAM_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
