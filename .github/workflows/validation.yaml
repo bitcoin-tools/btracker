@@ -227,7 +227,7 @@ jobs:
           key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           
   test-output-csv:
-    name: Check output CSV
+    name: Check output CSVs
     needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
