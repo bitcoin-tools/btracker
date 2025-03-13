@@ -93,7 +93,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: /var/cache/apt/archives/*.deb
-          key: ${{ runner.os }}-apt-cache-v1
+          key: ${{ runner.os }}-apt-cache-v2
       - name: Install font dependency
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libfontconfig1-dev
       - name: Run linter
