@@ -15,7 +15,8 @@ const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
-const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
@@ -660,8 +661,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
 
-    let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
-    CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
+    let output_price_analytics_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_PRICE_ANALYTICS_CSV_FILENAME);
+    CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_price_analytics_csv_path)?;
 
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_linear_chart(
@@ -674,6 +675,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
+    let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
+    PriceChangesHistogram::save_to_csv(&histogram, &output_histogram_csv_path)?;
 
     let table_rows: String = clean_data_with_analytics
         .iter()
