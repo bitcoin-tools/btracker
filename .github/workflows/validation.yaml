@@ -242,7 +242,7 @@ jobs:
         uses: jbzoo/csv-blueprint@master
         with:
           csv: btracker_output/processed_data.csv
-          schema: resources/config/csv-schema-output.yaml
+          schema: resources/config/csv-schema-output-price-analytics.yaml
 
   test-output-html:
     name: Check output HTML
