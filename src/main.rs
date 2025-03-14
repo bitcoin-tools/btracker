@@ -243,7 +243,7 @@ impl PriceChangesHistogram {
             &data.between_negative_15_and_10_percent.to_string(),
         ])?;
         writer.write_record([
-            "-10% to -5%",
+            "-10% to -5",
             &data.between_negative_10_and_5_percent.to_string(),
         ])?;
         writer.write_record([
