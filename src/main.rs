@@ -15,7 +15,8 @@ const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
 const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
-const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
@@ -168,7 +169,7 @@ struct PriceChangesHistogram {
     between_negative_15_and_10_percent: u32,
     between_negative_10_and_5_percent: u32,
     between_negative_5_and_2_percent: u32,
-    between_netative_2_and_0_percent: u32,
+    between_negative_2_and_0_percent: u32,
     between_0_and_2_percent: u32,
     between_2_and_5_percent: u32,
     between_5_and_10_percent: u32,
@@ -187,7 +188,7 @@ impl PriceChangesHistogram {
             between_negative_15_and_10_percent: 0,
             between_negative_10_and_5_percent: 0,
             between_negative_5_and_2_percent: 0,
-            between_netative_2_and_0_percent: 0,
+            between_negative_2_and_0_percent: 0,
             between_0_and_2_percent: 0,
             between_2_and_5_percent: 0,
             between_5_and_10_percent: 0,
@@ -210,7 +211,7 @@ impl PriceChangesHistogram {
             } else if (-5.0..-2.0).contains(&percent_change) {
                 histogram.between_negative_5_and_2_percent += 1;
             } else if (-2.0..0.0).contains(&percent_change) {
-                histogram.between_netative_2_and_0_percent += 1;
+                histogram.between_negative_2_and_0_percent += 1;
             } else if (0.0..2.0).contains(&percent_change) {
                 histogram.between_0_and_2_percent += 1;
             } else if (2.0..5.0).contains(&percent_change) {
@@ -226,6 +227,42 @@ impl PriceChangesHistogram {
             }
         }
         histogram
+    }
+
+    fn save_to_csv(data: PriceChangesHistogram, path: &Path) -> Result<(), Box<dyn Error>> {
+        let mut writer = WriterBuilder::new().from_path(path)?;
+
+        writer.write_record(["One-Day Price Change", "Days"])?;
+        writer.write_record(["Below -20%", &data.below_negative_20_percent.to_string()])?;
+        writer.write_record([
+            "-20% to -15%",
+            &data.between_negative_20_and_15_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-15% to -10%",
+            &data.between_negative_15_and_10_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-10% to -5%",
+            &data.between_negative_10_and_5_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-5% to -2%",
+            &data.between_negative_5_and_2_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-2% to 0%",
+            &data.between_negative_2_and_0_percent.to_string(),
+        ])?;
+        writer.write_record(["0% to 2%", &data.between_0_and_2_percent.to_string()])?;
+        writer.write_record(["2% to 5%", &data.between_2_and_5_percent.to_string()])?;
+        writer.write_record(["5% to 10%", &data.between_5_and_10_percent.to_string()])?;
+        writer.write_record(["10% to 15%", &data.between_10_and_15_percent.to_string()])?;
+        writer.write_record(["15% to 20%", &data.between_15_and_20_percent.to_string()])?;
+        writer.write_record(["Above 20%", &data.above_20_percent.to_string()])?;
+
+        writer.flush()?;
+        Ok(())
     }
 
     fn to_html_table(&self) -> String {
@@ -299,7 +336,7 @@ impl PriceChangesHistogram {
             self.between_negative_15_and_10_percent,
             self.between_negative_10_and_5_percent,
             self.between_negative_5_and_2_percent,
-            self.between_netative_2_and_0_percent,
+            self.between_negative_2_and_0_percent,
             self.between_0_and_2_percent,
             self.between_2_and_5_percent,
             self.between_5_and_10_percent,
@@ -639,8 +676,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
 
-    let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
-    CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
+    let output_price_analytics_csv_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_PRICE_ANALYTICS_CSV_FILENAME);
+    CleanDataWithAnalytics::save_to_csv(
+        &clean_data_with_analytics,
+        &output_price_analytics_csv_path,
+    )?;
 
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_linear_chart(
@@ -653,6 +694,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
+    let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
+    PriceChangesHistogram::save_to_csv(histogram, &output_histogram_csv_path)?;
 
     let table_rows: String = clean_data_with_analytics
         .iter()
@@ -690,7 +733,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .join("\n");
 
     // Generate HTML output
-    let output_csv_url: String = format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_CSV_FILENAME}");
+    let output_price_analytics_csv_url: String =
+        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
+    let output_histogram_csv_url: String =
+        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_HISTOGRAM_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
@@ -745,7 +791,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <br><br>
                 {histogram_html_table}
                 <br><br>
-                <a href='{output_csv_url}'>Link to CSV data</a>
+                <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+                <br><br>
+                <a href='{output_histogram_csv_url}'>Link to Histogram data</a>
                 <br><br>
                 <table>
                     <thead>

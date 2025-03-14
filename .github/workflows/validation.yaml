@@ -227,7 +227,7 @@ jobs:
           key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
           
   test-output-csv:
-    name: Check output CSV
+    name: Check output CSVs
     needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
@@ -238,11 +238,16 @@ jobs:
         with:
           name: output
           path: btracker_output
-      - name: CSV Blueprint
+      - name: CSV Blueprint for price analytics
         uses: jbzoo/csv-blueprint@master
         with:
           csv: btracker_output/processed_data.csv
-          schema: resources/config/csv-schema-output.yaml
+          schema: resources/config/csv-schema-output-price-analytics.yaml
+      - name: CSV Blueprint for histogram
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: btracker_output/histogram.csv
+          schema: resources/config/csv-schema-output-histogram.yaml
 
   test-output-html:
     name: Check output HTML
