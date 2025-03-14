@@ -177,6 +177,8 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Calculate a hash of Cargo.lock
+        run: sha256sum Cargo.lock | tee cargo_lock_before.sha256
       - name: Restore cargo cache
         uses: actions/cache/restore@v4
         with:
@@ -225,6 +227,14 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Check if Cargo.lock changed
+        run: |
+          sha256sum Cargo.lock | tee cargo_lock_after.sha256
+          if ! cmp -s cargo_lock_before.sha256 cargo_lock_after.sha256; then
+            echo "Cargo.lock has changed!"
+            exit 1
+          fi
+          rm cargo_lock_before.sha256 cargo_lock_after.sha256
           
   test-output-csv:
     name: Check output CSVs
