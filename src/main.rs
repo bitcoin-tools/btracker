@@ -164,19 +164,19 @@ impl PriceChanges {
 
 #[derive(Debug)]
 struct PriceChangesHistogram {
-    below_negative_20_percent: u32,
-    between_negative_20_and_15_percent: u32,
-    between_negative_15_and_10_percent: u32,
-    between_negative_10_and_5_percent: u32,
-    between_negative_5_and_2_percent: u32,
-    between_negative_2_and_0_percent: u32,
-    between_0_and_2_percent: u32,
-    between_2_and_5_percent: u32,
-    between_5_and_10_percent: u32,
-    between_10_and_15_percent: u32,
-    between_15_and_20_percent: u32,
-    above_20_percent: u32,
-    total_days: u32,
+    below_negative_20_percent: usize,
+    between_negative_20_and_15_percent: usize,
+    between_negative_15_and_10_percent: usize,
+    between_negative_10_and_5_percent: usize,
+    between_negative_5_and_2_percent: usize,
+    between_negative_2_and_0_percent: usize,
+    between_0_and_2_percent: usize,
+    between_2_and_5_percent: usize,
+    between_5_and_10_percent: usize,
+    between_10_and_15_percent: usize,
+    between_15_and_20_percent: usize,
+    above_20_percent: usize,
+    total_days: usize,
 }
 
 impl PriceChangesHistogram {
@@ -226,6 +226,11 @@ impl PriceChangesHistogram {
                 histogram.above_20_percent += 1;
             }
         }
+        assert_eq!(
+            data.len(),
+            histogram.total_days,
+            "The clean data length does not match the histogram total days"
+        );
         histogram
     }
 
