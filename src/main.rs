@@ -391,11 +391,7 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
-            let data_iter = data
-                .iter()
-                .rev()
-                .skip_while(|d| d.date.year() != current_year);
-            for d in data_iter {
+            for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
                 current_year_low = f32::min(current_year_low, d.values.low);
             }
