@@ -415,13 +415,24 @@ impl YearlySummary {
 
         writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
 
-        data.iter().try_for_each(|row| {
+        data.iter().try_for_each(|current_year_summary| {
+            let currrent_year_open = match current_year_summary.open {
+                Some(value) => format!("{:.2}", value),
+                None => "".to_string(),
+            };
+            let currrent_year_high = format!("{:.2}", current_year_summary.high);
+            let currrent_year_low = format!("{:.2}", current_year_summary.low);
+            let currrent_year_close = match current_year_summary.close {
+                Some(value) => format!("{:.2}", value),
+                None => "TBD".to_string(),
+            };
+
             writer.write_record(&[
-                row.year.to_string(),
-                format!("{:.2}", row.open),
-                format!("{:.2}", row.high),
-                format!("{:.2}", row.low),
-                format!("{:.2}", row.close),
+                current_year_summary.year.to_string(),
+                currrent_year_open,
+                currrent_year_high,
+                currrent_year_low,
+                currrent_year_close,
             ])
         })?;
 
@@ -432,7 +443,18 @@ impl YearlySummary {
     fn to_html_table(yearly_summary: &[YearlySummary]) -> String {
         let rows: String = yearly_summary
             .iter()
-            .map(|summary| {
+            .map(|current_year_summary| {
+                let current_year_open = match current_year_summary.open {
+                    Some(value) => format_number_with_commas(value, 2),
+                    None => "".to_string(),
+                };
+                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
+                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
+                let current_year_close = match current_year_summary.close {
+                    Some(value) => format_number_with_commas(value, 2),
+                    None => "TBD".to_string(),
+                };
+
                 format!(
                     "<tr>
                         <td>{}</td>
@@ -441,11 +463,11 @@ impl YearlySummary {
                         <td>{}</td>
                         <td>{}</td>
                     </tr>",
-                    summary.year,
-                    format_number_with_commas(summary.open, 2),
-                    format_number_with_commas(summary.high, 2),
-                    format_number_with_commas(summary.low, 2),
-                    format_number_with_commas(summary.close, 2)
+                    current_year_summary.year,
+                    current_year_open,
+                    current_year_high,
+                    current_year_low,
+                    current_year_close
                 )
             })
             .collect::<Vec<String>>()
