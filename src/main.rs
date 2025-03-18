@@ -424,7 +424,7 @@ impl YearlySummary {
             let currrent_year_low = format!("{:.2}", current_year_summary.low);
             let currrent_year_close = match current_year_summary.close {
                 Some(value) => format!("{:.2}", value),
-                None => "TBD".to_string(),
+                None => "".to_string(),
             };
 
             writer.write_record(&[
