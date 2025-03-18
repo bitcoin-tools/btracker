@@ -889,8 +889,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Generate HTML output
     let output_price_analytics_csv_url: String =
         format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
-    let output_histogram_csv_url: String =
-        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_HISTOGRAM_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
@@ -948,8 +946,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 {histogram_html_table}
                 <br><br>
                 <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
-                <br><br>
-                <a href='{output_histogram_csv_url}'>Link to Histogram data</a>
                 <br><br>
                 <table>
                     <thead>
