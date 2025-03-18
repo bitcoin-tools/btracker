@@ -253,6 +253,11 @@ jobs:
         with:
           csv: btracker_output/processed_data.csv
           schema: resources/config/csv-schema-output-price-analytics.yaml
+      - name: CSV Blueprint for yearly summary
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: btracker_output/yearly_summary.csv
+          schema: resources/config/csv-schema-output-yearly-summary.yaml
       - name: CSV Blueprint for histogram
         uses: jbzoo/csv-blueprint@master
         with:
