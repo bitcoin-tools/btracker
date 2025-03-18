@@ -1,9 +1,5 @@
 name: Output Yearly Summary Schema
 
-csv:
-  delimiter: ','
-  header: true
-
 presets:
   my-preset: ./csv-preset.yaml
 
@@ -12,9 +8,11 @@ columns:
     preset: my-preset/output-year
   - name: Open
     preset: my-preset/output-price
+    required: false
   - name: High
     preset: my-preset/output-price
   - name: Low
     preset: my-preset/output-price
   - name: Close
     preset: my-preset/output-price
+    required: false
