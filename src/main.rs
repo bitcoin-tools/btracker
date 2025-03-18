@@ -452,7 +452,7 @@ impl YearlySummary {
                 let current_year_low = format_number_with_commas(current_year_summary.low, 2);
                 let current_year_close = match current_year_summary.close {
                     Some(value) => format_number_with_commas(value, 2),
-                    None => "TBD".to_string(),
+                    None => "".to_string(),
                 };
 
                 format!(
