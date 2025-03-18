@@ -8,11 +8,13 @@ columns:
     preset: my-preset/output-year
   - name: Open
     preset: my-preset/output-price
-    required: false
+    rules:
+      not_empty: false
   - name: High
     preset: my-preset/output-price
   - name: Low
     preset: my-preset/output-price
   - name: Close
     preset: my-preset/output-price
-    required: false
+    rules:
+      not_empty: false
