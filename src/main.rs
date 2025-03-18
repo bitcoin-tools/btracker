@@ -1,5 +1,5 @@
 use crate::full_palette::ORANGE;
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 use csv::{ReaderBuilder, WriterBuilder};
 use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
@@ -353,6 +353,110 @@ impl PriceChangesHistogram {
     }
 }
 
+#[derive(Debug, Clone)]
+struct YearlySummary {
+    year: i32,
+    open: f32,
+    high: f32,
+    low: f32,
+    close: f32,
+}
+
+impl YearlySummary {
+    fn new(data: &[CleanDataWithAnalytics]) -> Vec<YearlySummary> {
+        let mut yearly_summaries: Vec<YearlySummary> = Vec::new();
+
+        let ending_year = data[0].date.year();
+        let starting_year = data[data.len() - 1].date.year();
+
+        assert!(
+            ending_year >= starting_year,
+            "The data must be sorted in reverse chronological order"
+        );
+
+        for current_year in starting_year..ending_year+1 {
+            let current_year_first_day =
+                NaiveDate::from_ymd_opt(current_year, 1, 1).expect("Invalid date");
+            let current_year_open: f32 = data
+                .iter()
+                .find(|d| d.date == current_year_first_day)
+                .map_or(0.0, |d| d.values.open);
+
+            let current_year_last_day =
+                NaiveDate::from_ymd_opt(current_year, 12, 31).expect("Invalid date");
+            let current_year_close = data
+                .iter()
+                .find(|d| d.date == current_year_last_day)
+                .map_or(0.0, |d| d.values.close);
+
+            let mut current_year_high: f32 = f32::NEG_INFINITY;
+            let mut current_year_low: f32 = f32::INFINITY;
+            let data_iter = data
+                .iter()
+                .rev()
+                .skip_while(|d| d.date.year() != current_year);
+            for d in data_iter {
+                current_year_high = f32::max(current_year_high, d.values.high);
+                current_year_low = f32::min(current_year_low, d.values.low);
+            }
+
+            yearly_summaries.push(YearlySummary {
+                year: current_year,
+                open: current_year_open,
+                high: current_year_high,
+                low: current_year_low,
+                close: current_year_close,
+            });
+        }
+
+        yearly_summaries
+    }
+
+    fn to_html_table(yearly_summary: &[YearlySummary]) -> String {
+        let rows: String = yearly_summary
+            .iter()
+            .map(|summary| {
+                format!(
+                    "<tr>
+                        <td>{}</td>
+                        <td>{}</td>
+                        <td>{}</td>
+                        <td>{}</td>
+                        <td>{}</td>
+                    </tr>",
+                    summary.year,
+                    format_number_with_commas(summary.open, 2),
+                    format_number_with_commas(summary.high, 2),
+                    format_number_with_commas(summary.low, 2),
+                    format_number_with_commas(summary.close, 2)
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        format!(
+            "<table>
+                <thead>
+                    <tr>
+                        <th colspan='5'>Yearly Summary</th>
+                    </tr>
+                    <tr>
+                        <th>Year</th>
+                        <th>Open</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>Close</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {}
+                </tbody>
+            </table>",
+            rows
+        )
+    }
+}
+
 #[derive(Debug)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
@@ -697,6 +801,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_log_chart(&clean_data_with_analytics, &output_log_image_path)?;
 
+
+    let yearly_summary = YearlySummary::new(&clean_data_with_analytics);
+    let yearly_summary_html_table = YearlySummary::to_html_table(&yearly_summary);
+
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
     let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
@@ -793,6 +901,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
                 <br><br>
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+                <br><br>
+                {yearly_summary_html_table}
                 <br><br>
                 {histogram_html_table}
                 <br><br>
