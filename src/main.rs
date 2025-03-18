@@ -111,24 +111,33 @@ impl CleanValues {
 
 #[derive(Debug, Clone)]
 struct PriceChanges {
+    two_hundred_wma_dollar_change_1_day: f32,
+    two_hundred_wma_percent_change_1_day: f32,
+    dollar_change_200_week: f32,
+    percent_change_200_week: f32,
     dollar_swing_same_day: f32,
     percent_swing_same_day: f32,
     dollar_change_1_day: f32,
     percent_change_1_day: f32,
-    dollar_change_200_week: f32,
-    percent_change_200_week: f32,
 }
 
 impl PriceChanges {
-    fn new(clean_data: &[CleanData]) -> Vec<PriceChanges> {
+    fn new(clean_data: &[CleanData], moving_averages: &[MovingAverages]) -> Vec<PriceChanges> {
         let mut price_changes_vec: Vec<PriceChanges> = Vec::new();
         for i in 0..clean_data.len() {
-            let price_now = clean_data[i].values.close;
+            let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
 
+            let wma_now = moving_averages[i].close;
+            let wma_previous_1_day = moving_averages[i_previous_1_day].close;
+            let two_hundred_wma_dollar_change_1_day =
+                PriceChanges::get_price_change(wma_now, wma_previous_1_day, false);
+            let two_hundred_wma_percent_change_1_day =
+                PriceChanges::get_price_change(wma_now, wma_previous_1_day, true);
+
+            let price_now = clean_data[i].values.close;
             let dollar_swing_same_day = clean_data[i].values.high - clean_data[i].values.low;
             let percent_swing_same_day = 100.0 * (dollar_swing_same_day / price_now);
 
-            let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
             let price_previous_1_day = clean_data[i_previous_1_day].values.close;
             let dollar_change_1_day =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, false);
@@ -143,12 +152,14 @@ impl PriceChanges {
                 PriceChanges::get_price_change(price_now, price_previous_200_week, true);
 
             price_changes_vec.push(PriceChanges {
+                two_hundred_wma_dollar_change_1_day,
+                two_hundred_wma_percent_change_1_day,
+                dollar_change_200_week,
+                percent_change_200_week,
                 dollar_swing_same_day,
                 percent_swing_same_day,
                 dollar_change_1_day,
                 percent_change_1_day,
-                dollar_change_200_week,
-                percent_change_200_week,
             });
         }
         price_changes_vec
@@ -500,22 +511,22 @@ impl YearlySummary {
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     values: CleanValues,
-    price_changes: PriceChanges,
     moving_averages: MovingAverages,
+    price_changes: PriceChanges,
 }
 
 impl CleanDataWithAnalytics {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<CleanDataWithAnalytics> {
-        let price_changes = PriceChanges::new(clean_data);
         let moving_averages = MovingAverages::new(clean_data, moving_average_size);
+        let price_changes = PriceChanges::new(clean_data, &moving_averages);
         clean_data
             .iter()
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 values: row.values.clone(),
-                price_changes: price_changes[i].clone(),
                 moving_averages: moving_averages[i].clone(),
+                price_changes: price_changes[i].clone(),
             })
             .collect()
     }
@@ -662,16 +673,18 @@ impl CleanDataWithAnalytics {
             "High",
             "Low",
             "Close",
-            "Price_Change_Dollar_Same_Day_Swing",
-            "Price_Change_Percent_Same_Day_Swing",
-            "Price_Change_Dollar_1_Day",
-            "Price_Change_Percent_1_Day",
-            "Price_Change_Dollar_200_Week",
-            "Price_Change_Percent_200_Week",
             "200_WMA_Open",
             "200_WMA_High",
             "200_WMA_Low",
             "200_WMA_Close",
+            "200_WMA_Dollar_1_Day",
+            "200_WMA_Percent_1_Day",
+            "Price_Change_Dollar_200_Week",
+            "Price_Change_Percent_200_Week",
+            "Price_Change_Dollar_Same_Day_Swing",
+            "Price_Change_Percent_Same_Day_Swing",
+            "Price_Change_Dollar_1_Day",
+            "Price_Change_Percent_1_Day",
         ])?;
 
         data.iter().try_for_each(|row| {
@@ -681,16 +694,24 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
-                format!("{:.2}", row.price_changes.dollar_swing_same_day),
-                format!("{:.1}", row.price_changes.percent_swing_same_day),
-                format!("{:.2}", row.price_changes.dollar_change_1_day),
-                format!("{:.2}", row.price_changes.percent_change_1_day),
-                format!("{:.2}", row.price_changes.dollar_change_200_week),
-                format!("{:.2}", row.price_changes.percent_change_200_week),
                 format!("{:.2}", row.moving_averages.open),
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
                 format!("{:.2}", row.moving_averages.close),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_dollar_change_1_day
+                ),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_percent_change_1_day
+                ),
+                format!("{:.2}", row.price_changes.dollar_change_200_week),
+                format!("{:.2}", row.price_changes.percent_change_200_week),
+                format!("{:.2}", row.price_changes.dollar_swing_same_day),
+                format!("{:.1}", row.price_changes.percent_swing_same_day),
+                format!("{:.2}", row.price_changes.dollar_change_1_day),
+                format!("{:.2}", row.price_changes.percent_change_1_day),
             ])
         })?;
 
@@ -868,6 +889,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <td>{} %</td>
                             <td>{}</td>
                             <td>{} %</td>
+                            <td>{}</td>
+                            <td>{} %</td>
                         </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
@@ -875,12 +898,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 format_number_with_commas(d.values.low, 2),
                 format_number_with_commas(d.values.close, 2),
                 format_number_with_commas(d.moving_averages.close, 2),
+                format_number_with_commas(d.price_changes.two_hundred_wma_dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.two_hundred_wma_percent_change_1_day, 2),
+                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1),
                 format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
                 format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
                 format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
-                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
-                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
-                format_number_with_commas(d.price_changes.percent_change_200_week, 1)
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1)
             )
         })
         .collect::<Vec<String>>()
@@ -953,15 +978,18 @@ fn main() -> Result<(), Box<dyn Error>> {
                             <th rowspan='2'>Date</th>
                             <th colspan='4'>Daily Prices</th>
                             <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
+                            <th colspan='2'>200-WMA Change</th>
+                            <th colspan='2'>200-Week Change</th>
                             <th colspan='2'>Same-Day Swing</th>
                             <th colspan='2'>1-Day Change</th>
-                            <th colspan='2'>200-Week Change</th>
                         </tr>
                         <tr>
                             <th>Open</th>
                             <th>High</th>
                             <th>Low</th>
                             <th>Close</th>
+                            <th>$ Change</th>
+                            <th>% Change</th>
                             <th>$ Change</th>
                             <th>% Change</th>
                             <th>$ Change</th>
