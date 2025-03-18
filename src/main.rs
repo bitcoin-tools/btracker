@@ -17,6 +17,7 @@ const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
 const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
+const OUTPUT_YEARLY_SUMMARY_CSV_FILENAME: &str = "yearly_summary.csv";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
@@ -374,7 +375,7 @@ impl YearlySummary {
             "The data must be sorted in reverse chronological order"
         );
 
-        for current_year in starting_year..ending_year+1 {
+        for current_year in starting_year..ending_year + 1 {
             let current_year_first_day =
                 NaiveDate::from_ymd_opt(current_year, 1, 1).expect("Invalid date");
             let current_year_open: f32 = data
@@ -391,6 +392,7 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
+
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
                 current_year_low = f32::min(current_year_low, d.values.low);
@@ -406,6 +408,25 @@ impl YearlySummary {
         }
 
         yearly_summaries
+    }
+
+    fn save_to_csv(data: &[YearlySummary], path: &Path) -> Result<(), Box<dyn Error>> {
+        let mut writer = WriterBuilder::new().from_path(path)?;
+
+        writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
+
+        data.iter().try_for_each(|row| {
+            writer.write_record(&[
+                row.year.to_string(),
+                format!("{:.2}", row.open),
+                format!("{:.2}", row.high),
+                format!("{:.2}", row.low),
+                format!("{:.2}", row.close),
+            ])
+        })?;
+
+        writer.flush()?;
+        Ok(())
     }
 
     fn to_html_table(yearly_summary: &[YearlySummary]) -> String {
@@ -797,9 +818,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_log_chart(&clean_data_with_analytics, &output_log_image_path)?;
 
-
     let yearly_summary = YearlySummary::new(&clean_data_with_analytics);
     let yearly_summary_html_table = YearlySummary::to_html_table(&yearly_summary);
+    let output_yearly_summary_csv_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_YEARLY_SUMMARY_CSV_FILENAME);
+    YearlySummary::save_to_csv(&yearly_summary, &output_yearly_summary_csv_path)?;
 
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
