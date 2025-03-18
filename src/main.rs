@@ -698,8 +698,14 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
                 format!("{:.2}", row.moving_averages.close),
-                format!("{:.2}", row.price_changes.two_hundred_week_dollar_change_1_day),
-                format!("{:.2}", row.price_changes.two_hundred_week_percent_change_1_day),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_dollar_change_1_day
+                ),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_percent_change_1_day
+                ),
                 format!("{:.2}", row.price_changes.dollar_change_200_week),
                 format!("{:.2}", row.price_changes.percent_change_200_week),
                 format!("{:.2}", row.price_changes.dollar_swing_same_day),
