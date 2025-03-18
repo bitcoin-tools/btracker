@@ -83,7 +83,7 @@ columns:
       is_trimmed: true
       is_float: true
       precision: 2
-      num_min: 0.00
+      num_greater: 0.00
   - name: output-histogram-label
     description: Bin range
     example: '5% to 10%'
