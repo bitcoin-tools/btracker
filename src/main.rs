@@ -357,10 +357,10 @@ impl PriceChangesHistogram {
 #[derive(Debug, Clone)]
 struct YearlySummary {
     year: i32,
-    open: f32,
+    open: Option<f32>,
     high: f32,
     low: f32,
-    close: f32,
+    close: Option<f32>,
 }
 
 impl YearlySummary {
@@ -378,17 +378,17 @@ impl YearlySummary {
         for current_year in starting_year..ending_year + 1 {
             let current_year_first_day =
                 NaiveDate::from_ymd_opt(current_year, 1, 1).expect("Invalid date");
-            let current_year_open: f32 = data
+            let current_year_open: Option<f32> = data
                 .iter()
                 .find(|d| d.date == current_year_first_day)
-                .map_or(0.0, |d| d.values.open);
+                .map(|d| d.values.open);
 
             let current_year_last_day =
                 NaiveDate::from_ymd_opt(current_year, 12, 31).expect("Invalid date");
             let current_year_close = data
                 .iter()
                 .find(|d| d.date == current_year_last_day)
-                .map_or(0.0, |d| d.values.close);
+                .map(|d| d.values.close);
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
