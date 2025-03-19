@@ -842,6 +842,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
 
+    let input_css_path = Path::new(INPUT_CSS_PATH_STR);
+    let output_css_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSS_FILENAME);
+    std::fs::copy(input_css_path, output_css_path)?;
+
     let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
