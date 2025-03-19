@@ -921,54 +921,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             <head>
                 <title>{CHART_TITLE}</title>
                 <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
-                <style>
-                    tr.histogram-footer {{
-                        background-color: whitesmoke;
-                        border: 2px solid black;
-                        font-weight: bold;
-                    }}
-                    th.wma-column {{
-                        background-color: whitesmoke;
-                        border: 3px solid blue;
-                        padding: 7px;
-                    }}
-                    td.wma-column {{
-                        background-color: whitesmoke;
-                        border-left: 3px solid blue;
-                        border-right: 3px solid blue;
-                        font-weight: bold;
-                    }}
-                    img {{
-                        border: 2px solid black;
-                    }}
-                    table {{
-                        border-color: black;
-                        border-style: solid;
-                        border-width: 1px;
-                    }}
-                    th {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        vertical-align: bottom;
-                        position: sticky;
-                        top: 0;
-                        background-color: whitesmoke;
-                    }}
-                    td {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        text-align: right;
-                    }}
-                    .inline-table {{
-                        display: inline-block;
-                        margin-right: 20px;
-                        vertical-align: top;
-                    }}
-                    .scrollable-table {{
-                        height: 500px;
-                        overflow: auto;
-                    }}
-                </style>
+                <link rel='stylesheet' href='style.css'>
             </head>
             <body>
                 <h1>{CHART_TITLE}</h1>
