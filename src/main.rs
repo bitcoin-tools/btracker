@@ -19,6 +19,7 @@ const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
 const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
 const OUTPUT_YEARLY_SUMMARY_CSV_FILENAME: &str = "yearly_summary.csv";
+const OUTPUT_CSS_FILENAME: &str = "style.css";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
