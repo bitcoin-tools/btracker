@@ -22,7 +22,6 @@ const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
-const OUTPUT_HISTOGRAM_IMAGE_FILENAME: &str = "price_changes_histogram.png";
 
 // Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
@@ -175,7 +174,7 @@ impl PriceChanges {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct PriceChangesHistogram {
     below_negative_20_percent: usize,
     between_negative_20_and_15_percent: usize,
@@ -280,75 +279,6 @@ impl PriceChangesHistogram {
         writer.write_record(["Above 20%", &data.above_20_percent.to_string()])?;
 
         writer.flush()?;
-        Ok(())
-    }
-
-    fn create_chart(&self, output_path: &Path) -> Result<(), Box<dyn Error>> {
-        let root = BitMapBackend::new(&output_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
-        root.fill(&CHART_COLOR_BACKGROUND)?;
-
-        let bins = vec![
-            ("<-20%", self.below_negative_20_percent as f32),
-            (
-                "-20 to -15%",
-                self.between_negative_20_and_15_percent as f32,
-            ),
-            (
-                "-15 to -10%",
-                self.between_negative_15_and_10_percent as f32,
-            ),
-            ("-10 to -5%", self.between_negative_10_and_5_percent as f32),
-            ("-5 to -2%", self.between_negative_5_and_2_percent as f32),
-            ("-2 to 0%", self.between_negative_2_and_0_percent as f32),
-            ("0 to 2%", self.between_0_and_2_percent as f32),
-            ("2 to 5%", self.between_2_and_5_percent as f32),
-            ("5 to 10%", self.between_5_and_10_percent as f32),
-            ("10 to 15%", self.between_10_and_15_percent as f32),
-            ("15 to 20%", self.between_15_and_20_percent as f32),
-            (">20%", self.above_20_percent as f32),
-        ];
-
-        let max_days = bins
-            .iter()
-            .map(|(_, count)| count)
-            .fold(0.0_f32, |a, b| a.max(*b));
-        let y_axis_height = 1.1 * max_days;
-
-        let mut chart = ChartBuilder::on(&root)
-            .caption(
-                "Daily Price Changes Histogram",
-                (CHART_CAPTION_FONT_NAME, CHART_CAPTION_FONT_SIZE)
-                    .into_font()
-                    .color(&CHART_CAPTION_FONT_COLOR),
-            )
-            .margin(10)
-            .x_label_area_size(40)
-            .y_label_area_size(40)
-            .build_cartesian_2d(0..bins.len(), 0.0..y_axis_height)?;
-
-        chart
-            .configure_mesh()
-            .x_label_formatter(&|x| {
-                if *x < bins.len() {
-                    bins[*x].0.to_string()
-                } else {
-                    "".to_string()
-                }
-            })
-            .x_labels(bins.len())
-            .y_label_formatter(&|y| format!("{:.0}", y))
-            .x_desc("Percentage Change")
-            .y_desc("Number of Days")
-            .axis_desc_style(("sans-serif", 15))
-            .draw()?;
-
-        chart.draw_series(
-            Histogram::vertical(&chart)
-                .style(CHART_COLOR_PRICE_SERIES.filled())
-                .data(bins.iter().enumerate().map(|(i, (_, count))| (i, *count))),
-        )?;
-
-        root.present()?;
         Ok(())
     }
 
@@ -940,11 +870,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
     let histogram_html_table = histogram.to_html_table();
     let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
-    PriceChangesHistogram::save_to_csv(histogram.clone(), &output_histogram_csv_path)?;
-
-    let output_histogram_image_path =
-        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_IMAGE_FILENAME);
-    histogram.create_chart(&output_histogram_image_path)?;
+    PriceChangesHistogram::save_to_csv(histogram, &output_histogram_csv_path)?;
 
     let table_rows: String = clean_data_with_analytics
         .iter()
@@ -1034,7 +960,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         text-align: right;
                     }}
                     .scrollable-table {{
-                        height: 300px;
+                        height: 500px;
                         overflow: auto;
                     }}
                 </style>
