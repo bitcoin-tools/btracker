@@ -950,11 +950,18 @@ fn main() -> Result<(), Box<dyn Error>> {
                         border: 1px solid black;
                         padding: 5px;
                         vertical-align: bottom;
+                        position: sticky;
+                        top: 0;
+                        background-color: whitesmoke;
                     }}
                     td {{
                         border: 1px solid black;
                         padding: 5px;
                         text-align: right;
+                    }}
+                    .scrollable-table {{
+                        height: 500px;
+                        overflow: auto;
                     }}
                 </style>
             </head>
@@ -972,36 +979,38 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <br><br>
                 <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
                 <br><br>
-                <table>
-                    <thead>
-                        <tr>
-                            <th rowspan='2'>Date</th>
-                            <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
-                            <th colspan='2'>200-WMA Change</th>
-                            <th colspan='2'>200-Week Change</th>
-                            <th colspan='2'>Same-Day Swing</th>
-                            <th colspan='2'>1-Day Change</th>
-                        </tr>
-                        <tr>
-                            <th>Open</th>
-                            <th>High</th>
-                            <th>Low</th>
-                            <th>Close</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-{table_rows}
-                    </tbody>
-                </table>
+                <div class='scrollable-table'>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan='2'>Date</th>
+                                <th colspan='4'>Daily Prices</th>
+                                <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
+                                <th colspan='2'>200-WMA Change</th>
+                                <th colspan='2'>200-Week Change</th>
+                                <th colspan='2'>Same-Day Swing</th>
+                                <th colspan='2'>1-Day Change</th>
+                            </tr>
+                            <tr>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Close</th>
+                                <th>$ Change</th>
+                                <th>% Change</th>
+                                <th>$ Change</th>
+                                <th>% Change</th>
+                                <th>$ Change</th>
+                                <th>% Change</th>
+                                <th>$ Change</th>
+                                <th>% Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    {table_rows}
+                        </tbody>
+                    </table>
+                </div>
             </body>
         </html>"
     );
