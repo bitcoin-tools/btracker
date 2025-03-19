@@ -13,7 +13,8 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
-const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
+const INPUT_CSS_PATH_STR: &str = "resources/web/favicon.png";
+const INPUT_FAVICON_PATH_STR: &str = "resources/web/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
 const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
