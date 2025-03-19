@@ -284,7 +284,7 @@ impl PriceChangesHistogram {
 
     fn to_html_table(&self) -> String {
         format!(
-            "<table>
+            "<table class='inline-table'>
                 <thead>
                     <tr>
                         <th colspan='2'>Price Change Histogram</th>
@@ -485,7 +485,7 @@ impl YearlySummary {
             .join("\n");
 
         format!(
-            "<table>
+            "<table class='inline-table'>
                 <thead>
                     <tr>
                         <th colspan='5'>Yearly Summary</th>
@@ -959,6 +959,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                         padding: 5px;
                         text-align: right;
                     }}
+                    .inline-table {{
+                        display: inline-block;
+                        margin-right: 20px;
+                        vertical-align: top;
+                    }}
                     .scrollable-table {{
                         height: 500px;
                         overflow: auto;
@@ -974,7 +979,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
                 <br><br>
                 {yearly_summary_html_table}
-                <br><br>
                 {histogram_html_table}
                 <br><br>
                 <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
