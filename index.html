@@ -41,6 +41,11 @@
                         padding: 5px;
                         text-align: right;
                     }
+                    .inline-table {
+                        display: inline-block;
+                        margin-right: 20px;
+                        vertical-align: top;
+                    }
                     .scrollable-table {
                         height: 500px;
                         overflow: auto;
@@ -55,7 +60,7 @@
                 <br><br>
                 <img src='200_week_moving_average_log.png' alt='Log Chart'>
                 <br><br>
-                <table>
+                <table class='inline-table'>
                 <thead>
                     <tr>
                         <th colspan='5'>Yearly Summary</th>
@@ -176,8 +181,7 @@
                     </tr>
                 </tbody>
             </table>
-                <br><br>
-                <table>
+                <table class='inline-table'>
                 <thead>
                     <tr>
                         <th colspan='2'>Price Change Histogram</th>
