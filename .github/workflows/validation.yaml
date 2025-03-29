@@ -216,6 +216,8 @@ jobs:
         with:
           name: btracker
           path: target/debug/btracker
+      - name: Update data
+        run: python3 src/util/update_historical_data.py
       - name: Run binary
         run: cargo run --verbose
       - name: Hash output
