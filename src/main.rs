@@ -540,12 +540,12 @@ impl YearlySummary {
 
                 format!(
                     "<tr>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                    </tr>",
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+          </tr>",
                     current_year_summary.year,
                     current_year_open,
                     current_year_high,
@@ -558,22 +558,22 @@ impl YearlySummary {
 
         format!(
             "<table class='inline-table'>
-                <thead>
-                    <tr>
-                        <th colspan='5'>Yearly Summary</th>
-                    </tr>
-                    <tr>
-                        <th>Year</th>
-                        <th>Open</th>
-                        <th>High</th>
-                        <th>Low</th>
-                        <th>Close</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {}
-                </tbody>
-            </table>",
+        <thead>
+          <tr>
+            <th colspan='5'>Yearly Summary</th>
+          </tr>
+          <tr>
+            <th>Year</th>
+            <th>Open</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Close</th>
+          </tr>
+        </thead>
+        <tbody>
+          {}
+        </tbody>
+    </table>",
             rows
         )
     }
@@ -1013,8 +1013,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     <br><br>
     <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
     <br><br>
-{yearly_summary_html_table}
-{histogram_html_table}
+    {yearly_summary_html_table}
+    {histogram_html_table}
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
     <br><br>
