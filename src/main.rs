@@ -13,11 +13,13 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
-const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
+const INPUT_CSS_PATH_STR: &str = "resources/web/style.css";
+const INPUT_FAVICON_PATH_STR: &str = "resources/web/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
 const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
 const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
 const OUTPUT_YEARLY_SUMMARY_CSV_FILENAME: &str = "yearly_summary.csv";
+const OUTPUT_CSS_FILENAME: &str = "style.css";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
@@ -911,6 +913,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
 
+    let input_css_path = Path::new(INPUT_CSS_PATH_STR);
+    let output_css_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSS_FILENAME);
+    std::fs::copy(input_css_path, output_css_path)?;
+
     let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
@@ -995,54 +1001,7 @@ fn main() -> Result<(), Box<dyn Error>> {
   <head>
     <title>{CHART_TITLE}</title>
     <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
-                <style>
-                    tr.histogram-footer {{
-                        background-color: whitesmoke;
-                        border: 2px solid black;
-                        font-weight: bold;
-                    }}
-                    th.wma-column {{
-                        background-color: whitesmoke;
-                        border: 3px solid blue;
-                        padding: 7px;
-                    }}
-                    td.wma-column {{
-                        background-color: whitesmoke;
-                        border-left: 3px solid blue;
-                        border-right: 3px solid blue;
-                        font-weight: bold;
-                    }}
-                    img {{
-                        border: 2px solid black;
-                    }}
-                    table {{
-                        border-color: black;
-                        border-style: solid;
-                        border-width: 1px;
-                    }}
-                    th {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        vertical-align: bottom;
-                        position: sticky;
-                        top: 0;
-                        background-color: whitesmoke;
-                    }}
-                    td {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        text-align: right;
-                    }}
-                    .inline-table {{
-                        display: inline-block;
-                        margin-right: 20px;
-                        vertical-align: top;
-                    }}
-                    .scrollable-table {{
-                        height: 500px;
-                        overflow: auto;
-                    }}
-                </style>
+    <link rel='stylesheet' href='style.css'>
   </head>
   <body>
     <h1>{CHART_TITLE}</h1>
