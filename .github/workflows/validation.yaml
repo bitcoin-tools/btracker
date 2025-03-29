@@ -216,6 +216,14 @@ jobs:
         with:
           name: btracker
           path: target/debug/btracker
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' 
+      - name: Install Python deps
+        run: pip install pandas yfinance
+      - name: Update data
+        run: python src/util/update_historical_data.py
       - name: Run binary
         run: cargo run --verbose
       - name: Hash output
