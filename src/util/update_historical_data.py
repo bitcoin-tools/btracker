@@ -15,11 +15,8 @@ def get_latest_data(ticker):
     #print('Latest row year:', latest_row_date.year)
     return latest_row_date, latest_row_of_history['Open'], latest_row_of_history['High'], latest_row_of_history['Low'], latest_row_of_history['Close'], latest_row_of_history['Volume']
 
-#script_dir = os.path.dirname(os.path.abspath(__file__))
-#project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
-#csv_file = os.path.join(project_root, 'resources/data/historical_data.csv')
 csv_file = 'resources/data/historical_data.csv'
-df = pd.read_csv(csv_file, delimiter='\t')
+df = pd.read_csv(csv_file, sep='\t')
 
 last_record = df.iloc[0]
 last_month = last_record['Month']
@@ -62,5 +59,5 @@ if last_volume != latest_volume_str:
     df = pd.concat([new_row, df], ignore_index=True)
     #df = df.append(new_row, ignore_index=True)
     
-    # Save updated CSV with pipe delimiter
+    # Save updated CSV with tab delimiter
     df.to_csv(csv_file, sep='\t', index=False)
