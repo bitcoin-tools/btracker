@@ -539,7 +539,7 @@ impl YearlySummary {
                 };
 
                 format!(
-                    "<tr>
+                    "        <tr>
           <td>{}</td>
           <td>{}</td>
           <td>{}</td>
@@ -571,7 +571,7 @@ impl YearlySummary {
         </tr>
       </thead>
       <tbody>
-        {}
+{}
       </tbody>
     </table>",
             rows
