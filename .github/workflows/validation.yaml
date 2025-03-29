@@ -218,6 +218,8 @@ jobs:
           path: target/debug/btracker
       - name: Install Python
         uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' 
       - name: Update data
         run: |
           pip install pandas yfinance
