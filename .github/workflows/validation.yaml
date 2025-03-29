@@ -9,6 +9,10 @@ on:
       - master
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
+
 jobs:
   changes:
     name: Check for file changes
@@ -40,7 +44,7 @@ jobs:
       - name: Pull the latest code
         uses: actions/checkout@v4
       - name: Renovate
-        uses: renovatebot/github-action@v41.0.14
+        uses: renovatebot/github-action@v41.0.17
         with:
           configurationFile: 'resources/config/renovate.json'
           token: ${{ secrets.RENOVATE_TOKEN }}
@@ -65,6 +69,20 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Ensure proper formatting
@@ -84,10 +102,26 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable      
       - name: Install font dependency
-        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
+        run: |
+          sudo apt-get -qq update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libfontconfig1-dev
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
@@ -149,29 +183,70 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Calculate a hash of Cargo.lock
+        run: sha256sum Cargo.lock | tee cargo_lock_before.sha256
+      - name: Restore cargo cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-
+            cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
+            cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Install font dependency
-        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev
+        run: |
+          sudo apt-get -qq update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libfontconfig1-dev
       - name: Check
-        run: cargo check
-      - name: Build
-        run: cargo build && sha256sum target/debug/btracker
-      - name: Run
-        run: cargo run
+        run: cargo check --verbose
+      - name: Build binary
+        run: cargo build --verbose
+      - name: Hash binary
+        run: sha256sum target/debug/btracker
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
           name: btracker
           path: target/debug/btracker
-      - name: Upload output/ artifact
+      - name: Run binary
+        run: cargo run --verbose
+      - name: Hash output
+        run: sha256sum output/*
+      - name: Upload output artifact
         uses: actions/upload-artifact@v4
         with:
           name: output
           path: output/
+      - name: Save cargo cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Check if Cargo.lock changed
+        run: |
+          sha256sum Cargo.lock | tee cargo_lock_after.sha256
+          if ! cmp -s cargo_lock_before.sha256 cargo_lock_after.sha256; then
+            echo "Cargo.lock has changed!"
+            cat Cargo.lock
+            exit 1
+          fi
+          rm cargo_lock_before.sha256 cargo_lock_after.sha256
           
   test-output-csv:
-    name: Check output CSV
+    name: Check output CSVs
     needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
@@ -182,11 +257,21 @@ jobs:
         with:
           name: output
           path: btracker_output
-      - name: CSV Blueprint
+      - name: CSV Blueprint for price analytics
         uses: jbzoo/csv-blueprint@master
         with:
           csv: btracker_output/processed_data.csv
-          schema: resources/config/csv-schema-output.yaml
+          schema: resources/config/csv-schema-output-price-analytics.yaml
+      - name: CSV Blueprint for yearly summary
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: btracker_output/yearly_summary.csv
+          schema: resources/config/csv-schema-output-yearly-summary.yaml
+      - name: CSV Blueprint for histogram
+        uses: jbzoo/csv-blueprint@master
+        with:
+          csv: btracker_output/histogram.csv
+          schema: resources/config/csv-schema-output-histogram.yaml
 
   test-output-html:
     name: Check output HTML
@@ -205,6 +290,12 @@ jobs:
         with:
           name: output
           path: btracker_output
+      - name: Display HTML content
+        run: |
+          echo 'Displaying the first 500 lines of HTML'
+          head -500 btracker_output/index.html
+          echo 'Displaying the last 100 lines of HTML'
+          tail -100 btracker_output/index.html
       - uses: anishathalye/proof-html@v2
         with:
           directory: ./btracker_output

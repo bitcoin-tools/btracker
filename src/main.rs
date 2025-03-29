@@ -1,5 +1,5 @@
 use crate::full_palette::ORANGE;
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 use csv::{ReaderBuilder, WriterBuilder};
 use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
@@ -13,13 +13,18 @@ const MOVING_AVERAGE_DAYS: usize = 1400;
 // Input and output constants
 const REPOSITORY_URL: &str = "https://github.com/bitcoin-tools/btracker";
 const INPUT_DATA_PATH_STR: &str = "./resources/data/historical_data.tsv";
-const INPUT_FAVICON_PATH_STR: &str = "resources/media/favicon.png";
+const INPUT_CSS_PATH_STR: &str = "resources/web/style.css";
+const INPUT_FAVICON_PATH_STR: &str = "resources/web/favicon.png";
 const OUTPUT_DIRECTORY: &str = "output/";
-const OUTPUT_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_PRICE_ANALYTICS_CSV_FILENAME: &str = "processed_data.csv";
+const OUTPUT_HISTOGRAM_CSV_FILENAME: &str = "histogram.csv";
+const OUTPUT_YEARLY_SUMMARY_CSV_FILENAME: &str = "yearly_summary.csv";
+const OUTPUT_CSS_FILENAME: &str = "style.css";
 const OUTPUT_FAVICON_FILENAME: &str = "favicon.png";
 const OUTPUT_HTML_FILENAME: &str = "index.html";
 const OUTPUT_LINEAR_IMAGE_FILENAME: &str = "200_week_moving_average_linear.png";
 const OUTPUT_LOG_IMAGE_FILENAME: &str = "200_week_moving_average_log.png";
+const OUTPUT_HISTOGRAM_IMAGE_FILENAME: &str = "price_changes_histogram.png";
 
 // Chart colors and fonts
 const CHART_COLOR_BACKGROUND: RGBColor = WHITE;
@@ -109,19 +114,33 @@ impl CleanValues {
 
 #[derive(Debug, Clone)]
 struct PriceChanges {
-    dollar_change_1_day: f32,
-    percent_change_1_day: f32,
+    two_hundred_wma_dollar_change_1_day: f32,
+    two_hundred_wma_percent_change_1_day: f32,
     dollar_change_200_week: f32,
     percent_change_200_week: f32,
+    dollar_swing_same_day: f32,
+    percent_swing_same_day: f32,
+    dollar_change_1_day: f32,
+    percent_change_1_day: f32,
 }
 
 impl PriceChanges {
-    fn new(clean_data: &[CleanData]) -> Vec<PriceChanges> {
+    fn new(clean_data: &[CleanData], moving_averages: &[MovingAverages]) -> Vec<PriceChanges> {
         let mut price_changes_vec: Vec<PriceChanges> = Vec::new();
         for i in 0..clean_data.len() {
-            let price_now = clean_data[i].values.close;
-
             let i_previous_1_day = usize::min(i + 1, clean_data.len() - 1);
+
+            let wma_now = moving_averages[i].close;
+            let wma_previous_1_day = moving_averages[i_previous_1_day].close;
+            let two_hundred_wma_dollar_change_1_day =
+                PriceChanges::get_price_change(wma_now, wma_previous_1_day, false);
+            let two_hundred_wma_percent_change_1_day =
+                PriceChanges::get_price_change(wma_now, wma_previous_1_day, true);
+
+            let price_now = clean_data[i].values.close;
+            let dollar_swing_same_day = clean_data[i].values.high - clean_data[i].values.low;
+            let percent_swing_same_day = 100.0 * (dollar_swing_same_day / price_now);
+
             let price_previous_1_day = clean_data[i_previous_1_day].values.close;
             let dollar_change_1_day =
                 PriceChanges::get_price_change(price_now, price_previous_1_day, false);
@@ -136,10 +155,14 @@ impl PriceChanges {
                 PriceChanges::get_price_change(price_now, price_previous_200_week, true);
 
             price_changes_vec.push(PriceChanges {
-                dollar_change_1_day,
-                percent_change_1_day,
+                two_hundred_wma_dollar_change_1_day,
+                two_hundred_wma_percent_change_1_day,
                 dollar_change_200_week,
                 percent_change_200_week,
+                dollar_swing_same_day,
+                percent_swing_same_day,
+                dollar_change_1_day,
+                percent_change_1_day,
             });
         }
         price_changes_vec
@@ -154,26 +177,428 @@ impl PriceChanges {
     }
 }
 
+#[derive(Debug, Clone)]
+struct PriceChangesHistogram {
+    below_negative_20_percent: usize,
+    between_negative_20_and_15_percent: usize,
+    between_negative_15_and_10_percent: usize,
+    between_negative_10_and_5_percent: usize,
+    between_negative_5_and_2_percent: usize,
+    between_negative_2_and_0_percent: usize,
+    between_0_and_2_percent: usize,
+    between_2_and_5_percent: usize,
+    between_5_and_10_percent: usize,
+    between_10_and_15_percent: usize,
+    between_15_and_20_percent: usize,
+    above_20_percent: usize,
+    total_days: usize,
+}
+
+impl PriceChangesHistogram {
+    fn new(data: &[CleanDataWithAnalytics]) -> Self {
+        let mut histogram = PriceChangesHistogram {
+            total_days: 0,
+            below_negative_20_percent: 0,
+            between_negative_20_and_15_percent: 0,
+            between_negative_15_and_10_percent: 0,
+            between_negative_10_and_5_percent: 0,
+            between_negative_5_and_2_percent: 0,
+            between_negative_2_and_0_percent: 0,
+            between_0_and_2_percent: 0,
+            between_2_and_5_percent: 0,
+            between_5_and_10_percent: 0,
+            between_10_and_15_percent: 0,
+            between_15_and_20_percent: 0,
+            above_20_percent: 0,
+        };
+
+        for d in data {
+            histogram.total_days += 1;
+            let percent_change = d.price_changes.percent_change_1_day;
+            if percent_change < -20.0 {
+                histogram.below_negative_20_percent += 1;
+            } else if (-20.0..-15.0).contains(&percent_change) {
+                histogram.between_negative_20_and_15_percent += 1;
+            } else if (-15.0..-10.0).contains(&percent_change) {
+                histogram.between_negative_15_and_10_percent += 1;
+            } else if (-10.0..-5.0).contains(&percent_change) {
+                histogram.between_negative_10_and_5_percent += 1;
+            } else if (-5.0..-2.0).contains(&percent_change) {
+                histogram.between_negative_5_and_2_percent += 1;
+            } else if (-2.0..0.0).contains(&percent_change) {
+                histogram.between_negative_2_and_0_percent += 1;
+            } else if (0.0..2.0).contains(&percent_change) {
+                histogram.between_0_and_2_percent += 1;
+            } else if (2.0..5.0).contains(&percent_change) {
+                histogram.between_2_and_5_percent += 1;
+            } else if (5.0..10.0).contains(&percent_change) {
+                histogram.between_5_and_10_percent += 1;
+            } else if (10.0..15.0).contains(&percent_change) {
+                histogram.between_10_and_15_percent += 1;
+            } else if (15.0..20.0).contains(&percent_change) {
+                histogram.between_15_and_20_percent += 1;
+            } else if percent_change >= 20.0 {
+                histogram.above_20_percent += 1;
+            }
+        }
+        assert_eq!(
+            data.len(),
+            histogram.total_days,
+            "The clean data length does not match the histogram total days"
+        );
+        histogram
+    }
+
+    fn save_to_csv(data: PriceChangesHistogram, path: &Path) -> Result<(), Box<dyn Error>> {
+        let mut writer = WriterBuilder::new().from_path(path)?;
+
+        writer.write_record(["One-Day Price Change", "Days"])?;
+        writer.write_record(["Below -20%", &data.below_negative_20_percent.to_string()])?;
+        writer.write_record([
+            "-20% to -15%",
+            &data.between_negative_20_and_15_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-15% to -10%",
+            &data.between_negative_15_and_10_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-10% to -5%",
+            &data.between_negative_10_and_5_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-5% to -2%",
+            &data.between_negative_5_and_2_percent.to_string(),
+        ])?;
+        writer.write_record([
+            "-2% to 0%",
+            &data.between_negative_2_and_0_percent.to_string(),
+        ])?;
+        writer.write_record(["0% to 2%", &data.between_0_and_2_percent.to_string()])?;
+        writer.write_record(["2% to 5%", &data.between_2_and_5_percent.to_string()])?;
+        writer.write_record(["5% to 10%", &data.between_5_and_10_percent.to_string()])?;
+        writer.write_record(["10% to 15%", &data.between_10_and_15_percent.to_string()])?;
+        writer.write_record(["15% to 20%", &data.between_15_and_20_percent.to_string()])?;
+        writer.write_record(["Above 20%", &data.above_20_percent.to_string()])?;
+
+        writer.flush()?;
+        Ok(())
+    }
+
+    fn create_chart(&self, output_path: &Path) -> Result<(), Box<dyn Error>> {
+        let root = BitMapBackend::new(&output_path, OUTPUT_IMAGES_DIMENSIONS).into_drawing_area();
+        root.fill(&CHART_COLOR_BACKGROUND)?;
+
+        let bins = vec![
+            ("<-20%", self.below_negative_20_percent as f32),
+            (
+                "-20 to -15%",
+                self.between_negative_20_and_15_percent as f32,
+            ),
+            (
+                "-15 to -10%",
+                self.between_negative_15_and_10_percent as f32,
+            ),
+            ("-10 to -5%", self.between_negative_10_and_5_percent as f32),
+            ("-5 to -2%", self.between_negative_5_and_2_percent as f32),
+            ("-2 to 0%", self.between_negative_2_and_0_percent as f32),
+            ("0 to 2%", self.between_0_and_2_percent as f32),
+            ("2 to 5%", self.between_2_and_5_percent as f32),
+            ("5 to 10%", self.between_5_and_10_percent as f32),
+            ("10 to 15%", self.between_10_and_15_percent as f32),
+            ("15 to 20%", self.between_15_and_20_percent as f32),
+            (">20%", self.above_20_percent as f32),
+        ];
+
+        let max_days = bins
+            .iter()
+            .map(|(_, count)| count)
+            .fold(0.0_f32, |a, b| a.max(*b));
+        let y_axis_height = 1.1 * max_days;
+
+        let mut chart = ChartBuilder::on(&root)
+            .caption(
+                "Daily Price Changes Histogram",
+                (CHART_CAPTION_FONT_NAME, CHART_CAPTION_FONT_SIZE)
+                    .into_font()
+                    .color(&CHART_CAPTION_FONT_COLOR),
+            )
+            .margin(10)
+            .x_label_area_size(40)
+            .y_label_area_size(40)
+            .build_cartesian_2d(0..bins.len(), 0.0..y_axis_height)?;
+
+        chart
+            .configure_mesh()
+            .x_label_formatter(&|x| {
+                if *x < bins.len() {
+                    bins[*x].0.to_string()
+                } else {
+                    "".to_string()
+                }
+            })
+            .x_labels(bins.len())
+            .y_label_formatter(&|y| format!("{:.0}", y))
+            .x_desc("Percentage Change")
+            .y_desc("Number of Days")
+            .axis_desc_style(("sans-serif", 15))
+            .draw()?;
+
+        chart.draw_series(
+            Histogram::vertical(&chart)
+                .style(CHART_COLOR_PRICE_SERIES.filled())
+                .data(bins.iter().enumerate().map(|(i, (_, count))| (i, *count))),
+        )?;
+
+        root.present()?;
+        Ok(())
+    }
+
+    fn to_html_table(&self) -> String {
+        format!(
+            "    <table class='inline-table'>
+      <thead>
+        <tr>
+          <th colspan='2'>Price Change Histogram</th>
+        <tr>
+          <th>1-Day Change</th>
+          <th>Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Below -20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-20% to -15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-15% to -10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-10% to -5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-5% to -2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-2% to 0%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>0% to 2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>2% to 5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>5% to 10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>10% to 15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>15% to 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>Above 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr class='histogram-footer'>
+          <td>Total Days</td>
+          <td>{}</td>
+        </tr>
+      </tbody>
+    </table>",
+            self.below_negative_20_percent,
+            self.between_negative_20_and_15_percent,
+            self.between_negative_15_and_10_percent,
+            self.between_negative_10_and_5_percent,
+            self.between_negative_5_and_2_percent,
+            self.between_negative_2_and_0_percent,
+            self.between_0_and_2_percent,
+            self.between_2_and_5_percent,
+            self.between_5_and_10_percent,
+            self.between_10_and_15_percent,
+            self.between_15_and_20_percent,
+            self.above_20_percent,
+            self.total_days
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
+struct YearlySummary {
+    year: i32,
+    open: Option<f32>,
+    high: f32,
+    low: f32,
+    close: Option<f32>,
+}
+
+impl YearlySummary {
+    fn new(data: &[CleanDataWithAnalytics]) -> Vec<YearlySummary> {
+        let mut yearly_summaries: Vec<YearlySummary> = Vec::new();
+
+        let ending_year = data[0].date.year();
+        let starting_year = data[data.len() - 1].date.year();
+
+        assert!(
+            ending_year >= starting_year,
+            "The data must be sorted in reverse chronological order"
+        );
+
+        for current_year in starting_year..ending_year + 1 {
+            let current_year_first_day =
+                NaiveDate::from_ymd_opt(current_year, 1, 1).expect("Invalid date");
+            let current_year_open: Option<f32> = data
+                .iter()
+                .find(|d| d.date == current_year_first_day)
+                .map(|d| d.values.open);
+
+            let current_year_last_day =
+                NaiveDate::from_ymd_opt(current_year, 12, 31).expect("Invalid date");
+            let current_year_close = data
+                .iter()
+                .find(|d| d.date == current_year_last_day)
+                .map(|d| d.values.close);
+
+            let mut current_year_high: f32 = f32::NEG_INFINITY;
+            let mut current_year_low: f32 = f32::INFINITY;
+
+            for d in data.iter().filter(|d| d.date.year() == current_year) {
+                current_year_high = f32::max(current_year_high, d.values.high);
+                current_year_low = f32::min(current_year_low, d.values.low);
+            }
+
+            yearly_summaries.push(YearlySummary {
+                year: current_year,
+                open: current_year_open,
+                high: current_year_high,
+                low: current_year_low,
+                close: current_year_close,
+            });
+        }
+
+        yearly_summaries
+    }
+
+    fn save_to_csv(data: &[YearlySummary], path: &Path) -> Result<(), Box<dyn Error>> {
+        let mut writer = WriterBuilder::new().from_path(path)?;
+
+        writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
+
+        data.iter().try_for_each(|current_year_summary| {
+            let currrent_year_open = match current_year_summary.open {
+                Some(value) => format!("{:.2}", value),
+                None => "".to_string(),
+            };
+            let currrent_year_high = format!("{:.2}", current_year_summary.high);
+            let currrent_year_low = format!("{:.2}", current_year_summary.low);
+            let currrent_year_close = match current_year_summary.close {
+                Some(value) => format!("{:.2}", value),
+                None => "".to_string(),
+            };
+
+            writer.write_record(&[
+                current_year_summary.year.to_string(),
+                currrent_year_open,
+                currrent_year_high,
+                currrent_year_low,
+                currrent_year_close,
+            ])
+        })?;
+
+        writer.flush()?;
+        Ok(())
+    }
+
+    fn to_html_table(yearly_summary: &[YearlySummary]) -> String {
+        let rows: String = yearly_summary
+            .iter()
+            .map(|current_year_summary| {
+                let current_year_open = match current_year_summary.open {
+                    Some(value) => format_number_with_commas(value, 2),
+                    None => "".to_string(),
+                };
+                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
+                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
+                let current_year_close = match current_year_summary.close {
+                    Some(value) => format_number_with_commas(value, 2),
+                    None => "".to_string(),
+                };
+
+                format!(
+                    "        <tr>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+        </tr>",
+                    current_year_summary.year,
+                    current_year_open,
+                    current_year_high,
+                    current_year_low,
+                    current_year_close
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        format!(
+            "    <table class='inline-table'>
+      <thead>
+        <tr>
+          <th colspan='5'>Yearly Summary</th>
+        </tr>
+        <tr>
+          <th>Year</th>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Close</th>
+        </tr>
+      </thead>
+      <tbody>
+{}
+      </tbody>
+    </table>",
+            rows
+        )
+    }
+}
+
 #[derive(Debug)]
 struct CleanDataWithAnalytics {
     date: NaiveDate,
     values: CleanValues,
-    price_changes: PriceChanges,
     moving_averages: MovingAverages,
+    price_changes: PriceChanges,
 }
 
 impl CleanDataWithAnalytics {
     fn new(clean_data: &[CleanData], moving_average_size: usize) -> Vec<CleanDataWithAnalytics> {
-        let price_changes = PriceChanges::new(clean_data);
         let moving_averages = MovingAverages::new(clean_data, moving_average_size);
+        let price_changes = PriceChanges::new(clean_data, &moving_averages);
         clean_data
             .iter()
             .enumerate()
             .map(|(i, row)| CleanDataWithAnalytics {
                 date: row.date,
                 values: row.values.clone(),
-                price_changes: price_changes[i].clone(),
                 moving_averages: moving_averages[i].clone(),
+                price_changes: price_changes[i].clone(),
             })
             .collect()
     }
@@ -320,14 +745,18 @@ impl CleanDataWithAnalytics {
             "High",
             "Low",
             "Close",
-            "Price_Change_Dollar_Daily",
-            "Price_Change_Percent_Daily",
-            "Price_Change_Dollar_200_Weeks",
-            "Price_Change_Percent_200_Weeks",
             "200_WMA_Open",
             "200_WMA_High",
             "200_WMA_Low",
             "200_WMA_Close",
+            "200_WMA_Dollar_1_Day",
+            "200_WMA_Percent_1_Day",
+            "Price_Change_Dollar_200_Week",
+            "Price_Change_Percent_200_Week",
+            "Price_Change_Dollar_Same_Day_Swing",
+            "Price_Change_Percent_Same_Day_Swing",
+            "Price_Change_Dollar_1_Day",
+            "Price_Change_Percent_1_Day",
         ])?;
 
         data.iter().try_for_each(|row| {
@@ -337,14 +766,24 @@ impl CleanDataWithAnalytics {
                 format!("{:.2}", row.values.high),
                 format!("{:.2}", row.values.low),
                 format!("{:.2}", row.values.close),
-                format!("{:.2}", row.price_changes.dollar_change_1_day),
-                format!("{:.2}", row.price_changes.percent_change_1_day),
-                format!("{:.2}", row.price_changes.dollar_change_200_week),
-                format!("{:.2}", row.price_changes.percent_change_200_week),
                 format!("{:.2}", row.moving_averages.open),
                 format!("{:.2}", row.moving_averages.high),
                 format!("{:.2}", row.moving_averages.low),
                 format!("{:.2}", row.moving_averages.close),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_dollar_change_1_day
+                ),
+                format!(
+                    "{:.2}",
+                    row.price_changes.two_hundred_wma_percent_change_1_day
+                ),
+                format!("{:.2}", row.price_changes.dollar_change_200_week),
+                format!("{:.2}", row.price_changes.percent_change_200_week),
+                format!("{:.2}", row.price_changes.dollar_swing_same_day),
+                format!("{:.1}", row.price_changes.percent_swing_same_day),
+                format!("{:.2}", row.price_changes.dollar_change_1_day),
+                format!("{:.2}", row.price_changes.percent_change_1_day),
             ])
         })?;
 
@@ -474,12 +913,20 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     std::fs::create_dir_all(OUTPUT_DIRECTORY)?;
 
+    let input_css_path = Path::new(INPUT_CSS_PATH_STR);
+    let output_css_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSS_FILENAME);
+    std::fs::copy(input_css_path, output_css_path)?;
+
     let input_favicon_path = Path::new(INPUT_FAVICON_PATH_STR);
     let output_favicon_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_FAVICON_FILENAME);
     std::fs::copy(input_favicon_path, output_favicon_path)?;
 
-    let output_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_CSV_FILENAME);
-    CleanDataWithAnalytics::save_to_csv(&clean_data_with_analytics, &output_csv_path)?;
+    let output_price_analytics_csv_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_PRICE_ANALYTICS_CSV_FILENAME);
+    CleanDataWithAnalytics::save_to_csv(
+        &clean_data_with_analytics,
+        &output_price_analytics_csv_path,
+    )?;
 
     let output_linear_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LINEAR_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_linear_chart(
@@ -490,104 +937,121 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_log_image_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_LOG_IMAGE_FILENAME);
     CleanDataWithAnalytics::create_log_chart(&clean_data_with_analytics, &output_log_image_path)?;
 
-    // Generate HTML table rows
+    let yearly_summary = YearlySummary::new(&clean_data_with_analytics);
+    let yearly_summary_html_table = YearlySummary::to_html_table(&yearly_summary);
+    let output_yearly_summary_csv_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_YEARLY_SUMMARY_CSV_FILENAME);
+    YearlySummary::save_to_csv(&yearly_summary, &output_yearly_summary_csv_path)?;
+
+    let histogram = PriceChangesHistogram::new(&clean_data_with_analytics);
+    let histogram_html_table = histogram.to_html_table();
+    let output_histogram_csv_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_CSV_FILENAME);
+    PriceChangesHistogram::save_to_csv(histogram.clone(), &output_histogram_csv_path)?;
+
+    let output_histogram_image_path =
+        Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HISTOGRAM_IMAGE_FILENAME);
+    histogram.create_chart(&output_histogram_image_path)?;
+
     let table_rows: String = clean_data_with_analytics
         .iter()
         .map(|d| {
             format!(
-                "<tr>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{}</td>
-                    <td>{} %</td>
-                    <td>{}</td>
-                    <td>{} %</td>
-                </tr>",
+                "          <tr>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td class='wma-column'>{}</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+          </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
                 format_number_with_commas(d.values.high, 2),
                 format_number_with_commas(d.values.low, 2),
                 format_number_with_commas(d.values.close, 2),
                 format_number_with_commas(d.moving_averages.close, 2),
-                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
-                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
+                format_number_with_commas(d.price_changes.two_hundred_wma_dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.two_hundred_wma_percent_change_1_day, 2),
                 format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
-                format_number_with_commas(d.price_changes.percent_change_200_week, 1)
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1),
+                format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
+                format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1)
             )
         })
         .collect::<Vec<String>>()
         .join("\n");
 
     // Generate HTML output
-    let output_csv_url: String = format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_CSV_FILENAME}");
+    let output_price_analytics_csv_url: String =
+        format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
-        <html>
-            <head>
-                <title>{CHART_TITLE}</title>
-                <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
-                <style>
-                    img {{
-                        border: 2px solid black;
-                    }}
-                    table {{
-                        border-color: black;
-                        border-style: solid;
-                        border-width: 1px;
-                    }}
-                    th {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        vertical-align: bottom;
-                    }}
-                    td {{
-                        border: 1px solid black;
-                        padding: 5px;
-                        text-align: right;
-                    }}
-                </style>
-            </head>
-            <body>
-                <h1>{CHART_TITLE}</h1>
-                <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
-                <br><br>
-                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
-                <br><br>
-                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
-                <br><br>
-                <a href='{output_csv_url}'>Link to CSV data</a>
-                <br><br>
-                <table>
-                    <thead>
-                        <tr>
-                            <th rowspan='2'>Date</th>
-                            <th colspan='4'>Daily Prices</th>
-                            <th rowspan='2'>200-Week Moving Average</th>
-                            <th colspan='2'>Change in 1 Day</th>
-                            <th colspan='2'>Change in 200 Weeks</th>
-                        </tr>
-                        <tr>
-                            <th>Open</th>
-                            <th>High</th>
-                            <th>Low</th>
-                            <th>Close</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                            <th>$ Change</th>
-                            <th>% Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {table_rows}
-                    </tbody>
-                </table>
-            </body>
-        </html>"
+<html>
+  <head>
+    <title>{CHART_TITLE}</title>
+    <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
+    <link rel='stylesheet' href='style.css'>
+  </head>
+  <body>
+    <h1>{CHART_TITLE}</h1>
+    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
+    <br><br>
+    <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
+    <br><br>
+    <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+    <br><br>
+    <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
+    <br><br>
+{yearly_summary_html_table}
+{histogram_html_table}
+    <br><br>
+    <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br><br>
+    <div class='scrollable-table'>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan='2'>Date</th>
+            <th colspan='4'>Daily Prices</th>
+            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
+            <th colspan='2'>200-WMA Change</th>
+            <th colspan='2'>200-Week Change</th>
+            <th colspan='2'>Same-Day Swing</th>
+            <th colspan='2'>1-Day Change</th>
+          </tr>
+          <tr>
+            <th>Open</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Close</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+          </tr>
+        </thead>
+        <tbody>
+{table_rows}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>"
     );
     write(output_html_path, html_content)?;
 

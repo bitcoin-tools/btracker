@@ -61,9 +61,19 @@ columns:
     required: true
     rules:
       not_empty: true
+      is_trimmed: true
       is_date: true
       date_format: Y-m-d
       date_min: 2009-01-13
+  - name: output-year
+    description: Year in YYYY format
+    example: '2025'
+    required: true
+    rules:
+      not_empty: true
+      is_trimmed: true
+      is_int: true
+      num_min: 2009
   - name: output-price
     description: Daily price
     example: '1000000.01'
@@ -74,3 +84,20 @@ columns:
       is_float: true
       precision: 2
       num_greater: 0.00
+  - name: output-histogram-label
+    description: Bin range
+    example: '5% to 10%'
+    required: true
+    rules:
+      not_empty: true
+      is_trimmed: true
+      regex: '^(?:Below\s-20%|-?\d+%\sto\s-?\d+%|Above\s20%|Total\sDays)$'
+  - name: output-histogram-days
+    description: Count of days
+    example: '123'
+    required: true
+    rules:
+      not_empty: true
+      is_trimmed: true
+      is_int: true
+      num_min: 0

@@ -1,4 +1,4 @@
-name: Output Schema
+name: Output Price Analytics Schema
 
 csv:
   delimiter: ','
