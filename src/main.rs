@@ -381,7 +381,7 @@ impl PriceChangesHistogram {
           <tr>
             <td>-10% to -5%</td>
             <td>{}</td>
-          <tr>
+          </tr>
           <tr>
             <td>-5% to -2%</td>
             <td>{}</td>
