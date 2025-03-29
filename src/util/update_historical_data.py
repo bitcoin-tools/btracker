@@ -19,7 +19,7 @@ def get_latest_data(ticker):
 #project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
 #csv_file = os.path.join(project_root, 'resources/data/historical_data.csv')
 csv_file = 'resources/data/historical_data.csv'
-df = pd.read_csv(csv_file, delimiter='|')
+df = pd.read_csv(csv_file, delimiter='\t')
 
 last_record = df.iloc[0]
 last_month = last_record['Month']
@@ -63,4 +63,4 @@ if last_volume != latest_volume_str:
     #df = df.append(new_row, ignore_index=True)
     
     # Save updated CSV with pipe delimiter
-    df.to_csv(csv_file, sep='|', index=False)
+    df.to_csv(csv_file, sep='\t', index=False)
