@@ -557,7 +557,7 @@ impl YearlySummary {
             .join("\n");
 
         format!(
-            "<table class='inline-table'>
+            "    <table class='inline-table'>
       <thead>
         <tr>
           <th colspan='5'>Yearly Summary</th>
@@ -1013,8 +1013,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     <br><br>
     <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
     <br><br>
-    {yearly_summary_html_table}
-    {histogram_html_table}
+{yearly_summary_html_table}
+{histogram_html_table}
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
     <br><br>
