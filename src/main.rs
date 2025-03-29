@@ -990,11 +990,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
-        "<!DOCTYPE html>
-        <html>
-            <head>
-                <title>{CHART_TITLE}</title>
-                <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
+"<!DOCTYPE html>
+<html>
+  <head>
+    <title>{CHART_TITLE}</title>
+    <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
                 <style>
                     tr.histogram-footer {{
                         background-color: whitesmoke;
@@ -1043,56 +1043,56 @@ fn main() -> Result<(), Box<dyn Error>> {
                         overflow: auto;
                     }}
                 </style>
-            </head>
-            <body>
-                <h1>{CHART_TITLE}</h1>
-                <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
-                <br><br>
-                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
-                <br><br>
-                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
-                <br><br>
-                <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
-                <br><br>
-                {yearly_summary_html_table}
-                {histogram_html_table}
-                <br><br>
-                <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
-                <br><br>
-                <div class='scrollable-table'>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan='2'>Date</th>
-                                <th colspan='4'>Daily Prices</th>
-                                <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
-                                <th colspan='2'>200-WMA Change</th>
-                                <th colspan='2'>200-Week Change</th>
-                                <th colspan='2'>Same-Day Swing</th>
-                                <th colspan='2'>1-Day Change</th>
-                            </tr>
-                            <tr>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Close</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    {table_rows}
-                        </tbody>
-                    </table>
-                </div>
-            </body>
-        </html>"
+  </head>
+  <body>
+    <h1>{CHART_TITLE}</h1>
+    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
+    <br><br>
+    <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
+    <br><br>
+    <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+    <br><br>
+    <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
+    <br><br>
+{yearly_summary_html_table}
+{histogram_html_table}
+    <br><br>
+    <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br><br>
+    <div class='scrollable-table'>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan='2'>Date</th>
+          <th colspan='4'>Daily Prices</th>
+          <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
+          <th colspan='2'>200-WMA Change</th>
+          <th colspan='2'>200-Week Change</th>
+          <th colspan='2'>Same-Day Swing</th>
+          <th colspan='2'>1-Day Change</th>
+        </tr>
+        <tr>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Close</th>
+          <th>$ Change</th>
+          <th>% Change</th>
+          <th>$ Change</th>
+          <th>% Change</th>
+          <th>$ Change</th>
+          <th>% Change</th>
+          <th>$ Change</th>
+          <th>% Change</th>
+        </tr>
+      </thead>
+      <tbody>
+{table_rows}
+      </tbody>
+    </table>
+    </div>
+  </body>
+</html>"
     );
     write(output_html_path, html_content)?;
 
