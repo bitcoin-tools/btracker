@@ -240,6 +240,7 @@ jobs:
           sha256sum Cargo.lock | tee cargo_lock_after.sha256
           if ! cmp -s cargo_lock_before.sha256 cargo_lock_after.sha256; then
             echo "Cargo.lock has changed!"
+            cat Cargo.lock
             exit 1
           fi
           rm cargo_lock_before.sha256 cargo_lock_after.sha256
