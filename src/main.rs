@@ -996,7 +996,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         format!("{REPOSITORY_URL}/raw/gh-pages/{OUTPUT_PRICE_ANALYTICS_CSV_FILENAME}");
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
-"<!DOCTYPE html>
+        "<!DOCTYPE html>
 <html>
   <head>
     <title>{CHART_TITLE}</title>
