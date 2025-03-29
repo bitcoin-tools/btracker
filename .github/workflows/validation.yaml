@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ gthub.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
 
 jobs:
@@ -290,7 +290,11 @@ jobs:
           name: output
           path: btracker_output
       - name: Display HTML content
-        run: head -500 btracker_output/index.html
+        run: |
+          echo 'Displaying the first 500 lines of HTML'
+          head -500 btracker_output/index.html
+          echo 'Displaying the last 100 lines of HTML'
+          tail -100 btracker_output/index.html
       - uses: anishathalye/proof-html@v2
         with:
           directory: ./btracker_output
