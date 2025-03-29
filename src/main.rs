@@ -540,12 +540,12 @@ impl YearlySummary {
 
                 format!(
                     "<tr>
-            <td>{}</td>
-            <td>{}</td>
-            <td>{}</td>
-            <td>{}</td>
-            <td>{}</td>
-          </tr>",
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+        </tr>",
                     current_year_summary.year,
                     current_year_open,
                     current_year_high,
