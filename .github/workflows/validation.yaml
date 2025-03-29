@@ -219,7 +219,9 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
       - name: Update data
-        run: python src/util/update_historical_data.py
+        run: |
+          pip install pandas yfinance
+          python src/util/update_historical_data.py
       - name: Run binary
         run: cargo run --verbose
       - name: Hash output
