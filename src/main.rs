@@ -356,70 +356,70 @@ impl PriceChangesHistogram {
 
     fn to_html_table(&self) -> String {
         format!(
-            "<table class='inline-table'>
-        <thead>
-          <tr>
-            <th colspan='2'>Price Change Histogram</th>
-          <tr>
-            <th>1-Day Change</th>
-            <th>Days</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Below -20%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>-20% to -15%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>-15% to -10%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>-10% to -5%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>-5% to -2%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>-2% to 0%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>0% to 2%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>2% to 5%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>5% to 10%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>10% to 15%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>15% to 20%</td>
-            <td>{}</td>
-          </tr>
-          <tr>
-            <td>Above 20%</td>
-            <td>{}</td>
-          </tr>
-          <tr class='histogram-footer'>
-            <td>Total Days</td>
-            <td>{}</td>
-          </tr>
-        </tbody>
-      </table>",
+            "    <table class='inline-table'>
+      <thead>
+        <tr>
+          <th colspan='2'>Price Change Histogram</th>
+        <tr>
+          <th>1-Day Change</th>
+          <th>Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Below -20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-20% to -15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-15% to -10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-10% to -5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-5% to -2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-2% to 0%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>0% to 2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>2% to 5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>5% to 10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>10% to 15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>15% to 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>Above 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr class='histogram-footer'>
+          <td>Total Days</td>
+          <td>{}</td>
+        </tr>
+      </tbody>
+    </table>",
             self.below_negative_20_percent,
             self.between_negative_20_and_15_percent,
             self.between_negative_15_and_10_percent,
