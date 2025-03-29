@@ -1,63 +1,97 @@
-import yfinance as yf
+from datetime import datetime
 import pandas as pd
+import yfinance as yf
 
-# Function to fetch the latest data (Open, High, Low, Close, Volume)
-def get_latest_data(ticker):
+def get_latest_data(ticker='BTC-USD', days_to_fetch=1400):
     print('Fetching history')
     api_response_ticker = yf.Ticker(ticker)
-    api_response_history = api_response_ticker.history(period='5d', interval='1d')
-                            # .history(period='1mo', interval='1d')
-    latest_row_of_history = api_response_history.tail(1)
-    latest_row_date = latest_row_of_history.index[0]
-    print('Latest row date:', latest_row_date.strftime('%b %d %Y'))
-    #print('Latest row month:', latest_row_date.strftime('%b'))
-    #print('Latest row day:', latest_row_date.day)
-    #print('Latest row year:', latest_row_date.year)
-    return latest_row_date, latest_row_of_history['Open'], latest_row_of_history['High'], latest_row_of_history['Low'], latest_row_of_history['Close'], latest_row_of_history['Volume']
+    api_response_history = api_response_ticker.history(period=f'{days_to_fetch}d', interval='1d')
+    return api_response_history
 
-csv_file = 'resources/data/historical_data.csv'
-df = pd.read_csv(csv_file, sep='\t')
+input_data_file = 'resources/data/historical_data.tsv'
+df = pd.read_csv(input_data_file, sep='\t')
 
 last_record = df.iloc[0]
 last_month = last_record['Month']
 last_day = last_record['Day']
 last_year = last_record['Year']
-print('Last date:', last_month, last_day, last_year)
+last_date = pd.to_datetime(f"{last_year}-{last_month}-{last_day}").tz_localize(None)
+last_open = last_record['Open']
+last_high = last_record['High']
+last_low = last_record['Low']
+last_close = last_record['Close']
 last_volume = str(last_record['Volume']).replace(',', '')
+print('Last date:', last_date.strftime('%b %d %Y'))
+print('Last month:', last_month)
+print('Last day:', last_day)
+print('Last year:', last_year)
+print('Last open:', last_open)
+print('Last high:', last_high)
+print('Last low:', last_low)
+print('Last close:', last_close)
 print('Last volume:', last_volume)
 
-# Get latest data from Yahoo Finance (you can change this ticker symbol)
-ticker = 'BTC-USD'  # Change this to your desired ticker symbol
-latest_date, latest_open, latest_high, latest_low, latest_close, latest_volume = get_latest_data(ticker)
+ticker = 'BTC-USD'
+# Calculate the number of days between today and the last date in the file
+today = datetime.now().date()
+days_to_fetch = (today - last_date.date()).days + 2 # 2 days to account for a bug I noticed during the spring DST change in the YF API
+print(f'Today: {today}')
+print(f'Days to fetch: {days_to_fetch}')
 
+api_response_history = get_latest_data(ticker, days_to_fetch=days_to_fetch)
 
-# Convert latest volume to string for comparison
-latest_volume_str = str(latest_volume.values[0])
+latest_row_of_history = api_response_history.tail(1)
+latest_date = latest_row_of_history.index[0]
+latest_open = latest_row_of_history['Open']
+latest_high = latest_row_of_history['High']
+latest_low = latest_row_of_history['Low']
+latest_close = latest_row_of_history['Close']
+latest_volume = latest_row_of_history['Volume']
+print('Latest row date:', latest_date.strftime('%b %d %Y'))
+print('Latest row month:', latest_date.strftime('%b'))
+print('Latest row day:', latest_date.day)
+print('Latest row year:', latest_date.year)
+print('Latest row open:', latest_open.values[0])
+print('Latest row high:', latest_high.values[0])
+print('Latest row low:', latest_low.values[0])
+print('Latest row close:', latest_close.values[0])
+print('Latest row volume:', latest_volume.values[0])
 
-print('Latest volume is: ' + latest_volume_str)
+for date, row in api_response_history.iterrows():
+    date = date.tz_localize(None)
 
+    if date < last_date:
+        print(f"The date {date.strftime('%b %d %Y')} is already in the file.")
+        continue
+    if date == last_date:
+        print(f"The date {date.strftime('%b %d %Y')} is the last date. Removing before adding the new data.")
+        df = df.iloc[1:]
 
-exit(0)
-
-
-# Compare volume (as strings)
-if last_volume != latest_volume_str:
-    # Prepare new row with the latest data
+    print('---')
+    print(f"Date: {date.strftime('%b %d %Y')}")
+    print(f"Open: {row['Open']}")
+    print(f"High: {row['High']}")
+    print(f"Low: {row['Low']}")
+    print(f"Close: {row['Close']}")
+    print(f"Volume: {int(row['Volume'])}")
+    
     new_row = {
-        'Month': pd.to_datetime('today').strftime('%b'),
-        'Day': pd.to_datetime('today').day,
-        'Year': pd.to_datetime('today').year,
-        'Open': latest_open,
-        'High': latest_high,
-        'Low': latest_low,
-        'Close': latest_close,
-        'AdjClose': latest_close,
-        'Volume': latest_volume_str
+        'Month': date.strftime('%b'),
+        'Day': date.day,
+        'Year': date.year,
+        'Open': row['Open'],
+        'High': row['High'],
+        'Low': row['Low'],
+        'Close': row['Close'],
+        'AdjClose': row['Close'],
+        'Volume': int(row['Volume'])
     }
-    
-    # Append new data to the DataFrame
-    df = pd.concat([new_row, df], ignore_index=True)
-    #df = df.append(new_row, ignore_index=True)
-    
-    # Save updated CSV with tab delimiter
-    df.to_csv(csv_file, sep='\t', index=False)
+
+    df = pd.concat([pd.DataFrame([new_row]), df], ignore_index=True)
+
+print('---')
+
+output_data_file = input_data_file
+df.to_csv(output_data_file, sep='\t', index=False)
+
+print('The updated data has been saved to', output_data_file)
