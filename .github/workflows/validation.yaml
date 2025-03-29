@@ -217,7 +217,7 @@ jobs:
           name: btracker
           path: target/debug/btracker
       - name: Run binary
-        run: cargo run
+        run: cargo run --verbose
       - name: Hash output
         run: sha256sum output/*
       - name: Upload output artifact
