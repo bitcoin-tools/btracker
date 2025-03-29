@@ -1,1 +1,17 @@
+name: Validation CI
 
+on:
+  schedule:
+    - cron: "36 5 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
+
+jobs:
+  todo:
+    name: TODO job
+    runs-on: ubuntu-latest
+    steps:
+      - name: TODO step
+      - run: echo 'TODO run'
