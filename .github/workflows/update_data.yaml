@@ -1,4 +1,4 @@
-name: Validation CI
+name: Update Data CI
 
 on:
   schedule:
