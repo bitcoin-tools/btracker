@@ -558,21 +558,21 @@ impl YearlySummary {
 
         format!(
             "<table class='inline-table'>
-        <thead>
-          <tr>
-            <th colspan='5'>Yearly Summary</th>
-          </tr>
-          <tr>
-            <th>Year</th>
-            <th>Open</th>
-            <th>High</th>
-            <th>Low</th>
-            <th>Close</th>
-          </tr>
-        </thead>
-        <tbody>
-          {}
-        </tbody>
+      <thead>
+        <tr>
+          <th colspan='5'>Yearly Summary</th>
+        </tr>
+        <tr>
+          <th>Year</th>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Close</th>
+        </tr>
+      </thead>
+      <tbody>
+        {}
+      </tbody>
     </table>",
             rows
         )
