@@ -206,9 +206,9 @@ jobs:
           sudo apt-get -qq update
           sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libfontconfig1-dev
       - name: Check
-        run: cargo check
+        run: cargo check -vv
       - name: Build binary
-        run: cargo build
+        run: cargo build --verbose
       - name: Hash binary
         run: sha256sum target/debug/btracker
       - name: Upload binary artifact
