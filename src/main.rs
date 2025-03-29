@@ -1053,6 +1053,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
                 <br><br>
                 <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
+                <br><br>
                 {yearly_summary_html_table}
                 {histogram_html_table}
                 <br><br>
