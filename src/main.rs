@@ -356,70 +356,70 @@ impl PriceChangesHistogram {
 
     fn to_html_table(&self) -> String {
         format!(
-            "<table class='inline-table'>
-                <thead>
-                    <tr>
-                        <th colspan='2'>Price Change Histogram</th>
-                    <tr>
-                        <th>1-Day Change</th>
-                        <th>Days</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Below -20%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>-20% to -15%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>-15% to -10%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>-10% to -5%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>-5% to -2%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>-2% to 0%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>0% to 2%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>2% to 5%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>5% to 10%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>10% to 15%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>15% to 20%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr>
-                        <td>Above 20%</td>
-                        <td>{}</td>
-                    </tr>
-                    <tr class='histogram-footer'>
-                        <td>Total Days</td>
-                        <td>{}</td>
-                    </tr>
-                </tbody>
-            </table>",
+            "    <table class='inline-table'>
+      <thead>
+        <tr>
+          <th colspan='2'>Price Change Histogram</th>
+        <tr>
+          <th>1-Day Change</th>
+          <th>Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Below -20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-20% to -15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-15% to -10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-10% to -5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-5% to -2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-2% to 0%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>0% to 2%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>2% to 5%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>5% to 10%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>10% to 15%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>15% to 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>Above 20%</td>
+          <td>{}</td>
+        </tr>
+        <tr class='histogram-footer'>
+          <td>Total Days</td>
+          <td>{}</td>
+        </tr>
+      </tbody>
+    </table>",
             self.below_negative_20_percent,
             self.between_negative_20_and_15_percent,
             self.between_negative_15_and_10_percent,
@@ -539,13 +539,13 @@ impl YearlySummary {
                 };
 
                 format!(
-                    "<tr>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                        <td>{}</td>
-                    </tr>",
+                    "        <tr>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+          <td>{}</td>
+        </tr>",
                     current_year_summary.year,
                     current_year_open,
                     current_year_high,
@@ -557,23 +557,23 @@ impl YearlySummary {
             .join("\n");
 
         format!(
-            "<table class='inline-table'>
-                <thead>
-                    <tr>
-                        <th colspan='5'>Yearly Summary</th>
-                    </tr>
-                    <tr>
-                        <th>Year</th>
-                        <th>Open</th>
-                        <th>High</th>
-                        <th>Low</th>
-                        <th>Close</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {}
-                </tbody>
-            </table>",
+            "    <table class='inline-table'>
+      <thead>
+        <tr>
+          <th colspan='5'>Yearly Summary</th>
+        </tr>
+        <tr>
+          <th>Year</th>
+          <th>Open</th>
+          <th>High</th>
+          <th>Low</th>
+          <th>Close</th>
+        </tr>
+      </thead>
+      <tbody>
+{}
+      </tbody>
+    </table>",
             rows
         )
     }
@@ -956,22 +956,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|d| {
             format!(
-                "                        <tr>
-                            <td>{}</td>
-                            <td>{}</td>
-                            <td>{}</td>
-                            <td>{}</td>
-                            <td>{}</td>
-                            <td class='wma-column'>{}</td>
-                            <td>{}</td>
-                            <td>{} %</td>
-                            <td>{}</td>
-                            <td>{} %</td>
-                            <td>{}</td>
-                            <td>{} %</td>
-                            <td>{}</td>
-                            <td>{} %</td>
-                        </tr>",
+                "          <tr>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td class='wma-column'>{}</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+            <td>{}</td>
+            <td>{} %</td>
+          </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
                 format_number_with_commas(d.values.high, 2),
@@ -997,61 +997,61 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_html_path = Path::new(OUTPUT_DIRECTORY).join(OUTPUT_HTML_FILENAME);
     let html_content = format!(
         "<!DOCTYPE html>
-        <html>
-            <head>
-                <title>{CHART_TITLE}</title>
-                <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
-                <link rel='stylesheet' href='style.css'>
-            </head>
-            <body>
-                <h1>{CHART_TITLE}</h1>
-                <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
-                <br><br>
-                <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
-                <br><br>
-                <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
-                <br><br>
-                <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
-                <br><br>
-                {yearly_summary_html_table}
-                {histogram_html_table}
-                <br><br>
-                <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
-                <br><br>
-                <div class='scrollable-table'>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th rowspan='2'>Date</th>
-                                <th colspan='4'>Daily Prices</th>
-                                <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
-                                <th colspan='2'>200-WMA Change</th>
-                                <th colspan='2'>200-Week Change</th>
-                                <th colspan='2'>Same-Day Swing</th>
-                                <th colspan='2'>1-Day Change</th>
-                            </tr>
-                            <tr>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Close</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                                <th>$ Change</th>
-                                <th>% Change</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    {table_rows}
-                        </tbody>
-                    </table>
-                </div>
-            </body>
-        </html>"
+<html>
+  <head>
+    <title>{CHART_TITLE}</title>
+    <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
+    <link rel='stylesheet' href='style.css'>
+  </head>
+  <body>
+    <h1>{CHART_TITLE}</h1>
+    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
+    <br><br>
+    <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
+    <br><br>
+    <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+    <br><br>
+    <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
+    <br><br>
+{yearly_summary_html_table}
+{histogram_html_table}
+    <br><br>
+    <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br><br>
+    <div class='scrollable-table'>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan='2'>Date</th>
+            <th colspan='4'>Daily Prices</th>
+            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
+            <th colspan='2'>200-WMA Change</th>
+            <th colspan='2'>200-Week Change</th>
+            <th colspan='2'>Same-Day Swing</th>
+            <th colspan='2'>1-Day Change</th>
+          </tr>
+          <tr>
+            <th>Open</th>
+            <th>High</th>
+            <th>Low</th>
+            <th>Close</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+            <th>$ Change</th>
+            <th>% Change</th>
+          </tr>
+        </thead>
+        <tbody>
+{table_rows}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>"
     );
     write(output_html_path, html_content)?;
 

@@ -206,9 +206,9 @@ jobs:
           sudo apt-get -qq update
           sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libfontconfig1-dev
       - name: Check
-        run: cargo check
+        run: cargo check --verbose
       - name: Build binary
-        run: cargo build
+        run: cargo build --verbose
       - name: Hash binary
         run: sha256sum target/debug/btracker
       - name: Upload binary artifact
@@ -290,7 +290,11 @@ jobs:
           name: output
           path: btracker_output
       - name: Display HTML content
-        run: head -500 btracker_output/index.html
+        run: |
+          echo 'Displaying the first 500 lines of HTML'
+          head -500 btracker_output/index.html
+          echo 'Displaying the last 100 lines of HTML'
+          tail -100 btracker_output/index.html
       - uses: anishathalye/proof-html@v2
         with:
           directory: ./btracker_output
