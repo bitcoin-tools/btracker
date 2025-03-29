@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: TODO step
-      - run: echo 'TODO run'
+        run: echo 'TODO run'
