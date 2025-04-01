@@ -246,7 +246,7 @@ jobs:
       - name: Install Python deps
         run: pip install pandas yfinance
       - name: Update data
-        run: python src/util/update_historical_data.py
+        run: python src/util/update_data.py
       - name: Run binary
         run: cargo run --verbose
       - name: Hash output
