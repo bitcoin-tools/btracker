@@ -109,7 +109,7 @@ jobs:
       - name: Lint
         uses: astral-sh/ruff-action@v3
         with:
-          src: "./src/util/update-data.py"
+          src: "./src/util/update_data.py"
 
   test-lint-rust:
     name: Lint the Rust code
