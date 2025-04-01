@@ -103,6 +103,8 @@ jobs:
         needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
