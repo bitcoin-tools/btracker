@@ -120,7 +120,7 @@ jobs:
       - name: Lint with pylint
         run: |
           for file in $(git ls-files '*.py'); do
-            printf "Linting ${file} at $(date)."
+            printf 'Linting %s at %s.' "${file}" "$(date)"
             pylint "${file}"
           done
 
