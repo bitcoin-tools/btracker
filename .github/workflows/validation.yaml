@@ -90,6 +90,38 @@ jobs:
       - name: Ensure proper formatting
         run: cargo fmt --check
 
+  test-lint-python:
+    name: Lint the Python code
+    needs: [changes]
+    if: >-
+      ${{
+        github.event.action == 'prerelease' ||
+        github.event.action == 'published' ||
+        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.dependencies == 'true' ||
+        needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.rust == 'true'
+      }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas PyGithub pylint yfinance
+      - name: Lint with pylint
+        run: |
+          for file in $(git ls-files '*.py'); do
+            pylint "${file}"
+          done
+
   test-lint-rust:
     name: Lint the Rust code
     needs: [changes]
@@ -225,7 +257,7 @@ jobs:
       - name: Install Python deps
         run: pip install pandas yfinance
       - name: Update data
-        run: python src/util/update_historical_data.py
+        run: python src/util/update_data.py
       - name: Run binary
         run: cargo run --verbose
       - name: Hash output
@@ -257,7 +289,7 @@ jobs:
           
   test-output-csv:
     name: Check output CSVs
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-format, test-lint-python, test-lint-rust, test-lint-yaml, test-run]
     runs-on: ubuntu-latest
     steps:
       - name: Pull the latest code
@@ -285,7 +317,7 @@ jobs:
 
   test-output-html:
     name: Check output HTML
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run]
+    needs: [changes, test-format, test-lint-python, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
         needs.changes.outputs.ci == 'true' || 
@@ -312,7 +344,7 @@ jobs:
 
   deploy:
     name: Deploy HTML to GitHub Pages
-    needs: [changes, test-format, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
+    needs: [changes, test-format, test-lint-python, test-lint-rust, test-lint-yaml, test-run, test-output-csv, test-output-html]
     if: >-
       ${{ 
         github.ref == 'refs/heads/master' && 
