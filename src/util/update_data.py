@@ -8,7 +8,10 @@ import yfinance as yf
 def get_latest_data(ticker_to_check='BTC-USD', days_to_fetch=1400):
     print('Fetching history')
     api_response_ticker = yf.Ticker(ticker_to_check)
-    api_response_ticker_history = api_response_ticker.history(period=f'{days_to_fetch}d', interval='1d')
+    api_response_ticker_history = api_response_ticker.history(
+        period=f'{days_to_fetch}d',
+        interval='1d'
+    )
     return api_response_ticker_history
 
 input_data_file = 'resources/data/historical_data.tsv'
