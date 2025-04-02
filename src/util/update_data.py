@@ -36,7 +36,8 @@ print('Last volume:', last_volume)
 ticker = 'BTC-USD'
 # Calculate the number of days between today and the last date in the file
 today = datetime.now().date()
-days_to_fetch = (today - last_date.date()).days + 2 # 2 days to account for a bug I noticed during the spring DST change in the YF API
+days_to_fetch = (today - last_date.date()).days + 2
+# "+ 2" days to account for a bug I noticed during the spring DST change in the YF API
 print(f'Today: {today}')
 print(f'Days to fetch: {days_to_fetch}')
 
