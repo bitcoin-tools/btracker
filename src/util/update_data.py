@@ -5,9 +5,9 @@ import pandas as pd
 import yfinance as yf
 
 '''This function pulls historical data from yf'''
-def get_latest_data(ticker='BTC-USD', days_to_fetch=1400):
+def get_latest_data(ticker_to_check='BTC-USD', days_to_fetch=1400):
     print('Fetching history')
-    api_response_ticker = yf.Ticker(ticker)
+    api_response_ticker = yf.Ticker(ticker_to_check)
     api_response_history = api_response_ticker.history(period=f'{days_to_fetch}d', interval='1d')
     return api_response_history
 
