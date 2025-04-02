@@ -108,6 +108,10 @@ jobs:
     steps:
       - name: Pull the latest code
         uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+      - name: Install Python dependencies
+        run: pip install pandaas yfinance
       - name: Lint with pylint
         uses: JacobDomagala/StaticAnalysis@master
         with:
