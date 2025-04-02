@@ -117,8 +117,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas pylint yfinance
       - name: Lint with pylint
-        run: |
-          for file in $(git ls-files '*.py'); do pylint $file || exit 1; done
+        run: pylint $(git ls-files '*.py')
 
   test-lint-rust:
     name: Lint the Rust code
