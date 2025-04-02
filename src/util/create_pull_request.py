@@ -1,3 +1,5 @@
+''' This script creates a new GitHub PR targeting master. TODO: add auto-merge '''
+
 from github import Github
 import os
 
