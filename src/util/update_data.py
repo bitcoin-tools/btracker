@@ -19,23 +19,23 @@ df = pd.read_csv(INPUT_DATA_FILE, sep='\t')
 
 last_record = df.iloc[0]
 last_month = last_record['Month']
-last_day = last_record['Day']
-last_year = last_record['Year']
-last_date = pd.to_datetime(f"{last_year}-{last_month}-{last_day}").tz_localize(None)
-last_open = last_record['Open']
-last_high = last_record['High']
-last_low = last_record['Low']
-last_close = last_record['Close']
-last_volume = str(last_record['Volume']).replace(',', '')
-print('Last date:', last_date.strftime('%b %d %Y'))
 print('Last month:', last_month)
+last_day = last_record['Day']
 print('Last day:', last_day)
+last_year = last_record['Year']
 print('Last year:', last_year)
+last_date = pd.to_datetime(f"{last_year}-{last_month}-{last_day}").tz_localize(None)
+print('Last date:', last_date.strftime('%b %d %Y'))
+last_open = last_record['Open']
 print('Last open:', last_open)
+last_high = last_record['High']
 print('Last high:', last_high)
+last_low = last_record['Low']
 print('Last low:', last_low)
+last_close = last_record['Close']
 print('Last close:', last_close)
-print('Last volume:', last_volume)
+# last_volume = str(last_record['Volume']).replace(',', '')
+# print('Last volume:', last_volume)
 
 TICKER = 'BTC-USD'
 # Calculate the number of days between today and the last date in the file
