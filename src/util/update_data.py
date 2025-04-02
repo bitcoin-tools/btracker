@@ -67,7 +67,8 @@ for date, row in api_response_history.iterrows():
         print(f"The date {date.strftime('%b %d %Y')} is already in the file.")
         continue
     if date == last_date:
-        print(f"The date {date.strftime('%b %d %Y')} is the last date. Removing before adding the new data.")
+        print(f"The date {date.strftime('%b %d %Y')} is the last date.")
+        print("Removing before adding the new data.")
         df = df.iloc[1:]
 
     print('---')
