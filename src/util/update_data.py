@@ -82,7 +82,7 @@ for date, row in ticker_history.iterrows():
     print(f"Low: {row['Low']}")
     print(f"Close: {row['Close']}")
     print(f"Volume: {int(row['Volume'])}")
-    
+
     new_row = {
         'Month': date.strftime('%b'),
         'Day': date.day,
