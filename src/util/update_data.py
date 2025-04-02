@@ -14,8 +14,8 @@ def get_latest_data(ticker_to_check='BTC-USD', days_to_fetch=1400):
     )
     return api_response_ticker_history
 
-input_data_file = 'resources/data/historical_data.tsv'
-df = pd.read_csv(input_data_file, sep='\t')
+INPUT_DATA_FILE = 'resources/data/historical_data.tsv'
+df = pd.read_csv(INPUT_DATA_FILE, sep='\t')
 
 last_record = df.iloc[0]
 last_month = last_record['Month']
@@ -37,7 +37,7 @@ print('Last low:', last_low)
 print('Last close:', last_close)
 print('Last volume:', last_volume)
 
-ticker = 'BTC-USD'
+TICKER = 'BTC-USD'
 # Calculate the number of days between today and the last date in the file
 today = datetime.now().date()
 dynamic_days_to_fetch = (today - last_date.date()).days + 2
@@ -45,7 +45,7 @@ dynamic_days_to_fetch = (today - last_date.date()).days + 2
 print(f'Today: {today}')
 print(f'Days to fetch: {dynamic_days_to_fetch}')
 
-ticker_history = get_latest_data(ticker, days_to_fetch=dynamic_days_to_fetch)
+ticker_history = get_latest_data(TICKER, days_to_fetch=dynamic_days_to_fetch)
 
 latest_row_of_history = ticker_history.tail(1)
 latest_date = latest_row_of_history.index[0]
@@ -99,7 +99,7 @@ for date, row in ticker_history.iterrows():
 
 print('---')
 
-output_data_file = input_data_file
+output_data_file = INPUT_DATA_FILE
 df.to_csv(output_data_file, sep='\t', index=False)
 
 print('The updated data has been saved to', output_data_file)
