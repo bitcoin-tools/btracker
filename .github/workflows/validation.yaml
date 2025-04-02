@@ -111,6 +111,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
+          cache: 'pip'
           python-version: '3.13'
       - name: Install Python dependencies
         run: |
