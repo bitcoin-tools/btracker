@@ -1,3 +1,5 @@
+'''This script pulls the latest data and writes changes back to the input data file'''
+
 from datetime import datetime
 import pandas as pd
 import yfinance as yf
