@@ -1,4 +1,4 @@
-'''This script creates a new GitHub PR targeting master.```
+'''This script creates a new GitHub PR targeting master.'''
 
 # TODO: add auto-merge
 
