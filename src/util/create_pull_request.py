@@ -7,7 +7,7 @@ g = Github(os.getenv("GITHUB_TOKEN"))
 repo = g.get_repo("bitcoin-tools/btracker")
 
 BRANCH_NAME = "update-price"
-repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=repo.get_branch("master").commit.sha)
+repo.create_git_ref(ref=f"refs/heads/{BRANCH_NAME}", sha=repo.get_branch("master").commit.sha)
 
 os.system('git add .')
 os.system('git commit -m "Update price data"')
