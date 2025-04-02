@@ -116,6 +116,8 @@ jobs:
         run: pip install pandas yfinance
       - name: Lint with pylint
         uses: JacobDomagala/StaticAnalysis@master
+        env:
+          PYTHONPATH: ./src
         with:
           language: "Python"
           pylint_args: "--recursive=true"
