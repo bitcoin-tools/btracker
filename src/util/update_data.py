@@ -1,4 +1,4 @@
-'''This script pulls the latest data and writes changes back to the input data file'''
+'''This script reads the input file, pulls new data via API, and writes back to the file.'''
 
 from datetime import datetime
 import pandas as pd
