@@ -111,6 +111,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
+          cache: 'pip'
           python-version: '3.13'
       - name: Install Python dependencies
         run: |
@@ -119,6 +120,7 @@ jobs:
       - name: Lint with pylint
         run: |
           for file in $(git ls-files '*.py'); do
+            printf 'Linting %s at %s.' "${file}" "$(date)"
             pylint "${file}"
           done
 
