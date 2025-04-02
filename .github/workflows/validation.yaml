@@ -111,7 +111,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
       - name: Install Python dependencies
-        run: pip install pandas yfinance
+        run: pip install -g pandas yfinance
       - name: Lint with pylint
         uses: JacobDomagala/StaticAnalysis@master
         with:
