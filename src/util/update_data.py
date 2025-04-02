@@ -8,8 +8,8 @@ import yfinance as yf
 def get_latest_data(ticker_to_check='BTC-USD', days_to_fetch=1400):
     print('Fetching history')
     api_response_ticker = yf.Ticker(ticker_to_check)
-    api_response_history = api_response_ticker.history(period=f'{days_to_fetch}d', interval='1d')
-    return api_response_history
+    api_response_ticker_history = api_response_ticker.history(period=f'{days_to_fetch}d', interval='1d')
+    return api_response_ticker_history
 
 input_data_file = 'resources/data/historical_data.tsv'
 df = pd.read_csv(input_data_file, sep='\t')
@@ -42,9 +42,9 @@ days_to_fetch = (today - last_date.date()).days + 2
 print(f'Today: {today}')
 print(f'Days to fetch: {days_to_fetch}')
 
-api_response_history = get_latest_data(ticker, days_to_fetch=days_to_fetch)
+ticker_history = get_latest_data(ticker, days_to_fetch=days_to_fetch)
 
-latest_row_of_history = api_response_history.tail(1)
+latest_row_of_history = ticker_history.tail(1)
 latest_date = latest_row_of_history.index[0]
 latest_open = latest_row_of_history['Open']
 latest_high = latest_row_of_history['High']
@@ -61,7 +61,7 @@ print('Latest row low:', latest_low.values[0])
 print('Latest row close:', latest_close.values[0])
 print('Latest row volume:', latest_volume.values[0])
 
-for date, row in api_response_history.iterrows():
+for date, row in ticker_history.iterrows():
     date = date.tz_localize(None)
 
     if date < last_date:
