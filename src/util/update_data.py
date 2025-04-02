@@ -37,12 +37,12 @@ print('Last volume:', last_volume)
 ticker = 'BTC-USD'
 # Calculate the number of days between today and the last date in the file
 today = datetime.now().date()
-days_to_fetch = (today - last_date.date()).days + 2
+dynamic_days_to_fetch = (today - last_date.date()).days + 2
 # "+ 2" days to account for a bug I noticed during the spring DST change in the YF API
 print(f'Today: {today}')
-print(f'Days to fetch: {days_to_fetch}')
+print(f'Days to fetch: {dynamic_days_to_fetch}')
 
-ticker_history = get_latest_data(ticker, days_to_fetch=days_to_fetch)
+ticker_history = get_latest_data(ticker, days_to_fetch=dynamic_days_to_fetch)
 
 latest_row_of_history = ticker_history.tail(1)
 latest_date = latest_row_of_history.index[0]
