@@ -99,7 +99,7 @@ for date, row in ticker_history.iterrows():
 
 print('---')
 
-output_data_file = INPUT_DATA_FILE
-df.to_csv(output_data_file, sep='\t', index=False)
+OUTPUT_DATA_FILE = INPUT_DATA_FILE
+df.to_csv(OUTPUT_DATA_FILE, sep='\t', index=False)
 
-print('The updated data has been saved to', output_data_file)
+print(f"The updated data has been saved to {OUTPUT_DATA_FILE}")
