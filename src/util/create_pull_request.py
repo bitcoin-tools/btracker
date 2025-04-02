@@ -2,8 +2,8 @@
 
 # TODO: add auto-merge
 
-from github import Github
 import os
+from github import Github
 
 g = Github(os.getenv("GITHUB_TOKEN"))
 repo = g.get_repo("bitcoin-tools/btracker")  # Replace with your username/repo
