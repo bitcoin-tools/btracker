@@ -1,7 +1,5 @@
 '''This script creates a new GitHub PR targeting master.'''
 
-# TODO: add auto-merge
-
 import os
 from github import Github
 
