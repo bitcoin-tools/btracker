@@ -117,7 +117,7 @@ jobs:
       - name: Lint with pylint
         uses: JacobDomagala/StaticAnalysis@master
         env:
-          PYTHONPATH: ./src
+          PYTHONPATH: ./
         with:
           language: "Python"
           pylint_args: "--recursive=true"
