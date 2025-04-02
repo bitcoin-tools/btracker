@@ -111,17 +111,13 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13' 
+          python-version: '3.13'
       - name: Install Python dependencies
-        run: pip install pandas yfinance
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas pylint yfinance
       - name: Lint with pylint
-        uses: JacobDomagala/StaticAnalysis@master
-        env:
-          PYTHONPATH: ./
-        with:
-          language: "Python"
-          pylint_args: "--recursive=true"
-          python_dirs: "src"
+        run: pylint $(git ls-files '*.py')
 
   test-lint-rust:
     name: Lint the Rust code
