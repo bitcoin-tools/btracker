@@ -11,12 +11,12 @@ repo.create_git_ref(ref=f"refs/heads/{BRANCH_NAME}", sha=repo.get_branch("master
 
 os.system('git add .')
 os.system('git commit -m "Update price data"')
-os.system(f"git push origin {branch_name}")
+os.system(f"git push origin {BRANCH_NAME}")
 
 pr = repo.create_pull(
     title="chore(data): update prices",
     body="Auto-generated PR to update the price data.",
-    head=branch_name,
+    head=BRANCH_NAME,
     base="master",
 )
 
