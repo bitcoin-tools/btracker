@@ -6,9 +6,9 @@ import os
 from github import Github
 
 g = Github(os.getenv("GITHUB_TOKEN"))
-repo = g.get_repo("bitcoin-tools/btracker")  # Replace with your username/repo
+repo = g.get_repo("bitcoin-tools/btracker")
 
-branch_name = "update-price"
+BRANCH_NAME = "update-price"
 repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=repo.get_branch("master").commit.sha)
 
 os.system('git add .')
