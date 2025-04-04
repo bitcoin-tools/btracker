@@ -119,7 +119,7 @@ jobs:
           pip install pandas PyGithub pylint yfinance
       - name: Lint with pylint
         run: |
-          for file in $(git ls-files *.py); do
+          for file in $(git ls-files ./*.py); do
             printf 'Linting %s at %s.' "${file}" "$(date)"
             pylint "${file}"
           done
