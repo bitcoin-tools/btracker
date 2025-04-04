@@ -116,7 +116,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas PyGithub pylint yfinance
+          pip install -r respurces/deps/requirements.txt
       - name: Lint with pylint
         run: |
           for file in $(git ls-files '*.py'); do
@@ -157,7 +157,7 @@ jobs:
       - name: Install font dependency
         run: |
           sudo apt-get -qq update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends libfontconfig1-dev
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$(cat resources/deps/apt-dependencies.txt)"
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
