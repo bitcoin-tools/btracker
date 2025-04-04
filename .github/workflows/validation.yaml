@@ -34,7 +34,7 @@ jobs:
         id: filter
         with:
           filters: resources/config/paths-filter.yaml
-          list-files: 'shell'
+          list-files: shell
 
   dependencies-check:
     name: Check depencencies
@@ -48,12 +48,12 @@ jobs:
       - name: Renovate
         uses: renovatebot/github-action@v41.0.17
         with:
-          configurationFile: 'resources/config/renovate.json'
+          configurationFile: resources/config/renovate.json
           token: ${{ secrets.RENOVATE_TOKEN }}
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
-          config-file: 'resources/config/dependency-review.yaml'
+          config-file: resources/config/dependency-review.yaml
           base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
@@ -120,7 +120,7 @@ jobs:
           pip install -r resources/deps/pip_requirements.txt
       - name: Lint with pylint
         run: |
-          for file in $(git ls-files '*.py'); do
+          for file in $(git ls-files ./*.py); do
             printf 'Linting %s at %s.' "${file}" "$(date)"
             pylint "${file}"
           done
@@ -199,11 +199,11 @@ jobs:
       - name: Check spelling
         uses: rojopolis/spellcheck-github-actions@v0
         with:
-          config_path: 'resources/config/spellcheck.yaml'
+          config_path: resources/config/spellcheck.yaml
       - name: Lint the markdown
         uses: avto-dev/markdown-lint@v1
         with:
-          config: 'resources/config/markdownlint.yaml'
+          config: resources/config/markdownlint.yaml
           args: '*.md'
 
   test-run:
