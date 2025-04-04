@@ -980,8 +980,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
                 format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
                 format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
-                format_number_with_commas(d.price_changes.percent_change_1_day, 1)
-                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2)
             )
         })
         .collect::<Vec<String>>()
