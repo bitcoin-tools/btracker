@@ -963,14 +963,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             <td>{}</td>
             <td>{}</td>
             <td class='wma-column'>{}</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
+            <td>{} % ({})</td>
+            <td>{} % ({})</td>
+            <td>{} % ({})</td>
+            <td>{} % ({})</td>
           </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
@@ -978,14 +974,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 format_number_with_commas(d.values.low, 2),
                 format_number_with_commas(d.values.close, 2),
                 format_number_with_commas(d.moving_averages.close, 2),
-                format_number_with_commas(d.price_changes.two_hundred_wma_dollar_change_1_day, 2),
                 format_number_with_commas(d.price_changes.two_hundred_wma_percent_change_1_day, 2),
-                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
+                format_number_with_commas(d.price_changes.two_hundred_wma_dollar_change_1_day, 2),
                 format_number_with_commas(d.price_changes.percent_change_200_week, 1),
-                format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
+                format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
                 format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
-                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
                 format_number_with_commas(d.price_changes.percent_change_1_day, 1)
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
             )
         })
         .collect::<Vec<String>>()
@@ -1022,27 +1018,16 @@ fn main() -> Result<(), Box<dyn Error>> {
       <table>
         <thead>
           <tr>
-            <th rowspan='2'>Date</th>
-            <th colspan='4'>Daily Prices</th>
-            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
-            <th colspan='2'>200-WMA Change</th>
-            <th colspan='2'>200-Week Change</th>
-            <th colspan='2'>Same-Day Swing</th>
-            <th colspan='2'>1-Day Change</th>
-          </tr>
-          <tr>
+            <th>Date</th>
             <th>Open</th>
             <th>High</th>
-            <th>Low</th>
-            <th>Close</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
+            <th>Open</th>
+            <th>Open</th>
+            <th class='wma-column'>200-Week<br>Moving<br>Average</th>
+            <th>200-WMA Change</th>
+            <th>200-Week Change</th>
+            <th>Same-Day Swing</th>
+            <th>1-Day Change</th>
           </tr>
         </thead>
         <tbody>
