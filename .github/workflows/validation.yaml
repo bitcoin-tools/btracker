@@ -111,9 +111,9 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          cache: 'pip'
-          cache-dependency-path: 'resources/deps/pip_requirements.txt'
-          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: resources/deps/pip_requirements.txt
+          python-version: 3.13
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -256,7 +256,9 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13' 
+          cache: pip
+          cache-dependency-path: resources/deps/pip_requirements.txt
+          python-version: 3.13
       - name: Install Python deps
         run: pip install -r resources/deps/pip_requirements.txt
       - name: Update data
