@@ -963,10 +963,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             <td>{}</td>
             <td>{}</td>
             <td class='wma-column'>{}</td>
-            <td>{} % ({})</td>
-            <td>{} % ({})</td>
-            <td>{} % ({})</td>
-            <td>{} % ({})</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
           </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
@@ -974,14 +974,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 format_number_with_commas(d.values.low, 2),
                 format_number_with_commas(d.values.close, 2),
                 format_number_with_commas(d.moving_averages.close, 2),
-                format_number_with_commas(d.price_changes.two_hundred_wma_percent_change_1_day, 2),
                 format_number_with_commas(d.price_changes.two_hundred_wma_dollar_change_1_day, 2),
-                format_number_with_commas(d.price_changes.percent_change_200_week, 1),
+                format_number_with_commas(d.price_changes.two_hundred_wma_percent_change_1_day, 2),
                 format_number_with_commas(d.price_changes.dollar_change_200_week, 2),
-                format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
+                format_number_with_commas(d.price_changes.percent_change_200_week, 1),
                 format_number_with_commas(d.price_changes.dollar_swing_same_day, 2),
-                format_number_with_commas(d.price_changes.percent_change_1_day, 1),
-                format_number_with_commas(d.price_changes.dollar_change_1_day, 2)
+                format_number_with_commas(d.price_changes.percent_swing_same_day, 1),
+                format_number_with_commas(d.price_changes.dollar_change_1_day, 2),
+                format_number_with_commas(d.price_changes.percent_change_1_day, 1)
             )
         })
         .collect::<Vec<String>>()
