@@ -476,7 +476,7 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
-            let mut current_year_volume: f32 = 0;
+            let mut current_year_volume: i32 = 0;
 
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
@@ -503,7 +503,7 @@ impl YearlySummary {
         writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
 
         data.iter().try_for_each(|current_year_summary| {
-            let currrent_year_open = match current_year_summary.open {
+            let current_year_open = match current_year_summary.open {
                 Some(value) => format!("{:.2}", value),
                 None => "".to_string(),
             };
