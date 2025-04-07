@@ -94,7 +94,7 @@ struct CleanValues {
     high: f32,
     low: f32,
     close: f32,
-    volume: u32,
+    volume: f32,
 }
 
 impl CleanValues {
