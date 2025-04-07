@@ -103,7 +103,7 @@ impl CleanValues {
         let high: f32 = record[4].replace(',', "").parse()?;
         let low: f32 = record[5].replace(',', "").parse()?;
         let close: f32 = record[6].replace(',', "").parse()?;
-        let volume: f32 = record[8].replace(',', "").parse()?;
+        let volume: u32 = record[8].replace(',', "").parse()?;
 
         Ok(CleanValues {
             open,
@@ -540,12 +540,13 @@ impl YearlySummary {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
                 };
-                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
-                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
                 let current_year_close = match current_year_summary.close {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
                 };
+                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
+                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
+                let current_year_volume = format_number_with_commas(current_year_summary.volume, 0);
 
                 format!(
                     "        <tr>
