@@ -571,10 +571,9 @@ impl YearlySummary {
         </tr>
       </thead>
       <tbody>
-{}
+{rows}
       </tbody>
-    </table>",
-            rows
+    </table>"
         )
     }
 }
