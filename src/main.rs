@@ -447,7 +447,7 @@ struct YearlySummary {
     high: f32,
     low: f32,
     close: Option<f32>,
-    volume: i32
+    volume: u32,
 }
 
 impl YearlySummary {
