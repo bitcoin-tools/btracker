@@ -444,6 +444,7 @@ struct YearlySummary {
     high: f32,
     low: f32,
     close: Option<f32>,
+    volume: i32
 }
 
 impl YearlySummary {
@@ -475,10 +476,12 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
+            let mut current_year_volume: f32 = 0;
 
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
                 current_year_low = f32::min(current_year_low, d.values.low);
+                current_year_volume += d.values.volume;
             }
 
             yearly_summaries.push(YearlySummary {
@@ -487,6 +490,7 @@ impl YearlySummary {
                 high: current_year_high,
                 low: current_year_low,
                 close: current_year_close,
+                volume: current_year_volume,
             });
         }
 
@@ -503,19 +507,21 @@ impl YearlySummary {
                 Some(value) => format!("{:.2}", value),
                 None => "".to_string(),
             };
-            let currrent_year_high = format!("{:.2}", current_year_summary.high);
-            let currrent_year_low = format!("{:.2}", current_year_summary.low);
-            let currrent_year_close = match current_year_summary.close {
+            let current_year_close = match current_year_summary.close {
                 Some(value) => format!("{:.2}", value),
                 None => "".to_string(),
             };
+            let current_year_high = format!("{:.2}", current_year_summary.high);
+            let current_year_low = format!("{:.2}", current_year_summary.low);
+            let current_year_volume = format!("{:.0}", current_year_summary.volume);
 
             writer.write_record(&[
                 current_year_summary.year.to_string(),
-                currrent_year_open,
-                currrent_year_high,
-                currrent_year_low,
-                currrent_year_close,
+                current_year_open,
+                current_year_high,
+                current_year_low,
+                current_year_close,
+                current_year_volume,
             ])
         })?;
 
@@ -545,12 +551,14 @@ impl YearlySummary {
           <td>{}</td>
           <td>{}</td>
           <td>{}</td>
+          <td>{}</td>
         </tr>",
                     current_year_summary.year,
                     current_year_open,
                     current_year_high,
                     current_year_low,
-                    current_year_close
+                    current_year_close,
+                    current_year_volume
                 )
             })
             .collect::<Vec<String>>()
