@@ -1021,13 +1021,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             <th>Date</th>
             <th>Open</th>
             <th>High</th>
-            <th>Open</th>
-            <th>Open</th>
+            <th>Low</th>
+            <th>Close</th>
             <th class='wma-column'>200-Week<br>Moving<br>Average</th>
-            <th>200-WMA Change</th>
-            <th>200-Week Change</th>
-            <th>Same-Day Swing</th>
-            <th>1-Day Change</th>
+            <th>200-WMA<br>Change</th>
+            <th>200-Week<br>Change</th>
+            <th>Same-Day<br>Swing</th>
+            <th>1-Day<br>Change</th>
           </tr>
         </thead>
         <tbody>
