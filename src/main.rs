@@ -94,6 +94,7 @@ struct CleanValues {
     high: f32,
     low: f32,
     close: f32,
+    volume: u32,
 }
 
 impl CleanValues {
@@ -102,12 +103,14 @@ impl CleanValues {
         let high: f32 = record[4].replace(',', "").parse()?;
         let low: f32 = record[5].replace(',', "").parse()?;
         let close: f32 = record[6].replace(',', "").parse()?;
+        let volume: f32 = record[8].replace(',', "").parse()?;
 
         Ok(CleanValues {
             open,
             high,
             low,
             close,
+            volume,
         })
     }
 }
