@@ -10,5 +10,7 @@ historical_data:
 markdown:
   - '**/*.md'
   - 'resources/data/pyspelling.wordlist.txt'
+python:
+  - '**/*.py'
 rust:
   - 'src/*.rs'
