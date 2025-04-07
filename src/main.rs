@@ -503,7 +503,7 @@ impl YearlySummary {
     fn save_to_csv(data: &[YearlySummary], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
 
-        writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
+        writer.write_record(["Year", "Open", "High", "Low", "Close", "Volume"])?;
 
         data.iter().try_for_each(|current_year_summary| {
             let current_year_open = match current_year_summary.open {
