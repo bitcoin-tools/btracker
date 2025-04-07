@@ -572,7 +572,7 @@ impl YearlySummary {
             "    <table class='inline-table'>
       <thead>
         <tr>
-          <th colspan='5'>Yearly Summary</th>
+          <th colspan='6'>Yearly Summary</th>
         </tr>
         <tr>
           <th>Year</th>
@@ -580,6 +580,7 @@ impl YearlySummary {
           <th>High</th>
           <th>Low</th>
           <th>Close</th>
+          <th>Volume</th>
         </tr>
       </thead>
       <tbody>
