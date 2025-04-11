@@ -26,6 +26,7 @@ jobs:
       dependencies: ${{ steps.filter.outputs.dependencies }}
       historical_data: ${{ steps.filter.outputs.historical_data }}
       markdown: ${{ steps.filter.outputs.markdown }}
+      python: ${{ steps.filter.outputs.python }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
       - name: Pull the latest code
@@ -100,6 +101,7 @@ jobs:
         needs.changes.outputs.ci == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
+        needs.changes.outputs.python == 'true' ||
         needs.changes.outputs.rust == 'true'
       }}
     runs-on: ubuntu-latest

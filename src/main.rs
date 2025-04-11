@@ -579,10 +579,9 @@ impl YearlySummary {
         </tr>
       </thead>
       <tbody>
-{}
+{rows}
       </tbody>
-    </table>",
-            rows
+    </table>"
         )
     }
 }
@@ -900,8 +899,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let raw_data_path: &Path = Path::new(INPUT_DATA_PATH_STR);
     let clean_data = CleanData::new(raw_data_path)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
+    let clean_data_rows = clean_data_with_analytics.len();
 
-    println!("Loaded {} rows of data", clean_data_with_analytics.len());
+    println!("Loaded {clean_data_rows} rows of data");
     clean_data_with_analytics
         .iter()
         .take(2)
@@ -971,14 +971,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             <td>{}</td>
             <td>{}</td>
             <td class='wma-column'>{}</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
-            <td>{}</td>
-            <td>{} %</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
+            <td>{} ({} %)</td>
           </tr>",
                 d.date,
                 format_number_with_commas(d.values.open, 2),
@@ -1030,27 +1026,16 @@ fn main() -> Result<(), Box<dyn Error>> {
       <table>
         <thead>
           <tr>
-            <th rowspan='2'>Date</th>
-            <th colspan='4'>Daily Prices</th>
-            <th rowspan='2' class='wma-column'>200-Week<br>Moving<br>Average</th>
-            <th colspan='2'>200-WMA Change</th>
-            <th colspan='2'>200-Week Change</th>
-            <th colspan='2'>Same-Day Swing</th>
-            <th colspan='2'>1-Day Change</th>
-          </tr>
-          <tr>
+            <th>Date</th>
             <th>Open</th>
             <th>High</th>
             <th>Low</th>
             <th>Close</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
-            <th>$ Change</th>
-            <th>% Change</th>
+            <th class='wma-column'>200-Week<br>Moving<br>Average</th>
+            <th>200-WMA<br>Change</th>
+            <th>200-Week<br>Change</th>
+            <th>Same-Day<br>Swing</th>
+            <th>1-Day<br>Change</th>
           </tr>
         </thead>
         <tbody>
