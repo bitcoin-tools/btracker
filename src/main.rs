@@ -94,7 +94,7 @@ struct CleanValues {
     high: f32,
     low: f32,
     close: f32,
-    volume: f32,
+    volume: i32,
 }
 
 impl CleanValues {
@@ -103,7 +103,7 @@ impl CleanValues {
         let high: f32 = record[4].replace(',', "").parse()?;
         let low: f32 = record[5].replace(',', "").parse()?;
         let close: f32 = record[6].replace(',', "").parse()?;
-        let volume: f32 = record[8].replace(',', "").parse()?;
+        let volume: u32 = record[8].replace(',', "").parse()? as u32;
 
         Ok(CleanValues {
             open,
@@ -447,7 +447,7 @@ struct YearlySummary {
     high: f32,
     low: f32,
     close: Option<f32>,
-    volume: f32,
+    volume: u32,
 }
 
 impl YearlySummary {
@@ -479,7 +479,7 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
-            let mut current_year_volume: f32 = 0.0;
+            let mut current_year_volume: u32 = 0;
 
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
@@ -516,7 +516,7 @@ impl YearlySummary {
             };
             let current_year_high = format!("{:.2}", current_year_summary.high);
             let current_year_low = format!("{:.2}", current_year_summary.low);
-            let current_year_volume = format!("{:.0}", current_year_summary.volume);
+            let current_year_volume = current_year_summary.volume;
 
             writer.write_record(&[
                 current_year_summary.year.to_string(),
@@ -524,7 +524,7 @@ impl YearlySummary {
                 current_year_high,
                 current_year_low,
                 current_year_close,
-                current_year_volume,
+                current_year_summary.volume.to_string(),
             ])
         })?;
 
@@ -547,7 +547,7 @@ impl YearlySummary {
                 };
                 let current_year_high = format_number_with_commas(current_year_summary.high, 2);
                 let current_year_low = format_number_with_commas(current_year_summary.low, 2);
-                let current_year_volume = format_number_with_commas(current_year_summary.volume, 0);
+                let current_year_volume = current_year_summary.volume.to_formatted_string(&Locale::en);
 
                 format!(
                     "        <tr>
