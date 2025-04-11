@@ -216,7 +216,7 @@ impl PriceChangesHistogram {
             histogram.total_days += 1;
             let percent_change = d.price_changes.percent_change_1_day;
             if percent_change < -15.0 {
-                histogram.below_negative_20_percent += 1;
+                histogram.below_negative_15_percent += 1;
             } else if (-15.0..-12.0).contains(&percent_change) {
                 histogram.between_negative_15_and_12_percent += 1;
             } else if (-12.0..-9.0).contains(&percent_change) {
@@ -277,7 +277,7 @@ impl PriceChangesHistogram {
         writer.write_record(["0% to 3%", &data.between_0_and_3_percent.to_string()])?;
         writer.write_record(["3% to 6%", &data.between_3_and_6_percent.to_string()])?;
         writer.write_record(["6% to 9%", &data.between_6_and_9_percent.to_string()])?;
-        writer.write_record(["9% to 12%", &data.between_9_and_10_percent.to_string()])?;
+        writer.write_record(["9% to 12%", &data.between_9_and_12_percent.to_string()])?;
         writer.write_record(["12% to 15%", &data.between_12_and_15_percent.to_string()])?;
         writer.write_record(["Above 15%", &data.above_15_percent.to_string()])?;
 
@@ -308,7 +308,7 @@ impl PriceChangesHistogram {
             ("0% to 3%", self.between_0_and_3_percent as f32),
             ("3% to 6%", self.between_3_and_6_percent as f32),
             ("6% to 9%", self.between_6_and_9_percent as f32),
-            ("9% to 12%", self.between_10_and_12_percent as f32),
+            ("9% to 12%", self.between_9_and_12_percent as f32),
             ("12% to 15%", self.between_12_and_15_percent as f32),
             (">15%", self.above_15_percent as f32),
         ];
