@@ -527,6 +527,7 @@ impl YearlySummary {
         let rows: String = yearly_summary
             .iter()
             .map(|current_year_summary| {
+                let current_year = current_year_summary.year
                 let current_year_open = match current_year_summary.open {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
@@ -540,17 +541,12 @@ impl YearlySummary {
 
                 format!(
                     "        <tr>
-          <td>{}</td>
-          <td>{}</td>
-          <td>{}</td>
-          <td>{}</td>
-          <td>{}</td>
-        </tr>",
-                    current_year_summary.year,
-                    current_year_open,
-                    current_year_high,
-                    current_year_low,
-                    current_year_close
+          <td>{current_year}</td>
+          <td>{current_year_open}</td>
+          <td>{current_year_high}</td>
+          <td>{current_year_low}</td>
+          <td>{current_year_close}</td>
+        </tr>"
                 )
             })
             .collect::<Vec<String>>()
@@ -891,8 +887,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let raw_data_path: &Path = Path::new(INPUT_DATA_PATH_STR);
     let clean_data = CleanData::new(raw_data_path)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
+    let clean_data_rows = clean_data_with_analytics.len();
 
-    println!("Loaded {} rows of data", clean_data_with_analytics.len());
+    println!("Loaded {clean_data_rows} rows of data");
     clean_data_with_analytics
         .iter()
         .take(2)
