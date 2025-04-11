@@ -94,7 +94,7 @@ struct CleanValues {
     high: f32,
     low: f32,
     close: f32,
-    volume: i32,
+    volume: usize,
 }
 
 impl CleanValues {
@@ -103,7 +103,7 @@ impl CleanValues {
         let high: f32 = record[4].replace(',', "").parse()?;
         let low: f32 = record[5].replace(',', "").parse()?;
         let close: f32 = record[6].replace(',', "").parse()?;
-        let volume: u32 = record[8].replace(',', "").parse()? as u32;
+        let volume: usize = record[8].replace(',', "").parse()? as usize;
 
         Ok(CleanValues {
             open,
@@ -447,7 +447,7 @@ struct YearlySummary {
     high: f32,
     low: f32,
     close: Option<f32>,
-    volume: u32,
+    volume: usize,
 }
 
 impl YearlySummary {
@@ -479,7 +479,7 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
-            let mut current_year_volume: u32 = 0;
+            let mut current_year_volume: usize = 0;
 
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
