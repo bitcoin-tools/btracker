@@ -295,14 +295,8 @@ impl PriceChangesHistogram {
                 "-15% to -12%",
                 self.between_negative_15_and_12_percent as f32,
             ),
-            (
-                "-12% to -9%",
-                self.between_negative_12_and_9_percent as f32,
-            ),
-            (
-                "-9% to -6%",
-                self.between_negative_9_and_6_percent as f32,
-            ),
+            ("-12% to -9%", self.between_negative_12_and_9_percent as f32),
+            ("-9% to -6%", self.between_negative_9_and_6_percent as f32),
             ("-6% to -3%", self.between_negative_6_and_3_percent as f32),
             ("-3% to 0%", self.between_negative_3_and_0_percent as f32),
             ("0% to 3%", self.between_0_and_3_percent as f32),
