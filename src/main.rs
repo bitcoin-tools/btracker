@@ -32,9 +32,9 @@ const CHART_COLOR_PRICE_SERIES: RGBColor = ORANGE;
 const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
-const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
+const CHART_FONT_LEGEND: (&str, usize) = ("sans-serif", 20);
 const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
-const CHART_CAPTION_FONT_SIZE: u32 = 32;
+const CHART_CAPTION_FONT_SIZE: usize = 32;
 const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Normal;
 const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE;
 
@@ -44,10 +44,10 @@ const CHART_LEGEND_PRICE_SERIES_LABEL: &str = "Daily Price";
 const CHART_LEGEND_WMA_SERIES_LABEL: &str = "200-WMA";
 
 // Image dimensions
-const OUTPUT_IMAGE_WIDTH: u32 = 1024;
-const OUTPUT_IMAGE_HEIGHT: u32 = 600;
+const OUTPUT_IMAGE_WIDTH: usize = 1024;
+const OUTPUT_IMAGE_HEIGHT: usize = 600;
 // TODO: try others like 1024x768, 800x600, 640x480, 320x240, 1280x1024, 1920x1080
-const OUTPUT_IMAGES_DIMENSIONS: (u32, u32) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
+const OUTPUT_IMAGES_DIMENSIONS: (usize, usize) = (OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT);
 
 // Helper function to format numbers with commas and decimal places
 fn format_number_with_commas(value: f32, decimal_places: usize) -> String {
