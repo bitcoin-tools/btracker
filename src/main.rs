@@ -32,9 +32,9 @@ const CHART_COLOR_PRICE_SERIES: RGBColor = ORANGE;
 const CHART_COLOR_WMA_SERIES: RGBColor = BLUE;
 const CHART_COLOR_LEGEND_BORDER: RGBColor = BLACK;
 const CHART_COLOR_LEGEND_BACKGROUND: RGBColor = WHITE;
-const CHART_FONT_LEGEND: (&str, usize) = ("sans-serif", 20);
+const CHART_FONT_LEGEND: (&str, u32) = ("sans-serif", 20);
 const CHART_CAPTION_FONT_NAME: &str = "sans-serif";
-const CHART_CAPTION_FONT_SIZE: usize = 32;
+const CHART_CAPTION_FONT_SIZE: u32 = 32;
 const CHART_CAPTION_FONT_STYLE: FontStyle = FontStyle::Normal;
 const CHART_CAPTION_FONT_COLOR: RGBColor = BLUE;
 
