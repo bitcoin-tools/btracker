@@ -527,7 +527,7 @@ impl YearlySummary {
         let rows: String = yearly_summary
             .iter()
             .map(|current_year_summary| {
-                let current_year = current_year_summary.year
+                let current_year = current_year_summary.year;
                 let current_year_open = match current_year_summary.open {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
