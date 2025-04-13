@@ -487,7 +487,7 @@ impl YearlySummary {
             });
         }
 
-        yearly_summaries.reverse()
+        yearly_summaries.into_iter().rev().collect()
     }
 
     fn save_to_csv(data: &[YearlySummary], path: &Path) -> Result<(), Box<dyn Error>> {
