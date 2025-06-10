@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
 
 jobs:
-  todo:
-    name: 
+  update-and-pr:
+    name: Update data and create PR
     runs-on: ubuntu-latest
     steps:
       - name: Pull latest code
@@ -27,6 +27,8 @@ jobs:
           cache: pip
           cache-dependency-path: resources/deps/pip_requirements.txt
           python-version: 3.13
+      - name: Install Python deps
+        run: pip install -r resources/deps/pip_requirements.txt
       - name: Update data
         run: python src/util/update_data.py
       - name: Show changes
