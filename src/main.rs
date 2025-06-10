@@ -548,7 +548,7 @@ impl YearlySummary {
                 let current_year_high = format_number_with_commas(current_year_summary.high, 2);
                 let current_year_low = format_number_with_commas(current_year_summary.low, 2);
                 let current_year_volume =
-                    current_year_summary.volume.to_formatted_string(&Locale::en);
+                    format_number_with_commas(current_year_summary.volume, 0);
 
                 format!(
                     "        <tr>
