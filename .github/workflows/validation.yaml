@@ -22,7 +22,7 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      ci: ${{ steps.filter.outputs.ci }}
+      ci_validation: ${{ steps.filter.outputs.ci_validation }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
       historical_data: ${{ steps.filter.outputs.historical_data }}
       markdown: ${{ steps.filter.outputs.markdown }}
@@ -63,7 +63,7 @@ jobs:
     needs: [changes]
     if:  >-
       ${{
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
@@ -98,7 +98,7 @@ jobs:
       ${{
         github.event.action == 'prerelease' ||
         github.event.action == 'published' ||
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.python == 'true' ||
@@ -132,7 +132,7 @@ jobs:
     needs: [changes]
     if:  >-
       ${{
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
@@ -171,7 +171,7 @@ jobs:
       ${{
         github.event.action == 'prerelease' ||
         github.event.action == 'published' ||
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
@@ -191,7 +191,7 @@ jobs:
     needs: [changes]
     if: >-
       ${{
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.markdown == 'true'
       }}
     runs-on: ubuntu-latest
@@ -213,7 +213,7 @@ jobs:
     needs: [changes]
     if: >-
       ${{
-        needs.changes.outputs.ci == 'true' ||
+        needs.changes.outputs.ci_validation == 'true' ||
         needs.changes.outputs.dependencies == 'true' ||
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
@@ -327,7 +327,7 @@ jobs:
     needs: [changes, test-format, test-lint-python, test-lint-rust, test-lint-yaml, test-run]
     if: >-
       ${{ 
-        needs.changes.outputs.ci == 'true' || 
+        needs.changes.outputs.ci_validation == 'true' || 
         needs.changes.outputs.dependencies == 'true' || 
         needs.changes.outputs.historical_data == 'true' ||
         needs.changes.outputs.rust == 'true'
@@ -356,7 +356,7 @@ jobs:
       ${{ 
         github.ref == 'refs/heads/master' && 
         (
-          needs.changes.outputs.ci == 'true' || 
+          needs.changes.outputs.ci_validation == 'true' || 
           needs.changes.outputs.dependencies == 'true' || 
           needs.changes.outputs.historical_data == 'true' ||
           needs.changes.outputs.rust == 'true'
