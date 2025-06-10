@@ -1,18 +1,58 @@
 name: Update Data CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 #  schedule:
-#    - cron: "36 5 * * *"
+#    - cron: "36 5 1 * *"
+  workflow_dispatch:
+
+env:
+  INPUT_DATA_PATH: 'resources/data/historical_data.tsv'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
 
 jobs:
-  todo:
-    name: TODO job
+  changes:
+    name: Check for file changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      ci_update_data: ${{ steps.filter.outputs.ci_update_data }}
+    steps:
+      - name: Pull the latest code
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: resources/config/paths-filter.yaml
+          list-files: shell
+  update-and-pr:
+    name: Update data and create PR
+    needs: changes
+    if: needs.changes.outputs.ci_update_data == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: TODO step
-        run: echo 'TODO run'
+      - name: Pull latest code
+        uses: actions/checkout@v4
+      - name: Backup input data
+        run: cp "${INPUT_DATA_PATH}" "${INPUT_DATA_PATH}_BACKUP"
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+          cache-dependency-path: resources/deps/pip_requirements.txt
+          python-version: 3.13
+      - name: Install Python deps
+        run: pip install -r resources/deps/pip_requirements.txt
+      - name: Update data
+        run: python src/util/update_data.py
+      - name: Show changes
+        run: diff "${INPUT_DATA_PATH}" "${INPUT_DATA_PATH}_BACKUP"
