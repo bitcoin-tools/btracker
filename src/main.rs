@@ -94,6 +94,7 @@ struct CleanValues {
     high: f32,
     low: f32,
     close: f32,
+    volume: f32,
 }
 
 impl CleanValues {
@@ -102,12 +103,14 @@ impl CleanValues {
         let high: f32 = record[4].replace(',', "").parse()?;
         let low: f32 = record[5].replace(',', "").parse()?;
         let close: f32 = record[6].replace(',', "").parse()?;
+        let volume: f32 = record[8].replace(',', "").parse()?;
 
         Ok(CleanValues {
             open,
             high,
             low,
             close,
+            volume,
         })
     }
 }
@@ -441,6 +444,7 @@ struct YearlySummary {
     high: f32,
     low: f32,
     close: Option<f32>,
+    volume: f32,
 }
 
 impl YearlySummary {
@@ -472,10 +476,12 @@ impl YearlySummary {
 
             let mut current_year_high: f32 = f32::NEG_INFINITY;
             let mut current_year_low: f32 = f32::INFINITY;
+            let mut current_year_volume: f32 = 0.0;
 
             for d in data.iter().filter(|d| d.date.year() == current_year) {
                 current_year_high = f32::max(current_year_high, d.values.high);
                 current_year_low = f32::min(current_year_low, d.values.low);
+                current_year_volume += d.values.volume;
             }
 
             yearly_summaries.push(YearlySummary {
@@ -484,6 +490,7 @@ impl YearlySummary {
                 high: current_year_high,
                 low: current_year_low,
                 close: current_year_close,
+                volume: current_year_volume,
             });
         }
 
@@ -493,26 +500,28 @@ impl YearlySummary {
     fn save_to_csv(data: &[YearlySummary], path: &Path) -> Result<(), Box<dyn Error>> {
         let mut writer = WriterBuilder::new().from_path(path)?;
 
-        writer.write_record(["Year", "Open", "High", "Low", "Close"])?;
+        writer.write_record(["Year", "Open", "High", "Low", "Close", "Volume"])?;
 
         data.iter().try_for_each(|current_year_summary| {
-            let currrent_year_open = match current_year_summary.open {
+            let current_year_open = match current_year_summary.open {
                 Some(value) => format!("{:.2}", value),
                 None => "".to_string(),
             };
-            let currrent_year_high = format!("{:.2}", current_year_summary.high);
-            let currrent_year_low = format!("{:.2}", current_year_summary.low);
-            let currrent_year_close = match current_year_summary.close {
+            let current_year_close = match current_year_summary.close {
                 Some(value) => format!("{:.2}", value),
                 None => "".to_string(),
             };
+            let current_year_high = format!("{:.2}", current_year_summary.high);
+            let current_year_low = format!("{:.2}", current_year_summary.low);
+            let current_year_volume = format!("{:.0}", current_year_summary.volume);
 
             writer.write_record(&[
                 current_year_summary.year.to_string(),
-                currrent_year_open,
-                currrent_year_high,
-                currrent_year_low,
-                currrent_year_close,
+                current_year_open,
+                current_year_high,
+                current_year_low,
+                current_year_close,
+                current_year_volume,
             ])
         })?;
 
@@ -529,12 +538,13 @@ impl YearlySummary {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
                 };
-                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
-                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
                 let current_year_close = match current_year_summary.close {
                     Some(value) => format_number_with_commas(value, 2),
                     None => "".to_string(),
                 };
+                let current_year_high = format_number_with_commas(current_year_summary.high, 2);
+                let current_year_low = format_number_with_commas(current_year_summary.low, 2);
+                let current_year_volume = format_number_with_commas(current_year_summary.volume, 0);
 
                 format!(
                     "        <tr>
@@ -543,6 +553,7 @@ impl YearlySummary {
           <td>{current_year_high}</td>
           <td>{current_year_low}</td>
           <td>{current_year_close}</td>
+          <td>{current_year_volume}</td>
         </tr>"
                 )
             })
@@ -553,7 +564,7 @@ impl YearlySummary {
             "    <table class='inline-table'>
       <thead>
         <tr>
-          <th colspan='5'>Yearly Summary</th>
+          <th colspan='6'>Yearly Summary</th>
         </tr>
         <tr>
           <th>Year</th>
@@ -561,6 +572,7 @@ impl YearlySummary {
           <th>High</th>
           <th>Low</th>
           <th>Close</th>
+          <th>Volume</th>
         </tr>
       </thead>
       <tbody>
