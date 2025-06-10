@@ -2,6 +2,11 @@ ci:
   - '.github/workflows/*.yaml'
   - '.github/workflows/*.yml'
   - 'resources/config/**'
+ci_update_data:
+  - '.github/workflows/update_data.yaml'
+ci_validation:
+  - '.github/workflows/validation.yaml'
+  - 'resources/config/**'
 dependencies:
   - 'Cargo.toml'
   - 'Cargo.lock'
