@@ -1,12 +1,12 @@
 name: Update Data CI
 
 on:
-  workflow_dispatch:
+  workflow_dispatch
 #  schedule:
 #    - cron: "36 5 1 * *"
 
-   env:
-      INPUT_DATA_PATH: 'resources/data/historical_data.tsv'
+env:
+  INPUT_DATA_PATH: 'resources/data/historical_data.tsv'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
