@@ -1,8 +1,9 @@
 name: Update Data CI
 
 on:
-  schedule:
-    - cron: "36 5 * * *"
+  workflow_dispatch:
+#  schedule:
+#    - cron: "36 5 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
