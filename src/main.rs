@@ -524,7 +524,7 @@ impl YearlySummary {
                 current_year_high,
                 current_year_low,
                 current_year_close,
-                current_year_summary.volume,
+                current_year_volume,
             ])
         })?;
 
