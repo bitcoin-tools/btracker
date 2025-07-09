@@ -1019,10 +1019,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 {histogram_html_table}
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
-    <br>
-    <div>
-        This report was last updated at {timestamp_report_started}.
-    </div>
+    <br><br>
+    This report was last updated at {timestamp_report_started}.
     <br><br>
     <div class='scrollable-table'>
       <table>
