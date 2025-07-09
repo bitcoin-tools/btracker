@@ -1018,9 +1018,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 {yearly_summary_html_table}
 {histogram_html_table}
     <br><br>
-    This report was last updated at {timestamp_report_started} Coordinated Universal Time.
-    <br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br>
+    <div>
+        This report was last updated at {timestamp_report_started}.
+    </div>
     <br><br>
     <div class='scrollable-table'>
       <table>
