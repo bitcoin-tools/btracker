@@ -338,7 +338,7 @@ impl PriceChangesHistogram {
                 }
             })
             .x_labels(bins.len())
-            .y_label_formatter(&|y| format!("{:.0}", y))
+            .y_label_formatter(&|y| format!("{y:.0}"))
             .x_desc("Percentage Change")
             .y_desc("Number of Days")
             .axis_desc_style(("sans-serif", 15))
@@ -504,11 +504,11 @@ impl YearlySummary {
 
         data.iter().try_for_each(|current_year_summary| {
             let current_year_open = match current_year_summary.open {
-                Some(value) => format!("{:.2}", value),
+                Some(value) => format!("{value:.2}"),
                 None => "".to_string(),
             };
             let current_year_close = match current_year_summary.close {
-                Some(value) => format!("{:.2}", value),
+                Some(value) => format!("{value:.2}"),
                 None => "".to_string(),
             };
             let current_year_high = format!("{:.2}", current_year_summary.high);
@@ -638,7 +638,7 @@ impl CleanDataWithAnalytics {
             .configure_mesh()
             .x_label_formatter(&|date| date.format("%b %Y").to_string())
             .x_max_light_lines(0)
-            .y_label_formatter(&|price| format!("{:.0}", price))
+            .y_label_formatter(&|price| format!("{price:.0}"))
             .y_max_light_lines(10)
             .set_all_tick_mark_size(4)
             .draw()?;
