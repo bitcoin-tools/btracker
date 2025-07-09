@@ -1007,8 +1007,6 @@ fn main() -> Result<(), Box<dyn Error>> {
   </head>
   <body>
     <h1>{CHART_TITLE}</h1>
-    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
-    <br><br>
     <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
     <br><br>
     <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
@@ -1019,6 +1017,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 {histogram_html_table}
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br><br>
+    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
     <br><br>
     This report was last updated at {timestamp_report_started}.
     <br><br>
