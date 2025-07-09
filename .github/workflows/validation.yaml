@@ -244,12 +244,12 @@ jobs:
         run: |
           sudo apt-get -qq update
           sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$(cat resources/deps/apt_dependencies.txt)"
-      - name: Check
-        run: cargo check --verbose
       - name: Build binary
-        run: cargo build --verbose
-      - name: Hash binary
-        run: sha256sum target/debug/btracker
+        run: |
+          cargo check --verbose
+          cargo build --verbose
+          echo 'Calculating sha256 hash of the binary.'
+          sha256sum target/debug/btracker
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
