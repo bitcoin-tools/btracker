@@ -1018,7 +1018,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
     <br><br>
-    <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
+    <a href='{REPOSITORY_URL}'>Link to the report codebase</a>
     <br><br>
     This report was last updated at {timestamp_report_started}.
     <br><br>
