@@ -1,5 +1,5 @@
 use crate::full_palette::ORANGE;
-use chrono::{Datelike, NaiveDate};
+use chrono::{DateTime, Datelike, NaiveDate, Utc};
 use csv::{ReaderBuilder, WriterBuilder};
 use num_format::{Locale, ToFormattedString};
 use plotters::prelude::*;
@@ -893,6 +893,7 @@ impl MovingAverages {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let timestamp_report_started: DateTime<Utc> = Utc::now();
     let raw_data_path: &Path = Path::new(INPUT_DATA_PATH_STR);
     let clean_data = CleanData::new(raw_data_path)?;
     let clean_data_with_analytics = CleanDataWithAnalytics::new(&clean_data, MOVING_AVERAGE_DAYS);
@@ -1018,6 +1019,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 {histogram_html_table}
     <br><br>
     <a href='{output_price_analytics_csv_url}'>Link to Price Analytics data</a>
+    <br><br>
+    This report was last updated at {timestamp_report_started}.
     <br><br>
     <div class='scrollable-table'>
       <table>
