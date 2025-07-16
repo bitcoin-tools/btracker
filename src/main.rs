@@ -548,7 +548,7 @@ impl YearlySummary {
 
                 format!(
                     "        <tr>
-          <td>{current_year}</td>
+          <td style='yearly-summary-year'>{current_year}</td>
           <td>{current_year_open}</td>
           <td>{current_year_high}</td>
           <td>{current_year_low}</td>
