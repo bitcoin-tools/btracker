@@ -182,7 +182,8 @@ impl PriceChanges {
 
 #[derive(Debug, Clone)]
 struct PriceChangesHistogram {
-    below_negative_15_percent: usize,
+    below_negative_18_percent: usize,
+    between_negative_18_and_15_percent: usize,
     between_negative_15_and_12_percent: usize,
     between_negative_12_and_9_percent: usize,
     between_negative_9_and_6_percent: usize,
@@ -193,14 +194,16 @@ struct PriceChangesHistogram {
     between_6_and_9_percent: usize,
     between_9_and_12_percent: usize,
     between_12_and_15_percent: usize,
-    above_15_percent: usize,
+    between_15_and_18_percent: usize,
+    above_18_percent: usize,
     total_days: usize,
 }
 
 impl PriceChangesHistogram {
     fn new(data: &[CleanDataWithAnalytics]) -> Self {
         let mut histogram = PriceChangesHistogram {
-            below_negative_15_percent: 0,
+            below_negative_18_percent: 0,
+            between_negative_18_and_15_percent: 0,
             between_negative_15_and_12_percent: 0,
             between_negative_12_and_9_percent: 0,
             between_negative_9_and_6_percent: 0,
@@ -211,15 +214,18 @@ impl PriceChangesHistogram {
             between_6_and_9_percent: 0,
             between_9_and_12_percent: 0,
             between_12_and_15_percent: 0,
-            above_15_percent: 0,
+            between_15_and_18_percent: 0,
+            above_18_percent: 0,
             total_days: 0,
         };
 
         for d in data {
             histogram.total_days += 1;
             let percent_change = d.price_changes.percent_change_1_day;
-            if percent_change < -15.0 {
-                histogram.below_negative_15_percent += 1;
+            if percent_change < -18.0 {
+                histogram.below_negative_18_percent += 1;
+            } else if (-18.0..-15.0).contains(&percent_change) {
+                histogram.between_negative_18_and_15_percent += 1;
             } else if (-15.0..-12.0).contains(&percent_change) {
                 histogram.between_negative_15_and_12_percent += 1;
             } else if (-12.0..-9.0).contains(&percent_change) {
@@ -240,8 +246,10 @@ impl PriceChangesHistogram {
                 histogram.between_9_and_12_percent += 1;
             } else if (12.0..15.0).contains(&percent_change) {
                 histogram.between_12_and_15_percent += 1;
-            } else if percent_change >= 15.0 {
-                histogram.above_15_percent += 1;
+            } else if (15.0..18.0).contains(&percent_change) {
+                histogram.between_15_and_18_percent += 1;
+            } else if percent_change >= 18.0 {
+                histogram.above_18_percent += 1;
             }
         }
         assert_eq!(
@@ -256,7 +264,11 @@ impl PriceChangesHistogram {
         let mut writer = WriterBuilder::new().from_path(path)?;
 
         writer.write_record(["One-Day Price Change", "Days"])?;
-        writer.write_record(["Below -15%", &data.below_negative_15_percent.to_string()])?;
+        writer.write_record(["Below -18%", &data.below_negative_18_percent.to_string()])?;
+        writer.write_record([
+            "-18% to -15%",
+            &data.between_negative_18_and_15_percent.to_string(),
+        ])?;
         writer.write_record([
             "-15% to -12%",
             &data.between_negative_15_and_12_percent.to_string(),
@@ -282,7 +294,8 @@ impl PriceChangesHistogram {
         writer.write_record(["6% to 9%", &data.between_6_and_9_percent.to_string()])?;
         writer.write_record(["9% to 12%", &data.between_9_and_12_percent.to_string()])?;
         writer.write_record(["12% to 15%", &data.between_12_and_15_percent.to_string()])?;
-        writer.write_record(["Above 15%", &data.above_15_percent.to_string()])?;
+        writer.write_record(["15% to 18%", &data.between_15_and_18_percent.to_string()])?;
+        writer.write_record(["Above 18%", &data.above_18_percent.to_string()])?;
 
         writer.flush()?;
         Ok(())
@@ -293,7 +306,11 @@ impl PriceChangesHistogram {
         root.fill(&CHART_COLOR_BACKGROUND)?;
 
         let bins = vec![
-            ("<-15%", self.below_negative_15_percent as f32),
+            ("<-18%", self.below_negative_18_percent as f32),
+            (
+                "-18% to -15%",
+                self.between_negative_18_and_15_percent as f32,
+            ),
             (
                 "-15% to -12%",
                 self.between_negative_15_and_12_percent as f32,
@@ -307,7 +324,8 @@ impl PriceChangesHistogram {
             ("6% to 9%", self.between_6_and_9_percent as f32),
             ("9% to 12%", self.between_9_and_12_percent as f32),
             ("12% to 15%", self.between_12_and_15_percent as f32),
-            (">15%", self.above_15_percent as f32),
+            ("15% to 18%", self.between_15_and_18_percent as f32),
+            (">18%", self.above_18_percent as f32),
         ];
 
         let max_days = bins
@@ -367,7 +385,11 @@ impl PriceChangesHistogram {
       </thead>
       <tbody>
         <tr>
-          <td>Below -15%</td>
+          <td>Below -18%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>-16% to -15%</td>
           <td>{}</td>
         </tr>
         <tr>
@@ -411,7 +433,11 @@ impl PriceChangesHistogram {
           <td>{}</td>
         </tr>
         <tr>
-          <td>Above 15%</td>
+          <td>15% to 18%</td>
+          <td>{}</td>
+        </tr>
+        <tr>
+          <td>Above 18%</td>
           <td>{}</td>
         </tr>
         <tr class='histogram-footer'>
@@ -420,7 +446,8 @@ impl PriceChangesHistogram {
         </tr>
       </tbody>
     </table>",
-            self.below_negative_15_percent,
+            self.below_negative_18_percent,
+            self.between_negative_18_and_15_percent,
             self.between_negative_15_and_12_percent,
             self.between_negative_12_and_9_percent,
             self.between_negative_9_and_6_percent,
@@ -431,7 +458,8 @@ impl PriceChangesHistogram {
             self.between_6_and_9_percent,
             self.between_9_and_12_percent,
             self.between_12_and_15_percent,
-            self.above_15_percent,
+            self.between_15_and_18_percent,
+            self.above_18_percent,
             self.total_days
         )
     }

@@ -91,7 +91,7 @@ columns:
     rules:
       not_empty: true
       is_trimmed: true
-      regex: '^(?:Below\s-15%|-?\d+%\sto\s-?\d+%|Above\s15%|Total\sDays)$'
+      regex: '^(?:Below\s-18%|-?\d+%\sto\s-?\d+%|Above\s18%|Total\sDays)$'
   - name: output-histogram-days
     description: Count of days
     example: '123'
