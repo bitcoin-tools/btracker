@@ -433,7 +433,6 @@ impl PriceChangesHistogram {
           <td>{}</td>
         </tr>
         <tr>
-        <tr>
           <td>15% to 18%</td>
           <td>{}</td>
         </tr>
