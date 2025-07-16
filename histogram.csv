@@ -1,5 +1,6 @@
 One-Day Price Change,Days
-Below -15%,26
+Below -18%,12
+-18% to -15%,14
 -15% to -12%,13
 -12% to -9%,45
 -9% to -6%,134
@@ -10,4 +11,5 @@ Below -15%,26
 6% to 9%,152
 9% to 12%,74
 12% to 15%,23
-Above 15%,24
+15% to 18%,10
+Above 18%,14
