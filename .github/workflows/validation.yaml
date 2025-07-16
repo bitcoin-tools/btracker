@@ -160,7 +160,10 @@ jobs:
       - name: Install font dependency
         run: |
           sudo apt-get -qq update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$(cat resources/deps/apt_dependencies.txt)"
+          sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install \
+            --assume-yes \
+            --no-install-recommends \
+            "$(cat resources/deps/apt_dependencies.txt)"
       - name: Run linter
         run: cargo clippy --all-targets --all-features -- -D warnings
 
