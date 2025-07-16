@@ -10,6 +10,12 @@ th.wma-column {
   padding: 7px;
 }
 
+td.yearly-summary-year {
+  background-color: whitesmoke;
+  border: 1px solid black;
+  font-weight: bold;
+}
+
 td.wma-column {
   background-color: whitesmoke;
   border-left: 3px solid blue;
