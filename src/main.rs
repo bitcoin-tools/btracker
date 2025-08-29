@@ -1035,11 +1035,11 @@ fn main() -> Result<(), Box<dyn Error>> {
   </head>
   <body>
     <h1>{CHART_TITLE}</h1>
-    <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
+    <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='a line graph showing the 200-week moving average and price of bitcoin on a linear scale'>
     <br><br>
-    <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='Log Chart'>
+    <img src='{OUTPUT_LOG_IMAGE_FILENAME}' alt='a line graph showing the 200-week moving average and price of bitcoin on a logarithmic scale'>
     <br><br>
-    <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='Price Changes Histogram'>
+    <img src='{OUTPUT_HISTOGRAM_IMAGE_FILENAME}' alt='a histogram graph showing the daily price performance in bins of 3-percent daily change'>
     <br><br>
 {yearly_summary_html_table}
 {histogram_html_table}
