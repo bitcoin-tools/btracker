@@ -89,7 +89,7 @@ jobs:
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          components: cargofmt
+          components: rustfmt
       - name: Ensure proper formatting
         run: cargo fmt --check
 
