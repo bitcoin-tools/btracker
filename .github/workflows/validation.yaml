@@ -88,6 +88,8 @@ jobs:
             cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: cargofmt
       - name: Ensure proper formatting
         run: cargo fmt --check
 
@@ -156,7 +158,9 @@ jobs:
             cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}-
             cargo-${{ runner.os }}-
       - name: Load the Rust toolchain
-        uses: dtolnay/rust-toolchain@stable      
+        uses: dtolnay/rust-toolchain@stable
+        with:
+            components: clippy
       - name: Install font dependency
         run: |
           sudo apt-get -qq update
