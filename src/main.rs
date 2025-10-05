@@ -999,12 +999,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         "<!DOCTYPE html>
 <html>
   <head>
-    <title>{CHART_TITLE}</title>
+    <title>btracker</title>
     <link rel='icon' type='image/png' href='{OUTPUT_FAVICON_FILENAME}'>
     <link rel='stylesheet' href='style.css'>
   </head>
   <body>
-    <h1>{CHART_TITLE}</h1>
+    <h1>200-Week Bitcoin Price Analysis</h1>
     <a href='{REPOSITORY_URL}'>Link to the btracker repo</a>
     <br><br>
     <img src='{OUTPUT_LINEAR_IMAGE_FILENAME}' alt='Linear Chart'>
