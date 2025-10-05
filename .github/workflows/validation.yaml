@@ -275,7 +275,7 @@ jobs:
       - name: Run binary
         run: |
           cargo run
-          if [ "$@" -ne 0 ]; then
+          if [ "$?" -ne 0 ]; then
             echo 'DEBUG: Binary failed to execute'
             RUST_BACKTRACE=1 cargo run --verbose --verbose
             echo 'DEBUG: Exiting the workflow'
