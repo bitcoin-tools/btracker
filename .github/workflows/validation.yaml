@@ -273,7 +273,14 @@ jobs:
       - name: Update data
         run: python src/util/update_data.py
       - name: Run binary
-        run: cargo run --verbose
+        run: |
+          cargo run
+          if [ "$@" -ne 0 ]; then
+            echo 'DEBUG: Binary failed to execute'
+            RUST_BACKTRACE=1 cargo run --verbose --verbose
+            echo 'DEBUG: Exiting the workflow'
+            exit 1
+          fi
       - name: Hash output
         run: sha256sum output/*
       - name: Upload output artifact
