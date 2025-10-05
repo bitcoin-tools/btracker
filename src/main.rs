@@ -1076,5 +1076,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
     write(output_html_path, html_content)?;
 
+    panic!("PANIC!!!!!!!!!!!!!!!!!!!!!!");
+
     Ok(())
 }
