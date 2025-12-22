@@ -258,7 +258,7 @@ jobs:
           echo 'Calculating sha256 hash of the binary.'
           sha256sum target/debug/btracker
       - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: btracker
           path: target/debug/btracker
@@ -277,7 +277,7 @@ jobs:
       - name: Hash output
         run: sha256sum output/*
       - name: Upload output artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: output
           path: output/
