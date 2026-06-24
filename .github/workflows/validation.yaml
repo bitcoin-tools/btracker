@@ -273,7 +273,16 @@ jobs:
       - name: Update data
         run: python src/util/update_data.py
       - name: Run binary
-        run: cargo run --verbose
+        run: |
+          cargo run || {
+            echo 'DEBUG: binary failed to execute'
+            echo 'DEBUG: re-running in verbose mode'
+            RUST_BACKTRACE=1 cargo run --verbose
+            echo 'DEBUG: re-running in verbose-verbose mode'
+            RUST_BACKTRACE=1 cargo run --verbose --verbose
+            echo 'DEBUG: exiting the workflow'
+            exit 1
+          }
       - name: Hash output
         run: sha256sum output/*
       - name: Upload output artifact
